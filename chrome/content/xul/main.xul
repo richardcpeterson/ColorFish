@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<window id="main" title="CSSchemer" width="800" height="600"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script type="application/x-javascript"
+           src="chrome://CSSchemer/content/scripts/browser.js"/>
+  <hbox>
+    <button label="Load Page" oncommand="load_page();"/>
+    <textbox id="url-bar" size="50"/>
+  </hbox>
+  <browser id="browser" flex="1"/>
+</window>
