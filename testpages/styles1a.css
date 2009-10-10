@@ -1,0 +1,22 @@
+div{
+	margin: 10px;
+	border-width: 5px;
+	border-style: solid;
+}
+
+.c1 {
+	background-color: #440000;
+	border-color: #FF0000;
+}
+.c2 {
+    background-color: #440000;
+	border-color: #00FFFF;
+}
+.c3 {
+	background-color: #000044;
+	border-color: #FF0000;
+}
+.c4 {
+	background-color: #000044;
+	border-color: #00FFFF;
+}
