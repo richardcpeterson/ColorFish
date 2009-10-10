@@ -3,11 +3,18 @@
 
 <window id="main" title="CSSchemer" width="800" height="600"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <script type="application/x-javascript"
-           src="chrome://CSSchemer/content/scripts/browser.js"/>
+
   <hbox>
-    <button label="Load Page" oncommand="load_page();"/>
+    <button label="Load Page" oncommand="Browser.load_from_address_bar();"/>
     <textbox id="url-bar" size="50"/>
   </hbox>
+
   <browser id="browser" flex="1"/>
+
+  <!-- See comments in 'browser.js' for why this script needs to come
+       near the end, specifically comments for 'Browser.widget'.  -->
+
+  <script type="application/x-javascript"
+          src="chrome://CSSchemer/content/scripts/browser.js"/>
+
 </window>
