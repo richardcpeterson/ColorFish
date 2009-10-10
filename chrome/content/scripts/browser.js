@@ -31,6 +31,14 @@ function Browser() {
         );
     }
 
+    /***
+     * Returns a StyleSheetList representing all of the style sheets
+     * attached to the current page we're viewing in the browser.
+     */
+    this.get_stylesheets = function() {
+        return this.widget.contentDocument.styleSheets;
+    }
+
 }
 
 /***
