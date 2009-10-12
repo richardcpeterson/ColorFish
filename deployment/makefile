@@ -3,13 +3,40 @@ NSISVER = 2.45
 NSIS = nsis-$(NSISVER)
 NSISDIR = nsis/
 APPNAME = csschemer
+APPVER = alpha-0.1
 DISTRO_DIR = distros/
+
+XUL_SOURCE_SITE = http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/$(XULVER)/runtimes/
+XUL_SOURCE_DIR = xul-sources/
+
+BUILDS = css-linux css-windows css-mac
+
 LINUX_DIR = linux/
 LINUX_FINAL_DIR = $(DISTRO_DIR)$(LINUX_DIR)$(APPNAME)/
+LINUX_FINAL_FILE = $(APPNAME)-$(APPVER).tar.gz
+LINUX_XUL_FILE = xulrunner-$(XULVER).en-US.linux-i686.tar.bz2
 
-all : nsis css-linux
+WINDOWS_DIR = windows/
+WINDOWS_FINAL_DIR = $(DISTRO_DIR)$(WINDOWS_DIR)$(APPNAME)/
+WINDOWS_FINAL_FILE = temp
+WINDOWS_XUL_FILE = xulrunner-$(XULVER).en-US.win32.zip
+
+MAC_DIR = mac/
+MAC_FINAL_DIR = $(DISTRO_DIR)$(MAC_DIR)$(APPNAME)/
+MAC_FINAL_FILE = temp
+MAC_XUL_FILE = xulrunner-$(XULVER).en-US.mac-pkg.dmg
+
+XUL_FILES = $(XUL_SOURCE_DIR)$(LINUX_XUL_FILE) $(XUL_SOURCE_DIR)$(WINDOWS_XUL_FILE) $(XUL_SOURCE_DIR)$(MAC_XUL_FILE)
+XUL_SOURCE_DIRS = $(XUL_SOURCE_DIR)$(LINUX_DIR) $(XUL_SOURCE_DIR)$(WINDOWS_DIR) $(XUL_SOURCE_DIR)$(MAC_DIR)
+
+all : $(BUILDS)
 
 nsis : $(NSISDIR)$(NSIS)/makensis
+
+clean :
+	rm $(DISTRO_DIR) -rf
+	rm $(NSISDIR) -rf
+	rm $(XUL_SOURCE_DIR) -rf
 
 $(NSISDIR)$(NSIS)-src.tar.bz2 :
 	wget http://sourceforge.net/projects/nsis/files/NSIS%202/$(NSISVER)/$(NSIS)-src.tar.bz2/download --directory-prefix=$(NSISDIR)
@@ -27,35 +54,61 @@ $(NSISDIR)$(NSIS)/makensis : $(NSISDIR)$(NSIS)-src/ $(NSISDIR)$(NSIS)/
 	cd "$(NSISDIR)$(NSIS)-src" ;\
 	scons SKIPSTUBS=all SKIPPLUGINS=all SKIPUTILS=all SKIPMISC=all NSIS_CONFIG_CONST_DATA=no PREFIX=../$(NSIS) install-compiler
 
-css-linux : $(DISTRO_DIR)$(LINUX_DIR)$(APPNAME).tar.gz
+css-linux : $(LINUX_FINAL_DIR)$(LINUX_FINAL_FILE)
 	rm $(LINUX_FINAL_DIR) -rf
+	rm $(XUL_SOURCE_DIR)$(LINUX_DIR) -rf
 
-$(DISTRO_DIR)$(LINUX_DIR)$(APPNAME).tar.gz : $(LINUX_FINAL_DIR)
-	cd $(DISTRO_DIR)$(LINUX_DIR) ;\
-	tar -cvzf $(APPNAME).tar.gz $(APPNAME)
+css-windows :
+	rm $(XUL_SOURCE_DIR)$(WINDOWS_DIR) -rf
 
-$(LINUX_FINAL_DIR) : distros xul-sources
-	mkdir distros/$(LINUX_DIR)
-	mkdir distros/$(LINUX_DIR)$(APPNAME)
+css-mac :
+
+$(LINUX_FINAL_DIR)$(LINUX_FINAL_FILE) : $(LINUX_FINAL_DIR) $(XUL_SOURCE_DIR) $(XUL_SOURCE_DIRS)
 	cp ../application.ini $(LINUX_FINAL_DIR)
 #cp ../components $(LINUX_FINAL_DIR). -rf
 	cp ../chrome $(LINUX_FINAL_DIR). -rf
 	cp ../defaults $(LINUX_FINAL_DIR). -rf
-	cp ../extensions $(LINUX_FINAL_DIR). -rf
+#cp ../extensions $(LINUX_FINAL_DIR). -rf
 	cp ../testpages $(LINUX_FINAL_DIR). -rf
-	cp xul-sources/$(LINUX_DIR)xulrunner-stub $(LINUX_FINAL_DIR).
+	cp $(XUL_SOURCE_DIR)$(LINUX_DIR)xulrunner-stub $(LINUX_FINAL_DIR).
 	mv $(LINUX_FINAL_DIR)xulrunner-stub $(LINUX_FINAL_DIR)$(APPNAME)
 	mkdir $(LINUX_FINAL_DIR)xulrunner
-	cp xul-sources/$(LINUX_DIR)* $(LINUX_FINAL_DIR)xulrunner/ -rf
+	cp $(XUL_SOURCE_DIR)$(LINUX_DIR)* $(LINUX_FINAL_DIR)xulrunner/ -rf
+	cd $(DISTRO_DIR)$(LINUX_DIR) ;\
+	tar -cvzf $(LINUX_FINAL_FILE) $(APPNAME)
 
-distros :
-	mkdir distros
+$(LINUX_FINAL_DIR) : $(DISTRO_DIR)$(LINUX_DIR)
+	mkdir $(LINUX_FINAL_DIR)
 
-xul-sources : xul-sources/xulrunner-$(XULVER).en-US.linux-i686.tar.bz2
-	cd xul-sources/ ;\
-	tar -xjvf xulrunner-$(XULVER).en-US.linux-i686.tar.bz2 ;\
+$(DISTRO_DIR) :
+	mkdir $(DISTRO_DIR)
+
+$(DISTRO_DIR)$(LINUX_DIR) : $(DISTRO_DIR)
+	mkdir $(DISTRO_DIR)$(LINUX_DIR)
+
+$(XUL_SOURCE_DIR) :
+	mkdir $(XUL_SOURCE_DIR)
+
+$(XUL_SOURCE_DIR)$(LINUX_DIR) : $(XUL_SOURCE_DIR)$(LINUX_XUL_FILE)
+	cd $(XUL_SOURCE_DIR) ;\
+	tar -xjvf $(LINUX_XUL_FILE) ;\
 	mv xulrunner $(LINUX_DIR)
 
-xul-sources/xulrunner-$(XULVER).en-US.linux-i686.tar.bz2 :
-	wget http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/$(XULVER)/runtimes/xulrunner-$(XULVER).en-US.linux-i686.tar.bz2 \
-	--directory-prefix=xul-sources/
+$(XUL_SOURCE_DIR)$(WINDOWS_DIR) : $(XUL_SOURCE_DIR)$(WINDOWS_XUL_FILE)
+	cd $(XUL_SOURCE_DIR) ;\
+	unzip $(WINDOWS_XUL_FILE) ;\
+	mv xulrunner $(WINDOWS_DIR)
+
+$(XUL_SOURCE_DIR)$(MAC_DIR) : $(XUL_SOURCE_DIR)$(MAC_XUL_FILE)
+
+$(XUL_SOURCE_DIR)$(LINUX_XUL_FILE) :
+	wget $(XUL_SOURCE_SITE)$(LINUX_XUL_FILE) \
+	--directory-prefix=$(XUL_SOURCE_DIR)
+
+$(XUL_SOURCE_DIR)$(WINDOWS_XUL_FILE) :
+	wget $(XUL_SOURCE_SITE)$(WINDOWS_XUL_FILE) \
+	--directory-prefix=$(XUL_SOURCE_DIR)
+
+$(XUL_SOURCE_DIR)$(MAC_XUL_FILE) :
+	wget $(XUL_SOURCE_SITE)$(MAC_XUL_FILE) \
+	--directory-prefix=$(XUL_SOURCE_DIR)
