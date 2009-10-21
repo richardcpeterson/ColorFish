@@ -1,4 +1,4 @@
 box, hbox, vbox, browser{
-    border: 2px solid red;
-    margin: 2px;
+    border: 1px solid #444;
+    margin: 1px;
 }

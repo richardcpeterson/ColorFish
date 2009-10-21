@@ -10,24 +10,33 @@
 
   <script type="application/x-javascript"
            src="chrome://CSSchemer/content/scripts/init.js"/>
-  
+  <script type="application/x-javascript"
+          src="chrome://CSSchemer/content/scripts/browser.js"/>
+
   <commandset id="mainCommandSet">
     <command id="cmd_browseURI" oncommand="Browser.load_from_address_bar();"/>
+    <command id="cmd_browseBack" oncommand="Browser.back();" />
+    <command id="cmd_browseForward" oncommand="Browser.forward();" />
+    <command id="cmd_browseReload" oncommand="Browser.reload();" />
   </commandset>
+  
+  <broadcasterset id="browserBroadcasters">
+    <broadcaster id="canGoBack"    disabled="true"/>
+    <broadcaster id="canGoForward" disabled="true"/>
+  </broadcasterset>
+
   
   <vbox id="main-layout" flex="1">
     <hbox id="nav-toolbar">
-      <textbox id="uri-input" size="100"/>
+      <button label="Back" command="cmd_browseBack" observes="canGoBack"/>
+      <button label="Forward" command="cmd_browseForward" observes="canGoForward"/>
+      <button label="Reload" command="cmd_browseReload"/>
+      <textbox id="uri-input" flex="1"/>
       <button label="Go" command="cmd_browseURI"/>
     </hbox>
-    <browser id="browser" flex="1"/>
+    <browser id="browser" type="content-primary" src="about:blank" flex="1"/>
     <splitter id="csContentSplitter" />
     <vbox id="appcontent" flex="1"><!--Content provided by overlay--></vbox>
   </vbox>
   
-  <!-- See comments in 'browser.js' for why this script needs to come
-       near the end, specifically comments for 'Browser.widget'.  -->
-  <script type="application/x-javascript"
-          src="chrome://CSSchemer/content/scripts/browser.js"/>
-
 </window>
