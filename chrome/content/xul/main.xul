@@ -1,19 +1,32 @@
 <?xml version="1.0"?>
+<?xul-overlay href="chrome://CSSchemer/content/xul/appcontent-overlay.xul"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://CSSchemer/content/css/layout.css" type="text/css"?>
 
-<window id="main" title="CSSchemer" width="800" height="600"
+<window id="main" title="CSSchemer"
+        width="800" height="600"
+        onload="initApp();"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <hbox>
-    <button label="Load Page" oncommand="Browser.load_from_address_bar();"/>
-    <textbox id="url-bar" size="50"/>
-  </hbox>
-
-  <browser id="browser" flex="1"/>
-
+  <script type="application/x-javascript"
+           src="chrome://CSSchemer/content/scripts/init.js"/>
+  
+  <commandset id="mainCommandSet">
+    <command id="cmd_browseURI" oncommand="Browser.load_from_address_bar();"/>
+  </commandset>
+  
+  <vbox id="main-layout" flex="1">
+    <hbox id="nav-toolbar">
+      <textbox id="uri-input" size="100"/>
+      <button label="Go" command="cmd_browseURI"/>
+    </hbox>
+    <browser id="browser" flex="1"/>
+    <splitter id="csContentSplitter" />
+    <vbox id="appcontent" flex="1"><!--Content provided by overlay--></vbox>
+  </vbox>
+  
   <!-- See comments in 'browser.js' for why this script needs to come
        near the end, specifically comments for 'Browser.widget'.  -->
-
   <script type="application/x-javascript"
           src="chrome://CSSchemer/content/scripts/browser.js"/>
 

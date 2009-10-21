@@ -1,0 +1,4 @@
+box, hbox, vbox, browser{
+    border: 2px solid red;
+    margin: 2px;
+}

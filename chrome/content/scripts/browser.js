@@ -27,7 +27,7 @@ function Browser() {
      */
     this.load_from_address_bar = function() {
         this.load_page(
-            document.getElementById("url-bar").value
+            document.getElementById("uri-input").value
         );
     }
 
