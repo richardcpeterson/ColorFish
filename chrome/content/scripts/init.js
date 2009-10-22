@@ -7,6 +7,7 @@ function initApp(){
     window.Browser = new Browser();
   
     addHandlerToElement("uri-input", "keypress", loadPageOnEnterKey);
+    document.getElementById("uri-input").focus();
 }
 
 function dumpProps(obj, parent) {
