@@ -22,4 +22,5 @@ box, hbox, vbox, browser{
     background-image: url("chrome://CSSchemer/content/images/appcontent_bg.png");
     background-repeat: repeat-x;
     background-color: #dadada;
+    height:300px;
 }

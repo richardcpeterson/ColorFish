@@ -31,16 +31,16 @@
 
   
   <vbox id="main-layout" flex="1">
-    <hbox id="nav-toolbar">
-      <button label="Back" command="cmd_browseBack"/>
-      <button label="Forward" command="cmd_browseForward"/>
-      <button label="Reload" command="cmd_browseReload"/>
+    <toolbar id="nav-toolbar">
+      <toolbarbutton label="Back" command="cmd_browseBack"/>
+      <toolbarbutton label="Forward" command="cmd_browseForward"/>
+      <toolbarbutton label="Reload" command="cmd_browseReload"/>
       <textbox id="uri-input" flex="1"/>
-      <button label="Go" command="cmd_browseURI"/>
-    </hbox>
+      <toolbarbutton label="Go" command="cmd_browseURI"/>
+    </toolbar>
     <browser id="browser" type="content-primary" src="about:blank" flex="2"/>
     <splitter id="csContentSplitter" />
-    <vbox id="appcontent" flex="1"><!--Content provided by overlay--></vbox>
+    <vbox id="appcontent"><!--Content provided by overlay--></vbox>
   </vbox>
   
 </window>
