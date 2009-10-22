@@ -6,6 +6,7 @@
 <window id="main" title="CSSchemer"
         width="800" height="600"
         onload="initApp();"
+        persist="screenX screenY width height"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <script type="application/x-javascript"
