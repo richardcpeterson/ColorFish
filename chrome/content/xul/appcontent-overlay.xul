@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <vbox id="appcontent">
-    <vbox id="csContentBox">
-      <label>Yo</label>
-    </vbox>
+    <hbox id="csContentBox">
+      <vbox id="csLeftPane"></vbox>
+      <vbox id="csCenterPane"></vbox>
+      <vbox id="csRightPane"></vbox>
+    </hbox>
   </vbox>
 </overlay>

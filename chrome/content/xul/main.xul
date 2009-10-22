@@ -2,6 +2,7 @@
 <?xul-overlay href="chrome://CSSchemer/content/xul/appcontent-overlay.xul"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://CSSchemer/content/css/layout.css" type="text/css"?>
+<?xml-stylesheet href="chrome://CSSchemer/content/css/skin.css" type="text/css"?>
 
 <window id="main" title="CSSchemer"
         width="800" height="600"
@@ -10,7 +11,7 @@
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <script type="application/x-javascript"
-           src="chrome://CSSchemer/content/scripts/init.js"/>
+          src="chrome://CSSchemer/content/scripts/init.js"/>
   <script type="application/x-javascript"
           src="chrome://CSSchemer/content/scripts/browser.js"/>
   <script type="application/x-javascript"

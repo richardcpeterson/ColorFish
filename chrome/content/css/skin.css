@@ -1,0 +1,25 @@
+/**
+ * Main Application Skin
+ *
+ * This file is for rules that could be considered
+ * "skinning" the application, rather than laying
+ * it out. Color rules, images, fonts, etc. should be
+ * here. We should be able to modify this file to
+ * replace the "look" of the application, as opposed
+ * to the structure.
+ */
+
+/* DEBUG...  show borders around these elements for
+ * diagnostic purposes
+ **/
+box, hbox, vbox, browser{
+    border: 1px solid #444;
+    margin: 1px;
+}
+
+/* Main content panel at bottom of screen */
+#appcontent {
+    background-image: url("chrome://CSSchemer/content/images/appcontent_bg.png");
+    background-repeat: repeat-x;
+    background-color: #dadada;
+}

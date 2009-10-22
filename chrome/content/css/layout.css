@@ -1,4 +1,10 @@
-box, hbox, vbox, browser{
-    border: 1px solid #444;
-    margin: 1px;
-}
+/**
+ * Main Application Layout
+ * 
+ * This CSS file is for main application layout.
+ * Only style rules that affect that structure,
+ * position and size of elements should be placed
+ * here.
+ */
+
+
