@@ -2,9 +2,9 @@
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <vbox id="appcontent">
     <hbox id="csContentBox">
-      <vbox id="csLeftPane"></vbox>
-      <vbox id="csCenterPane"></vbox>
-      <vbox id="csRightPane"></vbox>
+      <vbox id="csLeftPane" class="pane" flex="1"></vbox>
+      <vbox id="csCenterPane" class="pane"></vbox>
+      <vbox id="csRightPane" class="pane" flex="1"></vbox>
     </hbox>
   </vbox>
 </overlay>

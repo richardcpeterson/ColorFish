@@ -7,4 +7,28 @@
  * here.
  */
 
+#appcontent{
+    height:300px;
+}
 
+#csContentBox{
+    height:300px;
+}
+
+.pane{
+    background-color: #000;
+    margin:0px 10px;
+    height:300px;
+}
+
+#csLeftPane{
+    background: transparent;
+}
+
+#csCenterPane{
+    width:400px;
+}
+
+#csRightPane{
+    
+}

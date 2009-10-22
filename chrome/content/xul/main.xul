@@ -16,7 +16,7 @@
           src="chrome://CSSchemer/content/scripts/browser.js"/>
   <script type="application/x-javascript"
           src="chrome://CSSchemer/content/scripts/eventHandlers.js"/>
-
+  
   <commandset id="mainCommandSet">
     <command id="cmd_browseURI" oncommand="Browser.load_from_address_bar();"/>
     <command id="cmd_browseBack" oncommand="Browser.back();"  disabled="true"/>
@@ -28,7 +28,7 @@
     <broadcaster id="canGoBack"    disabled="true"/>
     <broadcaster id="canGoForward" disabled="true"/>
   </broadcasterset>
-
+  
   
   <vbox id="main-layout" flex="1">
     <toolbar id="nav-toolbar">
@@ -39,8 +39,6 @@
       <toolbarbutton label="Go" command="cmd_browseURI"/>
     </toolbar>
     <browser id="browser" type="content-primary" src="about:blank" flex="2"/>
-    <splitter id="csContentSplitter" />
     <vbox id="appcontent"><!--Content provided by overlay--></vbox>
   </vbox>
-  
 </window>
