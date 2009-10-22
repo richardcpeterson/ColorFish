@@ -13,6 +13,8 @@
            src="chrome://CSSchemer/content/scripts/init.js"/>
   <script type="application/x-javascript"
           src="chrome://CSSchemer/content/scripts/browser.js"/>
+  <script type="application/x-javascript"
+          src="chrome://CSSchemer/content/scripts/eventHandlers.js"/>
 
   <commandset id="mainCommandSet">
     <command id="cmd_browseURI" oncommand="Browser.load_from_address_bar();"/>
