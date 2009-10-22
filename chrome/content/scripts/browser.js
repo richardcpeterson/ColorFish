@@ -14,11 +14,15 @@ function Browser() {
      * <browser> element we want to use for our source.
      */
     this.widget = document.getElementById("browser");
-    this.widget.addProgressListener(new browserListener(),0xFFFFFFFF);
     
-    /**
-     * Hold reference to the address bar input
-     */
+    //Listen to events occurring in the browser, so
+    //we can update the GUI
+    //Don't make the progress listener anonymous.
+    //It causes a the listener to get dropped.
+    this.progressListener = new browserListener();
+    this.widget.addProgressListener(this.progressListener,0xFFFFFFFF);
+    
+    //Reference to the address bar input
     this.address_bar = document.getElementById("uri-input");
     
     /***
@@ -37,15 +41,24 @@ function Browser() {
         );
     }
     
+    /**
+     * Reload the current page
+     */
     this.reload = function() {
         this.widget.reload();
     }
     
+    /**
+     * Go forward in browser history
+     */
     this.forward = function() {
         if(this.widget.canGoForward)
             this.widget.goForward();
     }
     
+    /**
+     * Go back in browser history
+     */
     this.back = function() {
         if (this.widget.canGoBack)
             this.widget.goBack();
@@ -59,15 +72,24 @@ function Browser() {
         return this.widget.contentDocument.styleSheets;
     }
     
+    /**
+     * Cause the address bar to reflect the URI of the
+     * current page being viewed
+     */
     this.update_address_bar = function() {
         this.address_bar.value = this.widget.currentURI.spec;
     }
     
+    /**
+     * Disable or enable the back and forward commands
+     * depending on whether there is any browsing
+     * history forward or backward
+     */
     this.update_back_forward_commands = function() {
-        var backBroadcaster = document.getElementById("canGoBack");
-        var forwardBroadcaster = document.getElementById("canGoForward");
-        backBroadcaster.setAttribute("disabled", !this.widget.canGoBack);
-        forwardBroadcaster.setAttribute("disabled", !this.widget.canGoForward);
+        var backCommand = document.getElementById("cmd_browseBack");
+        var forwardCommand = document.getElementById("cmd_browseForward");
+        backCommand.setAttribute("disabled", !this.widget.canGoBack);
+        forwardCommand.setAttribute("disabled", !this.widget.canGoForward);
     }
 }
 
@@ -78,8 +100,6 @@ function Browser() {
  * events in the browser.
  */
 function browserListener () {
-    this.count=0;
-
     this.onStateChange = function(aWebProgress, aRequest, aStateFlags, aStatus) {},
     this.onStatusChange = function(aWebProgress, aRequest, aStatus, aMessage) {},
     this.onProgressChange = function(aWebProgress, aRequest, aCurSelfProgress,
@@ -87,8 +107,6 @@ function browserListener () {
     this.onSecurityChange = function(aWebProgress, aRequest, state) {},
     this.onLocationChange = function(aWebProgress, aRequest, aLocation)
     {
-        this.count++;
-        alert("browserListener.onLocationChange(): " + this.count);
         Browser.update_back_forward_commands();
         Browser.update_address_bar();
     },
