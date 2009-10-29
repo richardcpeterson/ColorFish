@@ -25,6 +25,39 @@ function Color() {
             this.blue  = parseInt( match[3] );
         }
     }
+    
+    /**
+     * Return the number in the string format
+     * #FFFFFF
+     */
+    this.getCSSHex = function(){
+        var r = this.padHex(this.red.toString(16));
+        var g = this.padHex(this.green.toString(16));
+        var b = this.padHex(this.blue.toString(16));
+        return "#"+r+g+b;
+    }
+    
+    /**
+     * Return the number in the string format
+     * rgb(255,255,255)
+     */
+    this.getCSSRGB = function(){
+        return "rgb("
+            + this.red + ","
+            + this.green + ","
+            + this.blue + ")";
+    }
+    
+    /**
+     * Pad a hex value to make sure it is (at least)
+     * 2 digits
+     */
+    this.padHex = function(hex){
+        while (hex.length < 2) {
+            hex = "0" + hex;
+        }
+        return hex;
+    }
 
     /***
      * Dumps debugging output to the console.
