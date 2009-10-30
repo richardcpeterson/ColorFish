@@ -23,3 +23,8 @@ box, hbox, vbox, browser{
     background-repeat: repeat-x;
     background-color: #dadada;
 }
+
+.pane{
+    background-color: #000;
+    color: #FFF;
+}
