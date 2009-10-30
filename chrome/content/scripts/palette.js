@@ -5,7 +5,6 @@
 
 function Palette(sourceDocument){
     this.document = sourceDocument;
-    this.swatches = deriveSwatches(sourceDocument);
     
     /**
      * Given a document, find all color properties
@@ -18,5 +17,9 @@ function Palette(sourceDocument){
         //TODO: derive the swatches
         return new Array();
     }
+    
+    this.swatches = this.deriveSwatches(sourceDocument);
+    
+    
 }
 

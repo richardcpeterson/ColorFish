@@ -73,6 +73,23 @@ function Browser() {
     }
     
     /**
+     * Returns the content document currently being
+     * viewed in the browser
+     */
+    this.get_document = function(){
+        return this.widget.contentDocument;
+    }
+    
+    /**
+     * Update the active page for the application.
+     * Could probably go to an observer pattern with
+     * this...
+     */
+    this.update_active_page = function() {
+        csApp.setActivePage(new Page(this.get_document()));
+    }
+    
+    /**
      * Cause the address bar to reflect the URI of the
      * current page being viewed
      */
@@ -100,13 +117,26 @@ function Browser() {
  * events in the browser.
  */
 function browserListener () {
-    this.onStateChange = function(aWebProgress, aRequest, aStateFlags, aStatus) {},
+    this.currentRequest;
+    
+    var nsI = Components.interfaces.nsIWebProgressListener;
+    this.STATE_DONE = nsI.STATE_STOP
+                    + nsI.STATE_IS_NETWORK
+                    + nsI.STATE_IS_WINDOW;
+    
+    this.onStateChange = function(aWebProgress, aRequest, aStateFlags, aStatus) {
+        if (aRequest == this.currentRequest
+        && ((aStateFlags & this.STATE_DONE) == this.STATE_DONE)) {
+            Browser.update_active_page();
+        }
+    },
     this.onStatusChange = function(aWebProgress, aRequest, aStatus, aMessage) {},
     this.onProgressChange = function(aWebProgress, aRequest, aCurSelfProgress,
                           aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress) {},
     this.onSecurityChange = function(aWebProgress, aRequest, state) {},
     this.onLocationChange = function(aWebProgress, aRequest, aLocation)
     {
+        this.currentRequest = aRequest;
         Browser.update_back_forward_commands();
         Browser.update_address_bar();
     },
