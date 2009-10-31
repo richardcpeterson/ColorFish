@@ -16,7 +16,7 @@ function Color() {
      * Sets the component values by reading an 'rgb(...)' string.
      */
     this.read_rgb = function(rgb) {
-        var pattern = /^rgb\(\s*(\d+?),\s*(\d+?),\s*(\d+?)\s*\)$/;
+        var pattern = /^rgb\(\s*(\d+?)\s*,\s*(\d+?)\s*,\s*(\d+?)\s*\)$/;
         var match   = pattern.exec(rgb);
 
         if (match) {
@@ -25,7 +25,7 @@ function Color() {
             this.blue  = parseInt( match[3] );
         }
     }
-    
+
     /**
      * Return the number in the string format
      * #FFFFFF
@@ -36,7 +36,7 @@ function Color() {
         var b = this.padHex(this.blue.toString(16));
         return "#"+r+g+b;
     }
-    
+
     /**
      * Return the number in the string format
      * rgb(255,255,255)
@@ -47,7 +47,7 @@ function Color() {
             + this.green + ","
             + this.blue + ")";
     }
-    
+
     /**
      * Pad a hex value to make sure it is (at least)
      * 2 digits
