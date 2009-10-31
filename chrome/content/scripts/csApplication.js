@@ -26,12 +26,12 @@ function CSApplication(){
         var sheet;
         for (var i = 0; i < this.activePage.styleSheets.length; i++){
             sheet = this.activePage.styleSheets[i];
-            sheetName = "Stylesheet " + (i+1) + ", ";
+            sheetName = "Stylesheet " + (i+1) + ": ";
             if (sheet.href){
                 sheetName += sheet.href;
             }
             else{
-                sheetName += sheet.type;
+                sheetName += "Inline " + sheet.type;
             }
             
             newNode = window.document.createElement("label");
