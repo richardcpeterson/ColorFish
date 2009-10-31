@@ -32,22 +32,23 @@ function Palette(sourceDocument){
              * for color properties and recording them
              */
             for(var j = 0; j < rules.length; j++){
-                style = rules[j].style;
-                
-                message += rules[j].selectorText + "{  \t";
-                if (style.color)
-                    message += "color: " + style.color + "; ";
-                if (style.backgroundColor)
-                    message += "background-color: " + style.backgroundColor + "; ";
-                if (style.borderTopColor)
-                    message += "border-top-color: " + style.borderTopColor + "; ";
-                if (style.borderRightColor)
-                    message += "border-right-color: " + style.borderRightColor + "; ";
-                if (style.borderBottomColor)
-                    message += "border-bottom-color: " + style.borderBottomColor + "; ";
-                if (style.borderLeftColor)
-                    message += "border-left-color: " + style.borderLeftColor + "; ";
-                message += " }\n";   
+                if (rules[j].style){
+                    style = rules[j].style;
+                    message += rules[j].selectorText + "{  \t";
+                    if (style.color)
+                        message += "color: " + style.color + "; ";
+                    if (style.backgroundColor)
+                        message += "background-color: " + style.backgroundColor + "; ";
+                    if (style.borderTopColor)
+                        message += "border-top-color: " + style.borderTopColor + "; ";
+                    if (style.borderRightColor)
+                        message += "border-right-color: " + style.borderRightColor + "; ";
+                    if (style.borderBottomColor)
+                        message += "border-bottom-color: " + style.borderBottomColor + "; ";
+                    if (style.borderLeftColor)
+                        message += "border-left-color: " + style.borderLeftColor + "; ";
+                    message += " }\n";
+                }
             }
         }
         alert(message);
