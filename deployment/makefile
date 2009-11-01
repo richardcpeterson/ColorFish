@@ -6,6 +6,8 @@ APPNAME = csschemer
 APPVER = alpha-0.1
 DISTRO_DIR = distros/
 
+APP_DIRECTORIES = chrome defaults extensions testpages updates
+
 XUL_SOURCE_SITE = http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/$(XULVER)/runtimes/
 XUL_SOURCE_DIR = xul-sources/
 
@@ -68,17 +70,16 @@ css-linux : $(LINUX_FINAL_DIR)$(LINUX_FINAL_FILE)
 	rm $(XUL_SOURCE_DIR)$(LINUX_DIR) -rf
 
 css-windows : $(WINDOWS_FINAL_DIR)$(WINDOWS_FINAL_FILE)
+	rm $(WINDOWS_FINAL_DIR) -rf
 	rm $(XUL_SOURCE_DIR)$(WINDOWS_DIR) -rf
 
 css-mac :
 
 $(LINUX_FINAL_DIR)$(LINUX_FINAL_FILE) : $(LINUX_FINAL_DIR)
 	cp ../application.ini $(LINUX_FINAL_DIR)
-#cp ../components $(LINUX_FINAL_DIR). -rf
-	cp ../chrome $(LINUX_FINAL_DIR). -rf
-	cp ../defaults $(LINUX_FINAL_DIR). -rf
-#cp ../extensions $(LINUX_FINAL_DIR). -rf
-	cp ../testpages $(LINUX_FINAL_DIR). -rf
+	for directory in $(APP_DIRECTORIES); do \
+		cp ../$$directory $(LINUX_FINAL_DIR). -rf ; \
+	done
 	cp $(XUL_SOURCE_DIR)$(LINUX_DIR)xulrunner-stub $(LINUX_FINAL_DIR).
 	mv $(LINUX_FINAL_DIR)xulrunner-stub $(LINUX_FINAL_DIR)$(APPNAME)
 	mkdir $(LINUX_FINAL_DIR)xulrunner
@@ -89,9 +90,23 @@ $(LINUX_FINAL_DIR)$(LINUX_FINAL_FILE) : $(LINUX_FINAL_DIR)
 $(WINDOWS_FINAL_DIR)$(WINDOWS_FINAL_FILE) : $(WINDOWS_FINAL_DIR) nsis $(NSISDIR)$(NSIS)/$(WINDOWS_NSIS_SCRIPT) $(NSISDIR)$(NSIS)/share/nsis
 	cd $(NSISDIR)$(NSIS) ;\
 	./makensis $(WINDOWS_NSIS_SCRIPT)
+	cp $(NSISDIR)$(NSIS)/$(WINDOWS_FINAL_FILE) $(DISTRO_DIR)$(WINDOWS_DIR)$(WINDOWS_FINAL_FILE)
 
-$(NSISDIR)$(NSIS)/$(WINDOWS_NSIS_SCRIPT) :
-	cp csschemer.nsi $(NSISDIR)$(NSIS)/$(WINDOWS_NSIS_SCRIPT)
+$(NSISDIR)$(NSIS)/$(WINDOWS_NSIS_SCRIPT) : build-nsis-script
+	cp $(WINDOWS_NSIS_SCRIPT) $(NSISDIR)$(NSIS)/$(WINDOWS_NSIS_SCRIPT)
+
+build-nsis-script : setup-windows-files
+	./build_nsi.sh $(APPNAME)-$(APPVER) $(WINDOWS_FINAL_DIR)
+
+setup-windows-files :
+	cp ../application.ini $(WINDOWS_FINAL_DIR)
+	for directory in $(APP_DIRECTORIES); do\
+		cp ../$$directory $(WINDOWS_FINAL_DIR). -rf ; \
+	done
+	cp $(XUL_SOURCE_DIR)$(WINDOWS_DIR)xulrunner-stub.exe $(WINDOWS_FINAL_DIR)
+	mv $(WINDOWS_FINAL_DIR)xulrunner-stub.exe $(WINDOWS_FINAL_DIR)$(APPNAME).exe
+	mkdir $(WINDOWS_FINAL_DIR)xulrunner
+	cp $(XUL_SOURCE_DIR)$(WINDOWS_DIR)* $(WINDOWS_FINAL_DIR)xulrunner/ -rf
 
 $(LINUX_FINAL_DIR) : $(DISTRO_DIR)$(LINUX_DIR)
 	mkdir $(LINUX_FINAL_DIR)
