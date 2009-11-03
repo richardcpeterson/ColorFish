@@ -6,7 +6,7 @@ APPNAME = csschemer
 APPVER = alpha-0.1
 DISTRO_DIR = distros/
 
-APP_DIRECTORIES = chrome defaults extensions testpages updates
+APP_DIRECTORIES = chrome defaults
 
 XUL_SOURCE_SITE = http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/$(XULVER)/runtimes/
 XUL_SOURCE_DIR = xul-sources/
@@ -91,9 +91,15 @@ $(WINDOWS_FINAL_DIR)$(WINDOWS_FINAL_FILE) : $(WINDOWS_FINAL_DIR) nsis $(NSISDIR)
 	cd $(NSISDIR)$(NSIS) ;\
 	./makensis $(WINDOWS_NSIS_SCRIPT)
 	cp $(NSISDIR)$(NSIS)/$(WINDOWS_FINAL_FILE) $(DISTRO_DIR)$(WINDOWS_DIR)$(WINDOWS_FINAL_FILE)
+	rm $(NSISDIR)$(NSIS)/$(WINDOWS_FINAL_FILE)
+	rm $(NSISDIR)$(NSIS)/$(WINDOWS_NSIS_SCRIPT)
 
-$(NSISDIR)$(NSIS)/$(WINDOWS_NSIS_SCRIPT) : build-nsis-script
+$(NSISDIR)$(NSIS)/$(WINDOWS_NSIS_SCRIPT) : build-nsis-script build_scripts/
 	cp $(WINDOWS_NSIS_SCRIPT) $(NSISDIR)$(NSIS)/$(WINDOWS_NSIS_SCRIPT)
+	mv $(WINDOWS_NSIS_SCRIPT) build_scripts/.
+
+build_scripts/ :
+	mkdir build_scripts/
 
 build-nsis-script : setup-windows-files
 	./build_nsi.sh $(APPNAME)-$(APPVER) $(WINDOWS_FINAL_DIR)

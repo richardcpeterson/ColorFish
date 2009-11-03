@@ -13,7 +13,7 @@ Name \"$APP_NAME\"
 outfile \"$APP_NAME.exe\"
 
 # define the directory to install to
-InstallDir \$PROGRAMFILES\\\\$APP_NAME
+InstallDir \$PROGRAMFILES\\$APP_NAME
 
 #The text to prompt the user to enter a directory
 DirText \"This will install Csschemer on your computer. Choose a directory\"
