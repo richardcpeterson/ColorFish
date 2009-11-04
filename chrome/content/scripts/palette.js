@@ -30,7 +30,6 @@ function Palette(sourceDocument){
         
         //Insert into existing swatch
         if (foundInPalette){
-            alert("found in palette!");
             this.swatches[i-1].addProperty(property);
         }
         
