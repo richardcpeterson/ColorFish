@@ -18,6 +18,7 @@
 .pane{
     margin:0px 10px;
     height:300px;
+    overflow: scroll;
 }
 
 #csLeftPane{

@@ -3,8 +3,9 @@
  */
  
 function CSApplication(){
-    this.activePage = "haha";
+    this.activePage = "blank";
     this.cssFilePane = document.getElementById("cssFilePane");
+    this.toolPane = document.getElementById("toolPane");
     
     /**
      * Set the active page for the application
@@ -12,6 +13,7 @@ function CSApplication(){
     this.setActivePage = function(page){
         this.activePage = page;
         this.updateCSSFilePane();
+        this.updateToolPane();
     }
     
     this.updateCSSFilePane = function(){
@@ -38,6 +40,31 @@ function CSApplication(){
             newNode.setAttribute("value", sheetName);
             this.cssFilePane.appendChild(newNode);
         }
+    }
+    
+    this.updateToolPane = function(){
+        //Remove all children
+        while ( this.toolPane.childNodes.length >= 1 )
+        {
+           this.toolPane.removeChild( this.toolPane.firstChild );       
+        }
+        //Add new children
+        var newNode;
+        var label;
+        var swatches = this.activePage.originalPalette.swatches;
+        alert(swatches.length);
+        for (var i = 0; i < swatches.length; i++){
+            
+            label = "Color: "
+                + swatches[i].color.getCSSHex()
+                + " (" + swatches[i].count()
+                + " references";
+            
+            newNode = window.document.createElement("label");
+            newNode.setAttribute("value", label);
+            this.toolPane.appendChild(newNode);
+        }
+        
     }
 
 }

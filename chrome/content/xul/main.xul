@@ -26,6 +26,10 @@
           src="chrome://CSSchemer/content/scripts/eventHandlers.js"/>
   <script type="application/x-javascript"
           src="chrome://CSSchemer/content/scripts/csApplication.js"/>
+  <script type="application/x-javascript"
+          src="chrome://CSSchemer/content/scripts/enums.js"/>
+  <script type="application/x-javascript"
+          src="chrome://CSSchemer/content/scripts/colorProperty.js"/>
   
   <commandset id="mainCommandSet">
     <command id="cmd_browseURI" oncommand="Browser.load_from_address_bar();"/>
