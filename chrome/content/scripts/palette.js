@@ -125,14 +125,14 @@ function Palette(sourceDocument){
      * and consolidate them into a set of swatches,
      * one swatch per color (not per color instance).
      */
-    this.insertDerivedSwatches = function(document) {
+    this.insertDerivedSwatches = function(sourceDocument) {
         /**
          * Process all stylesheets,
          * looking for color properties to record in each
          * one
          */
-        for(var i = 0; i < document.styleSheets.length; i++){
-            var rules = document.styleSheets[i].cssRules;
+        for(var i = 0; i < sourceDocument.styleSheets.length; i++){
+            var rules = sourceDocument.styleSheets[i].cssRules;
             var style;
             
             /**
@@ -149,6 +149,6 @@ function Palette(sourceDocument){
             }
         }
     }
-    this.insertDerivedSwatches(document);
+    this.insertDerivedSwatches(this.document);
 }
 

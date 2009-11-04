@@ -52,7 +52,7 @@ function CSApplication(){
         var newNode;
         var label;
         var swatches = this.activePage.originalPalette.swatches;
-        alert(swatches.length);
+        
         for (var i = 0; i < swatches.length; i++){
             
             label = "Color: "
