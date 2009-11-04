@@ -49,6 +49,9 @@ function updateSwatchWithExplicitValue(e){
     e = window.event;
   }
   var textbox = e.target.parentNode.getElementsByTagName("textbox")[0];
+  if(!Color.isParsableString(textbox.value)){
+    return;
+  }
   var newColor;
   try{
       newColor = Color.from_css(textbox.value);

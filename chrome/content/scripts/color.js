@@ -25,8 +25,7 @@ function Color() {
      * Sets the component values by reading an 'rgb(...)' string.
      */
     this.read_rgb = function(rgb) {
-        var pattern = /^rgb\(\s*(\d+?)\s*,\s*(\d+?)\s*,\s*(\d+?)\s*\)$/;
-        var match   = pattern.exec(rgb);
+        var match   = Color.rgbPattern.exec(rgb);
 
         if (match) {
             this.red   = parseInt( match[1] );
@@ -104,12 +103,12 @@ Color.from_css = function(rule) {
     var color = new Color();
 
     //rgb(255,255,255)  format
-    if ( rule.match( /^rgb\(/ ) ) {
+    if ( rule.match( Color.rgbPattern ) ) {
         color.read_rgb(rule);
     }
     
     //#FFFFFF or #FFF format
-    else if(rule.match(/^#([a-f]|[A-F]|[0-9]){3}(([a-f]|[A-F]|[0-9]){3})?$/)) {
+    else if(rule.match( Color.hexPattern )) {
         color.read_hex(rule);
     }
     
@@ -129,6 +128,17 @@ Color.from_css = function(rule) {
 
     return color;
 }
+
+Color.isParsableString = function(colorString){
+    return (
+           colorString.match(Color.rgbPattern)
+        || colorString.match(Color.hexPattern)
+        || Color.colorNames[colorString]
+    );
+}
+
+Color.rgbPattern = /^rgb\(\s*(\d+?)\s*,\s*(\d+?)\s*,\s*(\d+?)\s*\)$/;
+Color.hexPattern = /^#([a-f]|[A-F]|[0-9]){3}(([a-f]|[A-F]|[0-9]){3})?$/;
 
 Color.colorNames = new Array();
 Color.colorNames["aliceblue"] = "rgb(240,248,255)";  

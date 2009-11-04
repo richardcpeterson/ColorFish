@@ -72,21 +72,27 @@ function CSApplication(){
         );
         label.setAttribute("class", "code");
         
+        colorBox.setAttribute(
+            "style",
+            "background-color: " + swatch.color.getCSSHex());
+        colorBox.setAttribute("class", "colorSwatch");
+        
         textbox.setAttribute("value", swatch.color.getCSSHex());
         textbox.setAttribute("class", "code");
         
         button.setAttribute("label", "Update");
         addHandlerToElement(
-            button,
-            "click",
+            textbox,
+            "keyup",
             updateSwatchWithExplicitValue
         );
         
         hbox.swatch = swatch;
         
         hbox.appendChild(label);
+        hbox.appendChild(colorBox);
         hbox.appendChild(textbox);
-        hbox.appendChild(button);
+        //hbox.appendChild(button);
         return hbox;
     }
 }
