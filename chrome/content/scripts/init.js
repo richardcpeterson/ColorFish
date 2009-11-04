@@ -8,4 +8,9 @@ function initApp(){
   
     addHandlerToElement("uri-input", "keypress", loadPageOnEnterKey);
     document.getElementById("uri-input").focus();
+    
+    //Add repeat functionality to string
+    String.prototype.repeat = function(count){
+        return new Array(count + 1).join(this);
+    }
 }
