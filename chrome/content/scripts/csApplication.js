@@ -54,19 +54,41 @@ function CSApplication(){
         var swatches = this.activePage.originalPalette.swatches;
         
         for (var i = 0; i < swatches.length; i++){
-            
-            label = "Color: "
-                + swatches[i].color.getCSSHex()
-                + " (" + swatches[i].count()
-                + " references";
-            
-            newNode = window.document.createElement("label");
-            newNode.setAttribute("value", label);
-            this.toolPane.appendChild(newNode);
+            this.toolPane.appendChild(this.makeSwatchControl(swatches[i]));
         }
         
     }
-
+    
+    this.makeSwatchControl = function(swatch){
+        var hbox = window.document.createElement("hbox");
+        var label = window.document.createElement("label");
+        var textbox = window.document.createElement("textbox");
+        var button = window.document.createElement("button");
+        var colorBox = window.document.createElement("box");
+        
+        label.setAttribute(
+            "value",
+            swatch.count()+": "+swatch.color.getCSSHex()
+        );
+        label.setAttribute("class", "code");
+        
+        textbox.setAttribute("value", swatch.color.getCSSHex());
+        textbox.setAttribute("class", "code");
+        
+        button.setAttribute("label", "Update");
+        addHandlerToElement(
+            button,
+            "click",
+            updateSwatchWithExplicitValue
+        );
+        
+        hbox.swatch = swatch;
+        
+        hbox.appendChild(label);
+        hbox.appendChild(textbox);
+        hbox.appendChild(button);
+        return hbox;
+    }
 }
 
 function dumpProps(obj, parent) {

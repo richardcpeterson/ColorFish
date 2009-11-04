@@ -13,8 +13,8 @@
  * diagnostic purposes
  **/
 box, hbox, vbox, browser{
-    border: 1px solid #444;
-    margin: 1px;
+    /*border: 1px solid #444;
+    margin: 1px;*/
 }
 
 /* Main content panel at bottom of screen */
@@ -27,4 +27,8 @@ box, hbox, vbox, browser{
 .pane{
     background-color: #000;
     color: #FFF;
+}
+
+.code{
+    font-family: "Courier New",Courier,monospace;
 }

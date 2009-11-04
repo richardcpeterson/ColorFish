@@ -3,14 +3,16 @@
  * given id.
  *
  * Params:
- * id          The DOM id of the target element
+ * element     The DOM id of the target element,
+ *             or the element itself
  * eventName   A string representing the event to
  *             handle, such as "click"
  * handler     A function to handle the event.
  */
-function addHandlerToElement(id, eventName, handler){
-  var obj = document.getElementById(id);
-  obj.setAttribute("on"+eventName,handler.name + "(event);");
+function addHandlerToElement(element, eventName, handler){
+  if (typeof element == "string")
+    element = document.getElementById(element);
+  element.setAttribute("on"+eventName,handler.name + "(event);");
 }
 
 /**
@@ -18,13 +20,15 @@ function addHandlerToElement(id, eventName, handler){
  * given id.
  *
  * Params:
- * id          The DOM id of the target element
+ * element     The DOM id of the target element,
+ *             or the element itself
  * eventName   A string representing the event to
  *             no longer handle, such as "click"
  */
-function removeHandlerFromElement(id, eventName) {
-  var obj = document.getElementById(id);
-  obj.setAttribute("on"+eventName,"");
+function removeHandlerFromElement(element, eventName) {
+  if (typeof element == "string")
+    element = document.getElementById(element);
+  element.setAttribute("on"+eventName,"");
 }
 
 /**
@@ -38,4 +42,22 @@ function loadPageOnEnterKey(e) {
   if(e.keyCode == 13) {
     Browser.load_from_address_bar();
   }
+}
+
+function updateSwatchWithExplicitValue(e){
+  if (!e){
+    e = window.event;
+  }
+  var textbox = e.target.parentNode.getElementsByTagName("textbox")[0];
+  var newColor;
+  try{
+      newColor = Color.from_css(textbox.value);
+  }
+  catch(e){
+      alert(e);
+      return;
+  }
+  
+  e.target.parentNode.swatch.color = newColor;
+  e.target.parentNode.swatch.updateProperties();
 }
