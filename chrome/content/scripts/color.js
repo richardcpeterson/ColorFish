@@ -34,6 +34,25 @@ function Color() {
             this.blue  = parseInt( match[3] );
         }
     }
+    
+    /**
+     * Sets the value of this color by reading a hex
+     * color rule, like '#FFFFFF' or '#FFF'
+     */
+    this.read_hex = function(hex){
+        //Three digits, like #FFF
+        if(hex.match(/^#([a-f]|[A-F]|[0-9]){3}$/)){
+            this.red = parseInt(hex.charAt(1).repeat(2),16);
+            this.green = parseInt(hex.charAt(2).repeat(2),16);
+            this.blue = parseInt(hex.charAt(3).repeat(2),16);
+        }
+        //Six digits, like #FFFFFF
+        else if(hex.match(/^#([a-f]|[A-F]|[0-9]){6}$/)){
+            this.red = parseInt(hex.substring(1,3),16);
+            this.green = parseInt(hex.substring(3,5),16);
+            this.blue = parseInt(hex.substring(5,7),16);
+        }
+    }
 
     /**
      * Return the number in the string format
@@ -89,9 +108,23 @@ Color.from_css = function(rule) {
         color.read_rgb(rule);
     }
     
+    //#FFFFFF or #FFF format
+    else if(rule.match(/^#([a-f]|[A-F]|[0-9]){3}(([a-f]|[A-F]|[0-9]){3})?$/)) {
+        color.read_hex(rule);
+    }
+    
     //color name (ie "red")
     else if(Color.colorNames[rule]){
         color.read_rgb(Color.colorNames[rule])
+    }
+    else{
+        //There are lots of other cases, like
+        //"transparent", or "-moz-use-text-color"
+        //that we aren't prepared to handle
+        
+        //
+        
+        //throw "Could not read color " + rule;
     }
 
     return color;
@@ -238,3 +271,8 @@ Color.colorNames["white"] = "rgb(255,255,255)";
 Color.colorNames["whitesmoke"] = "rgb(245,245,245)";
 Color.colorNames["yellow"] = "rgb(255,255,0)"; 
 Color.colorNames["yellowgreen"] = "rgb(154,205,50)";
+
+//TODO: handle this...  Comment this line out
+//and browse some sites that have "transparent"
+//set as a color...
+Color.colorNames["transparent"] = "rgb(0,0,0)";
