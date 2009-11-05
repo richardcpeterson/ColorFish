@@ -66,8 +66,7 @@ function CSApplication(){
         var colorBox = window.document.createElement("box");
         
         label.setAttribute(
-            "value",
-            swatch.count()+": "+swatch.color.toString()
+            "value", swatch.color.toString()
         );
         label.setAttribute("class", "code");
         
@@ -87,6 +86,7 @@ function CSApplication(){
         
         hbox.swatch = swatch;
         
+        hbox.setAttribute("align", "end");
         hbox.appendChild(label);
         hbox.appendChild(colorBox);
         hbox.appendChild(textbox);
