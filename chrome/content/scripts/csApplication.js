@@ -63,12 +63,11 @@ function CSApplication(){
         var hbox = window.document.createElement("hbox");
         var label = window.document.createElement("label");
         var textbox = window.document.createElement("textbox");
-        var button = window.document.createElement("button");
         var colorBox = window.document.createElement("box");
         
         label.setAttribute(
             "value",
-            swatch.count()+": "+swatch.color.getCSSHex()
+            swatch.count()+": "+swatch.color.toString()
         );
         label.setAttribute("class", "code");
         
@@ -77,10 +76,9 @@ function CSApplication(){
             "background-color: " + swatch.color.getCSSHex());
         colorBox.setAttribute("class", "colorSwatch");
         
-        textbox.setAttribute("value", swatch.color.getCSSHex());
+        textbox.setAttribute("value", swatch.color.toString());
         textbox.setAttribute("class", "code");
         
-        button.setAttribute("label", "Update");
         addHandlerToElement(
             textbox,
             "keyup",
