@@ -116,8 +116,8 @@ function Color() {
         var l = (max + min) / 2;
 
         if(max == min){ //grayscale
-            h = 0;
-            s = 0;
+            h = -1;
+            s = -1;
         }
         else{
             var d = max - min;
