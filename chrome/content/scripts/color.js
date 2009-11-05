@@ -99,6 +99,61 @@ function Color() {
         else
             return this.getCSSHex();
     }
+    
+    /**
+     * Return an array of Hue, Saturation and Lightness values
+     */
+    this.getHSL = function() {
+        //Convert to 0-1 scale
+        var r = this.red / 255;
+        var g = this.green / 255;
+        var b = this.blue / 255;
+        
+        var max = Math.max(r, g, b);
+        var min = Math.min(r, g, b);
+        var h;
+        var s;
+        var l = (max + min) / 2;
+
+        if(max == min){ //grayscale
+            h = 0;
+            s = 0;
+        }
+        else{
+            var d = max - min;
+            
+            //Set saturation
+            s = ((l > 0.5) ? (d / (2 - max - min)) : (d / (max + min)));
+            
+            //Set hue depending on which of r,g,b is the maximum
+            switch(max){
+                case r:
+                    h = (g - b) / d + (g < b ? 6 : 0);
+                    break;
+                case g:
+                    h = (b - r) / d + 2;
+                    break;
+                case b:
+                    h = (r - g) / d + 4;
+                    break;
+            }
+            h /= 6;
+        }
+
+        return [h, s, l];
+    }
+      
+    this.getHue = function(){
+        return this.getHSL()[0];
+    }
+    
+    this.getSaturation = function(){
+        return this.getHSL()[1];
+    }
+    
+    this.getLightness = function() {
+        return this.getHSL()[2];
+    }
 
     /**
      * Pad a hex value to make sure it is (at least)

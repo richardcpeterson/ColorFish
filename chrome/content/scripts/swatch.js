@@ -33,4 +33,14 @@ function Swatch(color){
     this.count = function(){
         return this.properties.length;
     }
+    
+    
+    this.compareHue = function(otherSwatch){
+        return(
+            (otherSwatch.color.getHue() > this.color.getHue())?
+              -1
+            : ((otherSwatch.color.getHue() < this.color.getHue())? 1
+               :0)
+        );
+    }
 }
