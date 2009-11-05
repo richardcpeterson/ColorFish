@@ -11,14 +11,28 @@ function Color() {
     this.red   = 0;
     this.green = 0;
     this.blue  = 0;
+    
+    this.specialString = null;
 
     /**
      * Test for color equality
      */
     this.equals = function(otherColor){
-        return (otherColor.red == this.red
-           && otherColor.green == this.green
-           && otherColor.blue == this.blue);
+        return (
+            //No special string, and color matches
+            (    !(this.specialString
+                     || otherColor.specialString
+                  )
+               && otherColor.red == this.red
+               && otherColor.green == this.green
+               && otherColor.blue == this.blue
+            )
+            ||
+            //Special string defined and equal
+            (this.specialString
+               &&(otherColor.specialString == this.specialString)
+            )
+        );
     }
 
     /***
@@ -74,6 +88,17 @@ function Color() {
             + this.green + ","
             + this.blue + ")";
     }
+    
+    /**
+     * Return a string representation of this color,
+     * in a parsable format.
+     */
+    this.toString = function(){
+        if (this.specialString)
+            return this.specialString;
+        else
+            return this.getCSSHex();
+    }
 
     /**
      * Pad a hex value to make sure it is (at least)
@@ -90,7 +115,10 @@ function Color() {
      * Dumps debugging output to the console.
      */
     this.dump = function() {
-        dump([this.red, this.green, this.blue].join(','));
+        if(this.specialString)
+            dump(specialString);
+        else
+            dump([this.red, this.green, this.blue].join(','));
     }
 
 }
@@ -121,7 +149,10 @@ Color.from_css = function(rule) {
         //"transparent", or "-moz-use-text-color"
         //that we aren't prepared to handle
         
-        //
+        if(rule == "transparent"){
+            color.specialString = rule;
+            color.read_rgb(Color.specialNames[rule]);
+        }
         
         //throw "Could not read color " + rule;
     }
@@ -129,16 +160,46 @@ Color.from_css = function(rule) {
     return color;
 }
 
+/**
+ * Is the given string a known color string format
+ * that we can deal with?
+ */
 Color.isParsableString = function(colorString){
+    //Use the (?:) in order to
+    //return "true" or "false", not just "undefined"
+    //or the resulting evaluated boolean (which sometimes)
+    //isn't "true" or "false"
     return (
-           colorString.match(Color.rgbPattern)
+           (colorString.match(Color.rgbPattern)
         || colorString.match(Color.hexPattern)
         || Color.colorNames[colorString]
+        || Color.specialNames[colorString])?true:false
     );
+}
+
+/**
+ * Return the Enum.ColorFormat of the given string
+ */
+Color.getFormat = function(colorString){
+    if(colorString.match(Color.rgbPattern)){
+        return Enums.ColorFormats.rgb;
+    }
+    if(colorString.match(Color.shortHexPattern)){
+        return Enums.ColorFormats.shortHex;
+    }
+    if(colorString.match(Color.longHexPattern)){
+        return Enums.ColorFormats.longHex;
+    }
+    if(Color.colorNames[colorString]){
+        return Enums.ColorFormats.colorName;
+    }
+    return Enums.ColorFormats.specialString;
 }
 
 Color.rgbPattern = /^rgb\(\s*(\d+?)\s*,\s*(\d+?)\s*,\s*(\d+?)\s*\)$/;
 Color.hexPattern = /^#([a-f]|[A-F]|[0-9]){3}(([a-f]|[A-F]|[0-9]){3})?$/;
+Color.shortHexPattern = /^#([a-f]|[A-F]|[0-9]){3}$/;
+Color.longHexPattern = /^#([a-f]|[A-F]|[0-9]){6}$/;
 
 Color.colorNames = new Array();
 Color.colorNames["aliceblue"] = "rgb(240,248,255)";  
@@ -282,7 +343,9 @@ Color.colorNames["whitesmoke"] = "rgb(245,245,245)";
 Color.colorNames["yellow"] = "rgb(255,255,0)"; 
 Color.colorNames["yellowgreen"] = "rgb(154,205,50)";
 
+Color.specialNames = new Array();
+Color.specialNames["transparent"] = "rgb(0,0,0)";
+
 //TODO: handle this...  Comment this line out
 //and browse some sites that have "transparent"
 //set as a color...
-Color.colorNames["transparent"] = "rgb(0,0,0)";
