@@ -131,30 +131,38 @@ function Palette(sourceDocument){
          * one
          */
         for(var i = 0; i < sourceDocument.styleSheets.length; i++){
-            var rules = sourceDocument.styleSheets[i].cssRules;
-            var style;
-            
-            /**
-             * Process each rule in the stylesheet, looking
-             * for color properties and recording them into
-             * swatches in this palette
-             */
-            for(var j = 0; j < rules.length; j++){
-                //Only process style rules, not things like
-                //charset rules, etc.
-                if (rules[j].style){
-                    this.insertStyle(rules[j].style);
-                }
-                else {
-                    //Probably an inport
-                    //alert(rules[j]);
-                    //dumpProps(rules[j]);
-                }
-                
-            }
+            this.insertStyleSheet(sourceDocument.styleSheets[i]);
         }
         this.swatches.sort(Swatch.compareHueAndLightness);
     }
+    
+    /**
+     * Insert all style rules from this stylesheet
+     */
+    this.insertStyleSheet = function(styleSheet){
+        var rules = styleSheet.cssRules;
+        
+        /**
+         * Process each rule in the stylesheet, looking
+         * for color properties and recording them into
+         * swatches in this palette
+         */
+        for(var i = 0; i < rules.length; i++){
+            //Only process style rules, not things like
+            //charset rules, etc.
+            if (rules[i].style){
+                this.insertStyle(rules[i].style);
+            }
+            else {
+                //Recursively insert stylesheets
+                //imported via CSS @import
+                if (rules[i].type == rules[i].IMPORT_RULE){
+                    this.insertStyleSheet(rules[i].styleSheet);
+                }
+            }
+        }
+    }
+    
     this.insertDerivedSwatches(this.document);
 }
 
