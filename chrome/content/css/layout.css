@@ -30,13 +30,12 @@
 }
 
 #csLeftPane{
-    background: transparent;
-}
-
-#csCenterPane{
     width:400px;
 }
 
+#csCenterPane{
+}
+
 #csRightPane{
-    
+    width:400px;
 }
