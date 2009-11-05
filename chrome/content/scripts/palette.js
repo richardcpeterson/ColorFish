@@ -51,7 +51,6 @@ function Palette(sourceDocument){
      * consolidated into this palette.
      */
     this.insertStyle = function(style) {
-        new ColorProperty();
         //If the rule has a color property,
         //insert it
         if (style.color){
@@ -146,6 +145,12 @@ function Palette(sourceDocument){
                 if (rules[j].style){
                     this.insertStyle(rules[j].style);
                 }
+                else {
+                    //Probably an inport
+                    //alert(rules[j]);
+                    //dumpProps(rules[j]);
+                }
+                
             }
         }
     }
