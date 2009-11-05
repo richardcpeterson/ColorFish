@@ -18,66 +18,72 @@
 function ColorProperty(style, propertyType) {
     this.style = style;
     this.propertyType = propertyType;
+    this.originalFormat = 0;
     
-    /**
-     * Set the color property using a string
-     * representation of a color (ie #FFFFFF)
-     */
-    this.setColor = function(colorString){
-        
-        //Depending on which property this references,
-        //set that property
-        switch(this.propertyType){
-            case Enums.ColorPropertyTypes.color :
+    //Functions to be defined based on propertyType
+    this.setColor = null;
+    this.getColor = null;
+    
+    //Define these functions depending on which
+    //propertyType this ColorProperty is supposed
+    //to access.
+    switch(propertyType){
+        case Enums.ColorPropertyTypes.color :
+            this.setColor = function(colorString){
                 this.style.color = colorString;
-                break;
-            case Enums.ColorPropertyTypes.backgroundColor :
-                this.style.backgroundColor = colorString;
-                break;
-            case Enums.ColorPropertyTypes.borderTopColor :
-                this.style.borderTopColor = colorString;
-                break;
-            case Enums.ColorPropertyTypes.borderRightColor :
-                this.style.borderRightColor = colorString;
-                break;
-            case Enums.ColorPropertyTypes.borderBottomColor :
-                this.style.borderBottomColor = colorString;
-                break;
-            case Enums.ColorPropertyTypes.borderLeftColor :
-                this.style.borderLeftColor = colorString;
-                break;
-            default :
-                break;
-        }
-    }
-    
-    /**
-     * Get the color represented by this property
-     */
-    this.getColorString = function(){
-        switch(this.propertyType){
-            case Enums.ColorPropertyTypes.color :
+            };
+            this.getColorString = function(){
                 return this.style.color;
-                break;
-            case Enums.ColorPropertyTypes.backgroundColor :
+            };
+            break;
+        case Enums.ColorPropertyTypes.backgroundColor :
+            this.setColor = function(colorString){
+                this.style.backgroundColor = colorString;
+            };
+            this.getColorString = function(){
                 return this.style.backgroundColor;
-                break;
-            case Enums.ColorPropertyTypes.borderTopColor :
+            };
+            break;
+        case Enums.ColorPropertyTypes.borderTopColor :
+            this.setColor = function(colorString){
+                this.style.borderTopColor = colorString;
+            };
+            this.getColorString = function(){
                 return this.style.borderTopColor;
-                break;
-            case Enums.ColorPropertyTypes.borderRightColor :
+            };
+            break;
+        case Enums.ColorPropertyTypes.borderRightColor :
+            this.setColor = function(colorString){
+                this.style.borderRightColor = colorString;
+            };
+            this.getColorString = function(){
                 return this.style.borderRightColor;
-                break;
-            case Enums.ColorPropertyTypes.borderBottomColor :
+            };
+            break;
+        case Enums.ColorPropertyTypes.borderBottomColor :
+            this.setColor = function(colorString){
+                this.style.borderBottomColor = colorString;
+            };
+            this.getColorString = function(){
                 return this.style.borderBottomColor;
-                break;
-            case Enums.ColorPropertyTypes.borderLeftColor :
+            };
+            break;
+        case Enums.ColorPropertyTypes.borderLeftColor :
+            this.setColor = function(colorString){
+                this.style.borderLeftColor = colorString;
+            };
+            this.getColorString = function(){
                 return this.style.borderLeftColor;
-                break;
-            default :
-                break;
-        }
-        return null;
+            };
+            break;
+        default :
+            this.setColor = function(){
+                alert("ColorProperties.setColor() default case");
+            }
+            this.getColorString = function(){
+                alert("ColorProperties.getColorString() default case");
+            }
+            break;
     }
     
     /**
@@ -87,4 +93,6 @@ function ColorProperty(style, propertyType) {
     this.getColor = function(){
         return Color.from_css(this.getColorString());
     }
+    
+    this.originalFormat = Color.getFormat(this.getColorString());
 }
