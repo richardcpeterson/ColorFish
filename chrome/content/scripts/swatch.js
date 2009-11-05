@@ -14,8 +14,7 @@ function Swatch(color){
      * the value in this.color
      */
     this.updateProperties = function(){
-        var hexColor = this.color.getCSSHex();
-        
+        var hexColor = this.color.toString();
         for(var i = 0; i < this.properties.length; i++){
             this.properties[i].setColor(hexColor);
         }
