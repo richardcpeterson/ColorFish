@@ -19,3 +19,11 @@ Enums.ColorPropertyTypes = {
     borderBottomColor : 5,
     borderLeftColor : 6
 }
+
+Enums.ColorFormats = {
+    rgb : 1,
+    longHex : 2,
+    shortHex : 3,
+    colorName : 4,
+    specialString : 5
+}
