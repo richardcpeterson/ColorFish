@@ -153,6 +153,7 @@ function Palette(sourceDocument){
                 
             }
         }
+        this.swatches.sort(Swatch.compareHueAndLightness);
     }
     this.insertDerivedSwatches(this.document);
 }
