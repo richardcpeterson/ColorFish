@@ -162,7 +162,11 @@ function Palette(sourceDocument){
             else {
                 //Recursively insert stylesheets
                 //imported via CSS @import
-                if (rules[i].type == rules[i].IMPORT_RULE){
+                //but do not import if a loop is detected
+                //(the stylesheet to be added is already
+                //in the list)
+                if (rules[i].type == rules[i].IMPORT_RULE
+                    && (rules[i].styleSheet)){
                     this.insertStyleSheet(rules[i].styleSheet);
                 }
             }
