@@ -50,6 +50,7 @@ function updateSwatchWithExplicitValue(e){
   }
   var textbox = e.target.parentNode.getElementsByTagName("textbox")[0];
   if(!Color.isParsableString(textbox.value)){
+    textbox.addClass("invalid");
     return;
   }
   var newColor;
@@ -61,6 +62,31 @@ function updateSwatchWithExplicitValue(e){
       return;
   }
   
+  /**
+   * Show and hide the modified swatch. Show the swatch
+   * when it is different from the original swatch.
+   * Hide it when it is the same as the original swatch.
+   */
+  var swatch1 = e.target.parentNode.getElementsByTagName("box")[0];
+  var swatch2 = e.target.parentNode.getElementsByTagName("box")[1];
+  //If the new color is the same as the original color
+  if (Color.from_css(swatch1.style.backgroundColor).equals(newColor)){
+      swatch2.addClass("hidden");
+  }
+  //The new color is different from the original color
+  else{
+      //Make the swatch the new background color
+      swatch2.setAttribute(
+            "style",
+            "background-color: " + newColor.getCSSHex());
+      swatch2.removeClass("hidden");
+  }
+  
+  //Valid color
+  textbox.removeClass("invalid");
+  
+  //Actually update the real Swatches and page with
+  //the new color
   e.target.parentNode.swatch.color = newColor;
   e.target.parentNode.swatch.updateProperties();
 }

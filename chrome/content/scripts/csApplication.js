@@ -64,6 +64,8 @@ function CSApplication(){
         var label = window.document.createElement("label");
         var textbox = window.document.createElement("textbox");
         var colorBox = window.document.createElement("box");
+        var colorBox2 = window.document.createElement("box");
+        
         
         label.setAttribute(
             "value", swatch.color.toString()
@@ -74,6 +76,12 @@ function CSApplication(){
             "style",
             "background-color: " + swatch.color.getCSSHex());
         colorBox.setAttribute("class", "colorSwatch");
+        
+        colorBox2.setAttribute(
+            "style",
+            "background-color: " + swatch.color.getCSSHex());
+        colorBox2.setAttribute("class", "colorSwatch hidden");
+        
         
         textbox.setAttribute("value", swatch.color.toString());
         textbox.setAttribute("class", "code");
@@ -90,6 +98,7 @@ function CSApplication(){
         hbox.appendChild(label);
         hbox.appendChild(colorBox);
         hbox.appendChild(textbox);
+        hbox.appendChild(colorBox2);
         //hbox.appendChild(button);
         return hbox;
     }

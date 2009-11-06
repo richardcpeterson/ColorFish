@@ -33,3 +33,12 @@ box, hbox, vbox, browser{
 .code{
     font-family: "Courier New",Courier,monospace;
 }
+
+.invalid{
+    color: #F00;
+    font-weight: bold;
+}
+
+.hidden{
+    visibility: hidden;
+}
