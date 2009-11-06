@@ -5,6 +5,7 @@
 
 function Palette(sourceDocument){
     this.document = sourceDocument;
+    this.styleSheets = new Array();
     this.swatches = new Array();
     
     /**
@@ -138,8 +139,13 @@ function Palette(sourceDocument){
     
     /**
      * Insert all style rules from this stylesheet
+     * and its @import descendents
      */
     this.insertStyleSheet = function(styleSheet){
+        //Add the stylesheet to the list of stylesheets
+        //referenced by this palette
+        this.styleSheets.push(styleSheet);
+        
         var rules = styleSheet.cssRules;
         
         /**
