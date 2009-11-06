@@ -13,4 +13,14 @@ function initApp(){
     String.prototype.repeat = function(count){
         return new Array(count + 1).join(this);
     }
+    
+    Array.prototype.contains = function(item){
+        var found = false;
+        var i = 0;
+        while (!found && i < this.length){
+            found = (this[i] == item);
+            i++;
+        }
+        return found;
+    }
 }
