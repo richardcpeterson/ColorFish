@@ -14,9 +14,9 @@ function Page(contentDocument) {
     if (contentDocument){
         this.document = contentDocument;
         this.originalPalette = new Palette(this.document);
+        this.styleSheets = this.originalPalette.styleSheets;
         //this.resultPalette = new Palette(this.document);
         //this.resultPalette = originalPalette.clone();
-        this.styleSheets = this.document.styleSheets;
     }
 }
 
