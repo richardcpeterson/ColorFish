@@ -2,12 +2,6 @@
  * Initializes the application
  */
 function initApp(){
-    //Our global browser instance.
-    window.Browser = new Browser();
-    window.csApp = new CSApplication();
-  
-    addHandlerToElement("uri-input", "keypress", loadPageOnEnterKey);
-    document.getElementById("uri-input").focus();
     
     //Add repeat functionality to string
     String.prototype.repeat = function(count){
@@ -55,4 +49,13 @@ function initApp(){
             this.className = this.className.replace(reg,' ');
         }
     }
+    
+    //Our global browser instance.
+    window.Browser = new Browser();
+    window.csApp = new CSApplication();
+  
+    addHandlerToElement("uri-input", "keypress", loadPageOnEnterKey);
+    document.getElementById("uri-input").focus();
+    
+    window.Browser.load_page("chrome://csschemer/content/help/index.html");
 }

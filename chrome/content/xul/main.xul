@@ -52,7 +52,7 @@
       <textbox id="uri-input" flex="1"/>
       <toolbarbutton label="Go" command="cmd_browseURI"/>
     </toolbar>
-    <browser id="browser" type="content-primary" src="about:blank" flex="2"/>
+    <browser id="browser" type="content-primary" flex="2"/>
     <vbox id="appcontent"><!--Content provided by overlay--></vbox>
   </vbox>
 </window>
