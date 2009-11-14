@@ -15,7 +15,7 @@ html, body{
 
 body{
     font-family:sans-serif, "Arial";
-    background-color: #FFFFFF;
+    background-color: gray;
     height:100%;
 }
 
@@ -35,6 +35,11 @@ h2{
 
 h3{
     color: #7F0033;
+	margin-bottom: 0px;
+}
+
+p{
+    margin-top: 0px;
 }
 
 p, ul, li{
@@ -71,7 +76,7 @@ div#title{
 }
 
 div#content{
-    padding: 50px;
+    padding: 25px 50px;
     background-color: #FFF;
     height: 100%;
 }
