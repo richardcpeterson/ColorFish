@@ -7,6 +7,8 @@ function CSApplication(){
     this.cssFilePane = document.getElementById("cssFilePane");
     this.toolPane = document.getElementById("toolPane");
 
+    this.appPanel = document.getElementById("appPanel");
+    
     /**
      * Set the active page for the application
      */
@@ -90,7 +92,33 @@ function CSApplication(){
         }
 
     }
-
+   
+    /**
+     * Toggle the visibility of the main app content pane
+     */
+    this.toggleAppPanel = function(){
+        if(!this.appPanel.hasClass("collapsed")){
+            this.hideAppPanel();
+        }
+        else{
+            this.showAppPanel();
+        }
+    }
+    
+    /**
+     * Make the main app content pane hidden
+     */
+    this.hideAppPanel = function(){
+        this.appPanel.addClass("collapsed");
+    }
+    
+    /**
+     * Make the main app content pane visible
+     */
+    this.showAppPanel = function(){
+        this.appPanel.removeClass("collapsed");
+    }
+    
     /**
      * Make an individual swatch control within the palette
      * display.
@@ -143,7 +171,7 @@ function CSApplication(){
             break;
         }
     }
-
+    
     /***
      * This is called by the File -> Save option from the main menu.
      * It currently saves a test string to the output.
@@ -153,7 +181,7 @@ function CSApplication(){
 
         if (file) {
             var outputStream = Components.classes["@mozilla.org/network/file-output-stream;1"]
-		.createInstance( Components.interfaces.nsIFileOutputStream );
+                .createInstance( Components.interfaces.nsIFileOutputStream );
 
             // Open the file for read-write, and overwrite the
             // contents of the file if it already exists.

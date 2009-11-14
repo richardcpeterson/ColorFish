@@ -7,18 +7,17 @@
  * here.
  */
 
-#appcontent{
+#appPanel{
+    min-height:50px;
     height:300px;
 }
 
 #csContentBox{
-    height:300px;
 }
 
 .pane{
     margin:0px 10px;
     padding-top: 5px;
-    height:300px;
     overflow: auto;
 }
 
@@ -27,6 +26,10 @@
     height: 20px;
     margin-bottom: 2px;
     border:1px solid white;
+}
+
+.collapsed{
+    visibility: collapse;
 }
 
 #csLeftPane{
@@ -40,8 +43,12 @@
     width:400px;
 }
 
+#csToolPane{
+    overflow: scroll;
+}
+
 button {
-	min-width: 0.1em; 
+    min-width: 0.1em; 
 }
 
 .undoButton,

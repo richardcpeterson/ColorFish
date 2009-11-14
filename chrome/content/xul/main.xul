@@ -40,6 +40,7 @@
     <command id="cmd_browseBack" oncommand="Browser.back();"  disabled="true"/>
     <command id="cmd_browseForward" oncommand="Browser.forward();"  disabled="true"/>
     <command id="cmd_browseReload" oncommand="Browser.reload();" />
+    <command id="cmd_toggleAppPanel" oncommand="csApp.toggleAppPanel();" />
   </commandset>
 
   <comandset id="menuCommandSet">
@@ -81,6 +82,15 @@
       <toolbarbutton label="Go" command="cmd_browseURI"/>
     </toolbar>
     <browser id="browser" type="content-primary" flex="2"/>
-    <vbox id="appcontent"><!--Content provided by overlay--></vbox>
+    <splitter collapse="after"/>
+    <vbox id="appPanel"><!--Content provided by overlay--></vbox>
+    <vbox id="bottombox">
+        <statusbar id="status-bar" align="right">
+            <statusbarpanel id="csAppStatusBar">
+                <image id="csAppStatusIcon" tooltiptext="CSSchemer" onclick="csApp.toggleAppPanel();"/>
+                <label value="CSSchemet Tool Panel" id="csAppStatusText" onclick="csApp.toggleAppPanel();"/>
+            </statusbarpanel>
+        </statusbar>
+    </vbox>
   </vbox>
 </window>

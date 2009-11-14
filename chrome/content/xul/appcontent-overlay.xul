@@ -1,14 +1,17 @@
 <?xml version="1.0"?>
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <vbox id="appcontent">
-    <hbox id="csContentBox">
-      <vbox id="csLeftPane" class="pane" >
-        <vbox id="toolPane"></vbox>
+  <vbox id="appPanel">
+    <toolbar id="csAppPanelToolbar" align="right">
+      <toolbarbutton label="Minimize" command="cmd_toggleAppPanel"/>
+    </toolbar>
+    <hbox id="csContentBox" flex="1">
+      <vbox id="csLeftPane" class="pane">
+        <vbox id="toolPane" class="pane" ></vbox>
       </vbox>
       <vbox id="csCenterPane" class="pane" flex="1">
       </vbox>
       <vbox id="csRightPane" class="pane" flex="1">
-        <vbox id="cssFilePane"></vbox>
+        <vbox id="cssFilePane" class="pane"></vbox>
       </vbox>
     </hbox>
   </vbox>

@@ -13,16 +13,18 @@
  * diagnostic purposes
  **/
 box, hbox, vbox, browser{
-    /*border: 1px solid #444;
-    margin: 1px;*/
 }
 
 /* Main content panel at bottom of screen */
-#appcontent {
+#csContentBox{
     background-image: url("chrome://CSSchemer/content/images/appcontent_bg.png");
     background-repeat: repeat-x;
     background-color: #dadada;
     border-top: 2px solid #aaa;
+}
+
+#csAppPanelToolbar {
+    background-color: #ccc;
 }
 
 .pane{
