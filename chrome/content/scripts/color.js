@@ -183,33 +183,27 @@ function Color() {
  * returns a new Color object representing that color.
  */
 Color.from_css = function(rule) {
-    var color = new Color();
+    var color  = new Color();
+    var format = Color.getFormat(rule);
 
-    //rgb(255,255,255)  format
-    if ( rule.match( Color.rgbPattern ) ) {
+    switch (format) {
+        case Enums.ColorFormats.rgb:
         color.read_rgb(rule);
-    }
+        break;
 
-    //#FFFFFF or #FFF format
-    else if (Color.isHexFormat(rule)) {
+        case Enums.ColorFormats.shortHex:
+        case Enums.ColorFormats.longHex:
         color.read_hex(rule);
-    }
+        break;
 
-    //color name (ie "red")
-    else if(Color.colorNames[rule]){
-        color.read_rgb(Color.colorNames[rule])
-    }
-    else{
-        //There are lots of other cases, like
-        //"transparent", or "-moz-use-text-color"
-        //that we aren't prepared to handle
+        case Enums.ColorFormats.colorName:
+        color.read_rgb(Color.colorNames[rule]);
+        break;
 
-        if(rule == "transparent"){
-            color.specialString = rule;
-            color.read_rgb(Color.specialNames[rule]);
-        }
-
-        //throw "Could not read color " + rule;
+        case Enums.ColorFormats.specialString:
+        color.specialString = rule;
+        color.read_rgb(Color.specialNames[rule]);
+        break;
     }
 
     return color;
