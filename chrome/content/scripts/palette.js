@@ -7,7 +7,7 @@ function Palette(sourceDocument){
     this.document = sourceDocument;
     this.styleSheets = new Array();
     this.swatches = new Array();
-    
+
     /**
      * Insert a color property into the pallete,
      * inserting into an existing swatch if one
@@ -22,18 +22,18 @@ function Palette(sourceDocument){
         var foundInPalette = false;
         var i = 0;
         var color = property.getColor();
-        
+
         //Look for an existing swatch with the same color
         while(i < this.swatches.length && !foundInPalette){
             foundInPalette = color.equals(this.swatches[i].color);
             i++;
         }
-        
+
         //Insert into existing swatch
         if (foundInPalette){
             this.swatches[i-1].addProperty(property);
         }
-        
+
         //Create new swatch
         else {
             var newSwatch = new Swatch(color);
@@ -41,85 +41,35 @@ function Palette(sourceDocument){
             this.swatches.push(newSwatch);
         }
     }
-    
+
     /**
-     * Insert all applicable properties from a 
-     * style into the palette, using existing
-     * swatches where the swatch matches the
-     * color of the color property from the
-     * style being inserted. That is, the
-     * properties from the given style will be
-     * consolidated into this palette.
+     * Insert all applicable properties from a style into the palette,
+     * using existing swatches where the swatch matches the color of
+     * the color property from the style being inserted. That is, the
+     * properties from the given style will be consolidated into this
+     * palette.
      */
     this.insertStyle = function(style) {
-        //If the rule has a color property,
-        //insert it
-        if (style.color){
-            this.insertProperty(
-                new ColorProperty(
-                    style,
-                    Enums.ColorPropertyTypes.color
-                )
-            );
-        }
-        
-        //If the rule has a backgroundColor
-        //property, insert it
-        if (style.backgroundColor){
-            this.insertProperty(
-                new ColorProperty(
-                    style,
-                    Enums.ColorPropertyTypes.backgroundColor
-                )
-            );
-        }
-        
-        //If the rule has a borderTopColor
-        //property, insert it
-        if (style.borderTopColor){
-            this.insertProperty(
-                new ColorProperty(
-                    style,
-                    Enums.ColorPropertyTypes.borderTopColor
-                )
-            );
-        }
-        
-        //If the rule has a borderRightColor
-        //property, insert it
-        if (style.borderRightColor){
-            this.insertProperty(
-                new ColorProperty(
-                    style,
-                    Enums.ColorPropertyTypes.borderRightColor
-                )
-            );
-        }
-        
-        //If the rule has a borderBottomColor
-        //property, insert it
-        if (style.borderBottomColor){
-            this.insertProperty(
-                new ColorProperty(
-                    style,
-                    Enums.ColorPropertyTypes.borderBottomColor
-                )
-            );
-        }
-        
-        //If the rule has a borderLeftColor
-        //property, insert it
-        if (style.borderLeftColor){
-            this.insertProperty(
-                new ColorProperty(
-                    style,
-                    Enums.ColorPropertyTypes.borderLeftColor
-                )
-            );
-        }
+        var palette    = this;
+        var properties = [
+            'color',
+            'backgroundColor',
+            'borderTopColor',
+            'borderBottomColor',
+            'borderRightColor',
+            'borderLeftColor'
+        ];
+
+        properties.forEach( function(p) {
+            if (style[p]) {
+                palette.insertProperty(
+                    new ColorProperty(style, Enums.ColorPropertyTypes[p])
+                );
+            }
+        });
     }
-    
-    
+
+
     /**
      * Given a document, find all color properties
      * and consolidate them into a set of swatches,
@@ -136,7 +86,7 @@ function Palette(sourceDocument){
         }
         this.swatches.sort(Swatch.compareHueAndLightness);
     }
-    
+
     /**
      * Insert all style rules from this stylesheet
      * and its @import descendents
@@ -145,9 +95,9 @@ function Palette(sourceDocument){
         //Add the stylesheet to the list of stylesheets
         //referenced by this palette
         this.styleSheets.push(styleSheet);
-        
+
         var rules = styleSheet.cssRules;
-        
+
         /**
          * Process each rule in the stylesheet, looking
          * for color properties and recording them into
@@ -172,7 +122,7 @@ function Palette(sourceDocument){
             }
         }
     }
-    
+
     this.insertDerivedSwatches(this.document);
 }
 
