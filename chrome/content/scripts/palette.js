@@ -60,10 +60,10 @@ function Palette(sourceDocument){
             'borderLeftColor'
         ];
 
-        properties.forEach( function(p) {
-            if (style[p]) {
+        properties.forEach( function(property) {
+            if (style[property]) {
                 palette.insertProperty(
-                    new ColorProperty(style, Enums.ColorPropertyTypes[p])
+                    new ColorProperty(style, property)
                 );
             }
         });
