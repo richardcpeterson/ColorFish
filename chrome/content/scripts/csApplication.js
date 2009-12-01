@@ -61,16 +61,18 @@ function CSApplication(){
     
     this.makeSwatchControl = function(swatch){
         var hbox = window.document.createElement("hbox");
-        var label = window.document.createElement("label");
+        var original = window.document.createElement("textbox");
         var textbox = window.document.createElement("textbox");
         var colorBox = window.document.createElement("box");
         var colorBox2 = window.document.createElement("box");
         
         
-        label.setAttribute(
+        original.setAttribute(
             "value", swatch.color.toString()
         );
-        label.setAttribute("class", "code");
+        original.setAttribute("class", "code");
+        original.setAttribute("size", "10");
+        original.setAttribute("readonly", "true");
         
         colorBox.setAttribute(
             "style",
@@ -85,6 +87,7 @@ function CSApplication(){
         
         textbox.setAttribute("value", swatch.color.toString());
         textbox.setAttribute("class", "code");
+        textbox.setAttribute("size", "10");
         
         addHandlerToElement(
             textbox,
@@ -95,7 +98,7 @@ function CSApplication(){
         hbox.swatch = swatch;
         
         hbox.setAttribute("align", "end");
-        hbox.appendChild(label);
+        hbox.appendChild(original);
         hbox.appendChild(colorBox);
         hbox.appendChild(textbox);
         hbox.appendChild(colorBox2);
