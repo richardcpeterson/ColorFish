@@ -65,7 +65,8 @@ function CSApplication(){
         var textbox = window.document.createElement("textbox");
         var colorBox = window.document.createElement("box");
         var colorBox2 = window.document.createElement("box");
-        
+        var toolTip = "Found in " + swatch.count() + " style rule"
+                    + (swatch.count()==1?"":"s");
         
         original.setAttribute(
             "value", swatch.color.toString()
@@ -98,6 +99,7 @@ function CSApplication(){
         hbox.swatch = swatch;
         
         hbox.setAttribute("align", "end");
+        hbox.setAttribute("tooltiptext", toolTip);
         hbox.appendChild(original);
         hbox.appendChild(colorBox);
         hbox.appendChild(textbox);
