@@ -1,31 +1,11 @@
 /**
  * CSApplication class
  */
- 
+
 function CSApplication(){
     this.activePage = "blank";
     this.cssFilePane = document.getElementById("cssFilePane");
     this.toolPane = document.getElementById("toolPane");
-    
-    //TEMP FUNCTION - alerts all stylesheets...
-    this.alertRules = function(){
-        var styleSheets = this.activePage.styleSheets;
-        var daString = "";
-        
-        for (var i = 0; i < styleSheets.length; i++){
-            var rules = styleSheets[i].cssRules;
-            for (var j = 0; j < rules.length; j++){
-                if (rules[j].cssText){
-                    daString += rules[j].cssText;
-                    daString += "\r\n\r\n";
-                }
-                else{
-                    alert("cssText didn't exist...");
-                }
-            }
-        }
-        alert(daString);
-    }
     
     /**
      * Set the active page for the application
@@ -35,17 +15,15 @@ function CSApplication(){
         this.updateCSSFilePane();
         this.updateToolPane();
     }
-    
+
     this.updateCSSFilePane = function(){
         //Remove all children
         while ( this.cssFilePane.childNodes.length >= 1 )
         {
-           this.cssFilePane.removeChild( this.cssFilePane.firstChild );       
+           this.cssFilePane.removeChild( this.cssFilePane.firstChild );
         }
         //Add new children
-        var newNode;
-        var sheetName;
-        var sheet;
+        var newNode, label, sheetName, sheet, saveButton;
         for (var i = 0; i < this.activePage.styleSheets.length; i++){
             sheet = this.activePage.styleSheets[i];
             sheetName = "Stylesheet " + (i+1) + ": ";
@@ -56,29 +34,40 @@ function CSApplication(){
                 sheetName += "Inline " + sheet.type;
             }
             
-            newNode = window.document.createElement("label");
-            newNode.setAttribute("value", sheetName);
+            
+            newNode = window.document.createElement("hbox");
+            label = window.document.createElement("label");
+            label.setAttribute("value", sheetName);
+            
+            saveButton = window.document.createElement("button");
+            saveButton.setAttribute("label","Save");
+            saveButton.setAttribute(
+                "oncommand",
+                "alert(csApp.getStyleSheetSource(this.styleSheet));");
+            saveButton.styleSheet = sheet;
+            newNode.appendChild(label);
+            newNode.appendChild(saveButton);
             this.cssFilePane.appendChild(newNode);
         }
     }
-    
+
     this.updateToolPane = function(){
         //Remove all children
         while ( this.toolPane.childNodes.length >= 1 )
         {
-           this.toolPane.removeChild( this.toolPane.firstChild );       
+           this.toolPane.removeChild( this.toolPane.firstChild );
         }
         //Add new children
         var newNode;
         var label;
         var swatches = this.activePage.originalPalette.swatches;
-        
+
         for (var i = 0; i < swatches.length; i++){
             this.toolPane.appendChild(this.makeSwatchControl(swatches[i]));
         }
-        
+
     }
-    
+
     this.makeSwatchControl = function(swatch){
         var hbox = window.document.createElement("hbox");
         var original = window.document.createElement("textbox");
@@ -99,13 +88,13 @@ function CSApplication(){
             "style",
             "background-color: " + swatch.color.getCSSHex());
         colorBox.setAttribute("class", "colorSwatch");
-        
+
         colorBox2.setAttribute(
             "style",
             "background-color: " + swatch.color.getCSSHex());
         colorBox2.setAttribute("class", "colorSwatch hidden");
-        
-        
+
+
         textbox.setAttribute("value", swatch.color.toString());
         textbox.setAttribute("class", "code");
         textbox.setAttribute("size", "10");
@@ -115,9 +104,9 @@ function CSApplication(){
             "keyup",
             updateSwatchWithExplicitValue
         );
-        
+
         hbox.swatch = swatch;
-        
+
         hbox.setAttribute("align", "end");
         hbox.setAttribute("tooltiptext", toolTip);
         hbox.appendChild(original);
@@ -127,6 +116,76 @@ function CSApplication(){
         //hbox.appendChild(button);
         return hbox;
     }
+
+    /***
+     * Opens a dialog box for saving a file.  This will return either
+     * an nsILocalFile object representing the file to be saved to, or
+     * a null value if the user decides to cancel the save operation.
+     *
+     * By default the save dialog will appear with only the option to
+     * save CSS files, but the user can choose to save any file if he
+     * likes.
+     */
+    this.getSaveFile = function(fileName) {
+        var nsIFilePicker = Components.interfaces.nsIFilePicker;
+        var picker        = Components.classes["@mozilla.org/filepicker;1"].createInstance( nsIFilePicker );
+
+        picker.init(window, "Select a File", nsIFilePicker.modeSave);
+        picker.appendFilter("Cascading Style Sheets", "*.css");
+        picker.appendFilter("All Files", "*");
+        picker.defaultString = fileName;
+
+        var result = picker.show();
+
+        switch (result) {
+            case nsIFilePicker.returnOK:
+            case nsIFilePicker.returnReplace:
+            return picker.file;
+            break;
+
+            case nsIFilePicker.returnCancel:
+            return null;
+            break;
+        }
+    }
+
+    /***
+     * This is called by the File -> Save option from the main menu.
+     * It currently saves a test string to the output.
+     */
+    this.save = function(contents, fileName) {
+        var file = this.getSaveFile(fileName);
+
+        if (file) {
+            var outputStream = Components.classes["@mozilla.org/network/file-output-stream;1"]
+		.createInstance( Components.interfaces.nsIFileOutputStream );
+
+            // Open the file for read-write, and overwrite the
+            // contents of the file if it already exists.
+            outputStream.init(file, 0x04 | 0x08 | 0x20, 420, 0);
+
+            outputStream.write(contents, contents.length);
+            outputStream.close();
+        }
+    }
+    
+    
+    this.getStyleSheetSource = function(styleSheet) {
+        var output;
+        if(styleSheet.cssRules){
+            for (var j = 0; j < styleSheet.cssRules.length; j++){
+                if (styleSheet.cssRules[j].cssText){
+                    output += styleSheet.cssRules[j].cssText;
+                    output += "\r\n\r\n";
+                }
+            }
+        }
+        else{
+            output = "Could not generate stylesheet output";
+        }
+        return output;
+    }
+
 }
 
 function dumpProps(obj, parent) {
