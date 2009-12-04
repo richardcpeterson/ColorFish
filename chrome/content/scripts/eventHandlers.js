@@ -90,4 +90,5 @@ function updateSwatchWithExplicitValue(e){
   //the new color
   e.target.parentNode.swatch.color = newColor;
   e.target.parentNode.swatch.updateProperties();
+  csApp.alertRules();
 }

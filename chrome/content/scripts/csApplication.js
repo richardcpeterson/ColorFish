@@ -7,6 +7,26 @@ function CSApplication(){
     this.cssFilePane = document.getElementById("cssFilePane");
     this.toolPane = document.getElementById("toolPane");
     
+    //TEMP FUNCTION - alerts all stylesheets...
+    this.alertRules = function(){
+        var styleSheets = this.activePage.styleSheets;
+        var daString = "";
+        
+        for (var i = 0; i < styleSheets.length; i++){
+            var rules = styleSheets[i].cssRules;
+            for (var j = 0; j < rules.length; j++){
+                if (rules[j].cssText){
+                    daString += rules[j].cssText;
+                    daString += "\r\n\r\n";
+                }
+                else{
+                    alert("cssText didn't exist...");
+                }
+            }
+        }
+        alert(daString);
+    }
+    
     /**
      * Set the active page for the application
      */
