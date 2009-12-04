@@ -47,10 +47,14 @@
     <broadcaster id="canGoForward" disabled="true"/>
   </broadcasterset>
 
+  <keyset>
+    <key id="save-key" modifiers="control" key="S" command="cmd_menuFileSave"/>
+  </keyset>
+
   <menubar id="menubar">
     <menu id="file-menu" label="File">
       <menupopup id="file-popup">
-        <menuitem label="Save" command="cmd_menuFileSave"/>
+        <menuitem label="Save" command="cmd_menuFileSave" accesskey="s" key="save-key"/>
       </menupopup>
     </menu>
   </menubar>
