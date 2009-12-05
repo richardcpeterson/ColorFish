@@ -1,0 +1,5 @@
+/* Local sheet with import */
+@import url(./imported.css);
+h3{
+    color: #555;
+}
