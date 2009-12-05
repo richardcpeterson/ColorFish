@@ -15,38 +15,54 @@ function CSApplication(){
         this.updateCSSFilePane();
         this.updateToolPane();
     }
-
+    
+    
+    /* Update the GUI for the file pane, showing all
+     * needed controls and a list of all CSS files
+     */
     this.updateCSSFilePane = function(){
-        //Remove all children
+        //Remove all old children
         while ( this.cssFilePane.childNodes.length >= 1 )
         {
            this.cssFilePane.removeChild( this.cssFilePane.firstChild );
         }
         //Add new children
-        var newNode, label, sheetName, sheet, saveButton;
+        var newNode, label, fullName, sheetName, sheet, saveButton;
+        var inlineNumber = 0;
+        
+        //Process each stylesheet, building a UI
+        //element for each one
         for (var i = 0; i < this.activePage.styleSheets.length; i++){
             sheet = this.activePage.styleSheets[i];
-            sheetName = "Stylesheet " + (i+1) + ": ";
+            fullName = "Stylesheet " + (i+1) + ": ";
+            
+            //Create the strings for the sheet labels
             if (sheet.href){
-                sheetName += sheet.href;
+                fullName += sheet.href;
+                var startIndex = sheet.href.lastIndexOf("/");
+                startIndex++;
+                sheetName = sheet.href.substr(startIndex, sheet.href.length-1);
             }
             else{
-                sheetName += "Inline " + sheet.type;
+                inlineNumber++;
+                fullName += "Inline " + sheet.type;
+                sheetName = "style_tag_" + inlineNumber + ".css";
             }
-            
             
             newNode = window.document.createElement("hbox");
             label = window.document.createElement("label");
             label.setAttribute("value", sheetName);
+            newNode.setAttribute("tooltiptext", fullName);
+            newNode.setAttribute("align", "center");
             
             saveButton = window.document.createElement("button");
             saveButton.setAttribute("label","Save");
             saveButton.setAttribute(
                 "oncommand",
-                "alert(csApp.getStyleSheetSource(this.styleSheet));");
+                "csApp.save(csApp.getStyleSheetSource(this.styleSheet),'" + sheetName + "');");
             saveButton.styleSheet = sheet;
-            newNode.appendChild(label);
             newNode.appendChild(saveButton);
+            newNode.appendChild(label);
             this.cssFilePane.appendChild(newNode);
         }
     }
@@ -171,7 +187,7 @@ function CSApplication(){
     
     
     this.getStyleSheetSource = function(styleSheet) {
-        var output;
+        var output = "";
         if(styleSheet.cssRules){
             for (var j = 0; j < styleSheet.cssRules.length; j++){
                 if (styleSheet.cssRules[j].cssText){
@@ -183,6 +199,12 @@ function CSApplication(){
         else{
             output = "Could not generate stylesheet output";
         }
+        
+        //Pretty format
+        output = output.replace(/{ /g, "{\n    ");
+        output = output.replace(/; /g, ";\n    ");
+        output = output.replace(/    }/g, "}");
+        
         return output;
     }
 
