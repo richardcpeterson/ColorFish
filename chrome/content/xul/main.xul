@@ -40,6 +40,7 @@
 
   <comandset id="menuCommandSet">
     <command id="cmd_menuFileSave" oncommand="csApp.save()"/>
+    <command id="cmd_menuFileQuit" oncommand="csApp.quit()"/>
   </comandset>
 
   <broadcasterset id="browserBroadcasters">
@@ -49,12 +50,15 @@
 
   <keyset>
     <key id="save-key" modifiers="control" key="S" command="cmd_menuFileSave"/>
+    <key id="quit-key" modifiers="control" key="Q" command="cmd_menuFileQuit"/>
   </keyset>
 
   <menubar id="menubar">
     <menu id="file-menu" label="File">
       <menupopup id="file-popup">
         <menuitem label="Save" command="cmd_menuFileSave" accesskey="s" key="save-key"/>
+        <menuseparator/>
+        <menuitem label="Quit" command="cmd_menuFileQuit" accesskey="q" key="quit-key"/>
       </menupopup>
     </menu>
   </menubar>

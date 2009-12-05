@@ -15,8 +15,17 @@ function CSApplication(){
         this.updateCSSFilePane();
         this.updateToolPane();
     }
-    
-    
+
+    /***
+     * Quits the application.
+     */
+    this.quit = function() {
+        Components.classes['@mozilla.org/toolkit/app-startup;1']
+            .getService(Components.interfaces.nsIAppStartup)
+            .quit(Components.interfaces.nsIAppStartup.eAttemptQuit);
+    };
+
+
     /* Update the GUI for the file pane, showing all
      * needed controls and a list of all CSS files
      */
