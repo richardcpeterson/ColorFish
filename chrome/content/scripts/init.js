@@ -74,6 +74,17 @@ function initApp(){
         this.relatedObjects[name] = object;
     }
 
+    /***
+     * Removes all children nodes from an element.
+     */
+    Element.prototype.removeAllChildren = function() {
+        var nodeCount = this.childNodes.length;
+
+        while (nodeCount--) {
+            this.removeChild( this.firstChild );
+        }
+    };
+
     //Our global browser instance.
     window.Browser = new Browser();
     window.csApp = new CSApplication();

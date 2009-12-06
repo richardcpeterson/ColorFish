@@ -29,12 +29,10 @@ function CSApplication(){
     /* Update the GUI for the file pane, showing all
      * needed controls and a list of all CSS files
      */
-    this.updateCSSFilePane = function(){
+    this.updateCSSFilePane = function() {
         //Remove all old children
-        while ( this.cssFilePane.childNodes.length >= 1 )
-        {
-           this.cssFilePane.removeChild( this.cssFilePane.firstChild );
-        }
+        this.cssFilePane.removeAllChildren();
+
         //Add new children
         var newNode, label, fullName, sheetName, sheet, saveButton;
         var inlineNumber = 0;
