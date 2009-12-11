@@ -3,9 +3,7 @@
  * and provides options for operating on those swatches.
  */
 
-function Palette(sourceDocument){
-    this.document = sourceDocument;
-    this.styleSheets = new Array();
+function Palette(){
     this.swatches = new Array();
 
     /**
@@ -61,68 +59,12 @@ function Palette(sourceDocument){
         ];
 
         properties.forEach( function(property) {
-            if (style[property]) {
+            if (style.property(property)) {
                 palette.insertProperty(
                     new ColorProperty(style, property)
                 );
             }
         });
     }
-
-
-    /**
-     * Given a document, find all color properties
-     * and consolidate them into a set of swatches,
-     * one swatch per color (not per color instance).
-     */
-    this.insertDerivedSwatches = function(sourceDocument) {
-        /**
-         * Process all stylesheets,
-         * looking for color properties to record in each
-         * one
-         */
-        for(var i = 0; i < sourceDocument.styleSheets.length; i++){
-            this.insertStyleSheet(sourceDocument.styleSheets[i]);
-        }
-        this.swatches.sort(Swatch.compareHueAndLightness);
-    }
-
-    /**
-     * Insert all style rules from this stylesheet
-     * and its @import descendents
-     */
-    this.insertStyleSheet = function(styleSheet){
-        //Add the stylesheet to the list of stylesheets
-        //referenced by this palette
-        this.styleSheets.push(styleSheet);
-
-        var rules = styleSheet.cssRules;
-
-        /**
-         * Process each rule in the stylesheet, looking
-         * for color properties and recording them into
-         * swatches in this palette
-         */
-        for(var i = 0; i < rules.length; i++){
-            //Only process style rules, not things like
-            //charset rules, etc.
-            if (rules[i].style){
-                this.insertStyle(rules[i].style);
-            }
-            else {
-                //Recursively insert stylesheets
-                //imported via CSS @import
-                //but do not import if a loop is detected
-                //(the stylesheet to be added is already
-                //in the list)
-                if (rules[i].type == rules[i].IMPORT_RULE
-                    && (rules[i].styleSheet)){
-                    this.insertStyleSheet(rules[i].styleSheet);
-                }
-            }
-        }
-    }
-
-    this.insertDerivedSwatches(this.document);
 }
 

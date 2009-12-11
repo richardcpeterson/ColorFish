@@ -2,12 +2,12 @@
  * Initializes the application
  */
 function initApp(){
-    
+
     //Add repeat functionality to string
     String.prototype.repeat = function(count){
         return new Array(count + 1).join(this);
     }
-    
+
     /**
      * Allow arrays to tell us if they contain
      * a particular element as a value
@@ -21,7 +21,17 @@ function initApp(){
         }
         return found;
     }
-    
+
+    /**
+     * Returns the last/top item of an array.
+     * This is essentially the equivalent of pop
+     * except it doesn't remove the item
+     */
+    Array.prototype.top = function() {
+        return (this[ this.length -1 ]) ? this[ this.length -1 ] : false;
+    }
+
+
     /**
      * Check if the element has a particular class
      * assigned to it in its class string
@@ -29,7 +39,7 @@ function initApp(){
     Element.prototype.hasClass = function(classString){
         return this.className.match(new RegExp("\\b" + classString + "\\b"));
     }
-    
+
     /**
      * Add a class to an element's class string
      * (if it isn't already in the string)
@@ -38,7 +48,7 @@ function initApp(){
         if (!this.hasClass(classString))
             this.className += " "+classString;
     }
-    
+
     /**
      * Remove a class from an element, if it exists
      * in the element's class string
@@ -49,13 +59,13 @@ function initApp(){
             this.className = this.className.replace(reg,' ');
         }
     }
-    
+
     //Our global browser instance.
     window.Browser = new Browser();
     window.csApp = new CSApplication();
-  
+
     addHandlerToElement("uri-input", "keypress", loadPageOnEnterKey);
     document.getElementById("uri-input").focus();
-    
+
     window.Browser.load_page("chrome://csschemer/content/help/index.html");
 }

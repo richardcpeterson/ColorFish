@@ -6,6 +6,10 @@
 function Swatch(color){
     this.color = color;
 
+    this.undoList = new Array();
+    this.redoList = new Array();
+
+
     //An array of color properties
     this.properties = new Array();
 
@@ -13,12 +17,29 @@ function Swatch(color){
      * Update all properties in this swatch to reflect
      * the value in this.color
      */
-    this.updateProperties = function(){
-        var hexColor = this.color.toString();
-        for(var i = 0; i < this.properties.length; i++){
-            this.properties[i].setColor(hexColor);
+    this.updateProperties = function(newColor){
+        newColor = Color.from_css(newColor);
+        if ( !this.undoList.top() || ( this.color.getCSSRGB() != newColor.getCSSRGB()) ) {
+            this.undoList.push( array(this.color, Color.getFormat(this.color)) );
+            this.color = newColor;
+            for(var i = 0; i < this.properties.length; i++) {
+                 this.properties[i].setColor(this.color);
+            }
         }
     }
+
+    this.undoProperties = function() {
+        if (this.undoList.top()) {
+            this.redoList.push( this.color );
+            this.color = this.undoList.top()[0];
+            this.format
+            for(var i = 0; i < this.properties.length; i++) {
+                this.properties[i].setColor(this.color);
+            }
+        }
+        // TODO: will need to save the user's entered format and then reformat this value to match
+        return this.color.toString();
+    };
 
     /**
      * Add a color property to this swatch

@@ -30,6 +30,10 @@
           src="chrome://CSSchemer/content/scripts/enums.js"/>
   <script type="application/x-javascript"
           src="chrome://CSSchemer/content/scripts/colorProperty.js"/>
+  <script type="application/x-javascript"
+          src="chrome://CSSchemer/content/scripts/csDocument.js"/>
+  <script type="application/x-javascript"
+          src="chrome://CSSchemer/content/scripts/csStylesheet.js"/>
 
   <commandset id="mainCommandSet">
     <command id="cmd_browseURI" oncommand="Browser.load_from_address_bar();"/>

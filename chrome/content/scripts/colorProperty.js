@@ -26,10 +26,15 @@ function ColorProperty(style, propertyType) {
     // Define these functions depending on which propertyType this
     // ColorProperty is supposed to access.
     this.setColor = function(colorString) {
-        this.style[propertyType] = colorString;
+        this.style.update(propertyType, colorString);
     };
+
+    this.undoColor = function(colorString) {
+        return this.style.undo();
+    };
+
     this.getColorString = function() {
-        return this.style[propertyType];
+        return this.style.property(propertyType);
     };
 
     /**

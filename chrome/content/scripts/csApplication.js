@@ -6,7 +6,7 @@ function CSApplication(){
     this.activePage = "blank";
     this.cssFilePane = document.getElementById("cssFilePane");
     this.toolPane = document.getElementById("toolPane");
-    
+
     /**
      * Set the active page for the application
      */
@@ -38,13 +38,13 @@ function CSApplication(){
         //Add new children
         var newNode, label, fullName, sheetName, sheet, saveButton;
         var inlineNumber = 0;
-        
+
         //Process each stylesheet, building a UI
         //element for each one
         for (var i = 0; i < this.activePage.styleSheets.length; i++){
             sheet = this.activePage.styleSheets[i];
             fullName = "Stylesheet " + (i+1) + ": ";
-            
+
             //Create the strings for the sheet labels
             if (sheet.href){
                 fullName += sheet.href;
@@ -57,13 +57,13 @@ function CSApplication(){
                 fullName += "Inline " + sheet.type;
                 sheetName = "style_tag_" + inlineNumber + ".css";
             }
-            
+
             newNode = window.document.createElement("hbox");
             label = window.document.createElement("label");
             label.setAttribute("value", sheetName);
             newNode.setAttribute("tooltiptext", fullName);
             newNode.setAttribute("align", "center");
-            
+
             saveButton = window.document.createElement("button");
             saveButton.setAttribute("label","Save");
             saveButton.setAttribute(
@@ -101,14 +101,17 @@ function CSApplication(){
         var colorBox2 = window.document.createElement("box");
         var toolTip = "Found in " + swatch.count() + " style rule"
                     + (swatch.count()==1?"":"s");
-        
+
+        var undoButton = window.document.createElement("button");
+        var redoButton = window.document.createElement("button");
+
         original.setAttribute(
             "value", swatch.color.toString()
         );
         original.setAttribute("class", "code");
         original.setAttribute("size", "10");
         original.setAttribute("readonly", "true");
-        
+
         colorBox.setAttribute(
             "style",
             "background-color: " + swatch.color.getCSSHex());
@@ -123,21 +126,44 @@ function CSApplication(){
         textbox.setAttribute("value", swatch.color.toString());
         textbox.setAttribute("class", "code");
         textbox.setAttribute("size", "10");
-        
+
         addHandlerToElement(
             textbox,
-            "keyup",
+            "input",
             updateSwatchWithExplicitValue
         );
 
+
+        undoButton.setAttribute("label","Undo");
+        addHandlerToElement(
+            undoButton,
+            "command",
+            undoSwatch
+        );
+
         hbox.swatch = swatch;
+        relatedObjects = function() {
+            this.relatedObjects = new Array();
+            this.add = function(object) {
+                this.relatedObjects[object] = object;
+            }
+            this.get = function(objectName) {
+                return this.relatedObjects[objectName];
+            }
+        }
+
+
+        hbox.relatedObjects = new relatedObjects();
 
         hbox.setAttribute("align", "end");
         hbox.setAttribute("tooltiptext", toolTip);
         hbox.appendChild(original);
         hbox.appendChild(colorBox);
         hbox.appendChild(textbox);
+        hbox.relatedObjects.add(textbox);
         hbox.appendChild(colorBox2);
+
+        hbox.appendChild(undoButton);
         //hbox.appendChild(button);
         return hbox;
     }
@@ -193,8 +219,8 @@ function CSApplication(){
             outputStream.close();
         }
     }
-    
-    
+
+
     this.getStyleSheetSource = function(styleSheet) {
         var output = "";
         if(styleSheet.cssRules){
@@ -208,12 +234,12 @@ function CSApplication(){
         else{
             output = "Could not generate stylesheet output";
         }
-        
+
         //Pretty format
         output = output.replace(/{ /g, "{\n    ");
         output = output.replace(/; /g, ";\n    ");
         output = output.replace(/    }/g, "}");
-        
+
         return output;
     }
 
