@@ -21,6 +21,7 @@ Enums.ColorPropertyTypes = {
 }
 
 Enums.ColorFormats = {
+    unknown : 0,
     rgb : 1,
     longHex : 2,
     shortHex : 3,
