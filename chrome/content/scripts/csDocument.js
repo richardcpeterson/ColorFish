@@ -3,25 +3,34 @@ function csDocument(sourceDocument) {
     this.source = sourceDocument;
 
     this.LoadStyleSheets = function () {
-        //var stack = this.source.styleSheets;
-        var stack = new Array();
+        var sheetsToAdd = new Array();
         var sheets = new Array();
 
-        // For now, wrap stylesheets into an array
+        
+        /**
+         * Put the initial list of stylesheets into
+         * the list of sheets to add. More sheets
+         * may be added later via @import rules
+         */
         for (i = 0; i < this.source.styleSheets.length; i++) {
-            stack.push(this.source.styleSheets[i]);
+            sheetsToAdd.push(this.source.styleSheets[i]);
         }
 
         /**
-         * Process all stylesheets,
-         * looking for color properties to record in each
-         * one
+         * Process all stylesheets in sheetsToAdd,
+         * adding each one to the list of sheets. If any
+         * imported stylesheets are found, they will be
+         * placed in sheetsToAdd as they are found.
          */
-        while(stack.length > 0) {
-            if (stack.top().cssRules) {
-                sheets.push(new csStylesheet(stack.pop()));
-                stack.push(sheets.top().loadRules());
-            } else stack.pop();
+        while(sheetsToAdd.length > 0) {
+            var sheet = sheetsToAdd.pop();
+            if (sheet.cssRules) {
+                sheets.push(new csStylesheet(sheet));
+                //Add any stylesheets imported
+                //by sheet into the list of sheets
+                //that need to be added.
+                sheetsToAdd = sheetsToAdd.concat(sheets.top().importedSheets);
+            }
         }
 
         return sheets;

@@ -36,46 +36,39 @@ function csStylesheet(sheet) {
     this.href = sheet.href;
     // this.locked = boolean;
     this.rules = new Array();
+    
+    //List of DOM stylesheets that are imported
+    //by this csStylesheet using @import rules
+    this.importedSheets = new Array();
 
     this.addRule = function(rule) {
         this.rules.push(new csStylesheetRule(rule));
     }
 
     /**
-     * Given a document, find all color properties
-     * and consolidate them into a set of swatches,
-     * one swatch per color (not per color instance).
+     * Load all rules into the rules array, and all
+     * imported stylesheets into the importedSheets
+     * array
      */
-    this.loadRules = function() {
-        var importRules = this.originalSheet.cssRules;
-        var importList = new Array();
-
-        /**
-         * Process each rule in the stylesheet, looking
-         * for color properties and recording them into
-         * swatches in this palette
-         */
-        for (var i = 0; i < importRules.length; i++){
-            //Only process style rules, not things like
-            //charset rules, etc.
-            if (importRules[i].style){
-                // this.rules.push(new csStylesheetRule(importRules[i]));
-                this.addRule(importRules[i]);
-            }
-            else {
-                //Recursively insert stylesheets
-                //imported via CSS @import
-                //but do not import if a loop is detected
-                //(the stylesheet to be added is already
-                //in the list)
-                if (importRules[i].type == importRules[i].IMPORT_RULE
-                    && (importRules[i].styleSheet)){
-                    importList.push(importRules[i].stylesheet);
-                }
+    var DOMRules = this.originalSheet.cssRules;
+        
+    /**
+     * Process each rule in the stylesheet
+     */
+    for (var i = 0; i < DOMRules.length; i++){
+        //Only process style rules, not things like
+        //charset rules, etc.
+        if (DOMRules[i].style){
+            this.addRule(DOMRules[i]);
+        }
+        else {
+            //Add @import stylesheets to the
+            //importedSheets array
+            if (DOMRules[i].type == DOMRules[i].IMPORT_RULE
+                && (DOMRules[i].styleSheet)){
+                dump("importing a sheet...\n");
+                this.importedSheets.push(DOMRules[i].styleSheet);
             }
         }
-
-        return importList;
     }
-
 }
