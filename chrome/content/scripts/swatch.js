@@ -20,7 +20,7 @@ function Swatch(color){
     this.updateProperties = function(newColor){
         newColor = Color.from_css(newColor);
         if ( !this.undoList.top() || ( this.color.getCSSRGB() != newColor.getCSSRGB()) ) {
-            this.undoList.push( array(this.color, Color.getFormat(this.color)) );
+            this.undoList.push(new Array(this.color, Color.getFormat(this.color)));
             this.color = newColor;
             for(var i = 0; i < this.properties.length; i++) {
                  this.properties[i].setColor(this.color);
