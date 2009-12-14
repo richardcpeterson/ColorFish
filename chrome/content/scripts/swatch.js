@@ -3,8 +3,14 @@
  * CSS color properties associated with that color.
  */
 
-function Swatch(color){
+function Swatch(color, colorFormat){
     this.color = color;
+    
+    //Use colorFormat if given, or default value
+    this.format =
+        (colorFormat?
+         colorFormat:
+         Enums.ColorFormats.longHex);
 
     this.undoList = new Array();
     this.redoList = new Array();
@@ -15,30 +21,79 @@ function Swatch(color){
 
     /**
      * Update all properties in this swatch to reflect
-     * the value in this.color
+     * the value passed in color. This does not create
+     * a new Swatch state to modify the undo stack.
+     * It DOES set this swatch's current color.
+     * This is a transient action.
+     * color may be a valid CSS color string or a
+     * Color object.
      */
-    this.updateProperties = function(newColor){
-        newColor = Color.from_css(newColor);
-        if ( !this.undoList.top() || ( this.color.getCSSRGB() != newColor.getCSSRGB()) ) {
-            this.undoList.push(new Array(this.color, Color.getFormat(this.color)));
-            this.color = newColor;
-            for(var i = 0; i < this.properties.length; i++) {
-                 this.properties[i].setColor(this.color);
-            }
+    this.updateColor = function(color){
+        if (typeof color == "string")
+            color = Color.from_css(color);
+        this.color = color;
+        for(var i = 0; i < this.properties.length; i++) {
+            this.properties[i].setColor(this.color);
         }
     }
-
-    this.undoProperties = function() {
-        if (this.undoList.top()) {
-            this.redoList.push( this.color );
-            this.color = this.undoList.top()[0];
-            this.format
-            for(var i = 0; i < this.properties.length; i++) {
-                this.properties[i].setColor(this.color);
-            }
+    
+    /**
+     * Sets the color of the current swatch, setting
+     * an undo-able Swatch state.
+     * Both parameters are optional. If newColor
+     * is given, it will opdate all properties for
+     * that color. If colorFormat is given, it will
+     * use the new color format. If neither
+     * parameter is given, the current values in
+     * the swatch will be used, and a new Swatch
+     * state will be created from these values. So
+     * for instance, you could use
+     * updateProperties(color)
+     * several times, and use
+     * setColor() with no arguments to set an undoable
+     * swatch state with the current swatch properties.
+     */
+    this.setColor = function(newColor, colorFormat) {
+        //Push the old state onto the undo stack
+        this.undoList.push(new Array(this.color, this.format) );
+        
+        //Update properties and color format if needed
+        if (newColor){
+            this.updateColor(newColor);
         }
-        // TODO: will need to save the user's entered format and then reformat this value to match
-        return this.color.toString();
+        if (colorFormat){
+            this.format = colorFormat;
+        }
+        
+        //Clear the redo list - this wasn't an undone
+        //command
+		this.redoList = new Array();
+    }
+
+    /**
+     * Undo the most recent setColor action
+     */
+    this.undo = function() {
+        if (this.undoList.top()) {
+            //Save the current state in the redo stack
+            this.redoList.push(new Array(this.color, this.format));
+            this.updateColor(this.undoList.top()[0]);
+            this.format = this.undoList.top()[1];
+            this.undoList.pop();
+        }
+    };
+    
+    /**
+     * Redo the most recently undone setColor action
+     */
+    this.redo = function() {
+        if (this.redoList.top()) {
+            //Save the current state in the undo stack
+            this.undoList.push(new Array(this.color, this.format));
+            this.updateColor(this.redoList.top()[0]);
+            this.format = this.redoList.top()[1];
+            this.redoList.pop();
+        }
     };
 
     /**

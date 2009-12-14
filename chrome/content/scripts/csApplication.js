@@ -93,8 +93,14 @@ function CSApplication(){
 
     }
 
+    /**
+     * Make an individual swatch control within the palette
+     * display.
+     */
     this.makeSwatchControl = function(swatch){
+        //Parent element for the whole control
         var hbox = window.document.createElement("hbox");
+        
         var original = window.document.createElement("textbox");
         var textbox = window.document.createElement("textbox");
         var colorBox = window.document.createElement("box");
@@ -105,6 +111,7 @@ function CSApplication(){
         var undoButton = window.document.createElement("button");
         var redoButton = window.document.createElement("button");
 
+        //Set up the original swatch text box
         original.setAttribute(
             "value", swatch.color.toString()
         );
@@ -112,21 +119,25 @@ function CSApplication(){
         original.setAttribute("size", "10");
         original.setAttribute("readonly", "true");
 
+        //Set up the original color box
         colorBox.setAttribute(
             "style",
             "background-color: " + swatch.color.getCSSHex());
         colorBox.setAttribute("class", "colorSwatch");
 
+        //Set up the modified swatch color box
         colorBox2.setAttribute(
             "style",
             "background-color: " + swatch.color.getCSSHex());
         colorBox2.setAttribute("class", "colorSwatch hidden");
 
 
+        //Set up the input box
         textbox.setAttribute("value", swatch.color.toString());
         textbox.setAttribute("class", "code");
         textbox.setAttribute("size", "10");
 
+        //Add textbox input handler
         addHandlerToElement(
             textbox,
             "input",
@@ -135,36 +146,84 @@ function CSApplication(){
 
 
         undoButton.setAttribute("label","Undo");
+        undoButton.setAttribute("class","undoButton");
         addHandlerToElement(
             undoButton,
             "command",
             undoSwatch
         );
+        
+        redoButton.setAttribute("label","Redo");
+        redoButton.setAttribute("class","redoButton");
+        addHandlerToElement(
+            redoButton,
+            "command",
+            redoSwatch
+        );
 
-        hbox.swatch = swatch;
-        relatedObjects = function() {
-            this.relatedObjects = new Array();
-            this.add = function(object) {
-                this.relatedObjects[object] = object;
-            }
-            this.get = function(objectName) {
-                return this.relatedObjects[objectName];
-            }
-        }
-
-
-        hbox.relatedObjects = new relatedObjects();
-
+        //Build the final element
         hbox.setAttribute("align", "end");
         hbox.setAttribute("tooltiptext", toolTip);
         hbox.appendChild(original);
         hbox.appendChild(colorBox);
         hbox.appendChild(textbox);
-        hbox.relatedObjects.add(textbox);
         hbox.appendChild(colorBox2);
-
         hbox.appendChild(undoButton);
-        //hbox.appendChild(button);
+        hbox.appendChild(redoButton);
+        
+        //Set all the related objects
+        hbox.addRelatedObject("undoButton",undoButton);
+        hbox.addRelatedObject("inputTextbox",textbox);
+        hbox.addRelatedObject("swatch",swatch);
+        hbox.addRelatedObject("originalColorTextbox",original);
+        hbox.addRelatedObject("originalColorBox",colorBox);
+        hbox.addRelatedObject("modifiedColorBox",colorBox2);
+        
+        /**
+         * Update the GUI to reflect the state of the
+         * attached swatch object hbox.relatedOjbects.swatch
+         */
+        hbox.updateControl = function() {
+            //Input element
+            var textbox = this.relatedObjects.inputTextbox;
+            var swatch = this.relatedObjects.swatch;
+            var newColor = this.relatedObjects.swatch.color;
+            
+            /**
+             * Show and hide the modified swatch. Show the swatch
+             * when it is different from the original swatch.
+             * Hide it when it is the same as the original swatch.
+             */
+            var swatch1 = this.relatedObjects.originalColorBox;
+            var swatch2 = this.relatedObjects.modifiedColorBox;
+            //If the new color is the same as the original color
+            if (Color.from_css(swatch1.style.backgroundColor).equals(newColor)){
+                swatch2.addClass("hidden");
+            }
+            //The new color is different from the original color
+            else {
+                //Make the swatch the new background color
+                swatch2.setAttribute(
+                    "style",
+                    "background-color: " + newColor.getCSSHex());
+                swatch2.removeClass("hidden");
+            }
+            
+            //Valid color
+            textbox.removeClass("invalid");
+        }
+        
+        /**
+         * Update the input field with a new color string
+         * representing the current state of the attached
+         * swatch object.
+         */
+        hbox.updateInputField = function() {
+            var textbox = this.relatedObjects.inputTextbox;
+            var swatch = this.relatedObjects.swatch;
+            textbox.value = swatch.color.toString(swatch.format);
+        }
+
         return hbox;
     }
 

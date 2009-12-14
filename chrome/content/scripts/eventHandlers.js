@@ -44,68 +44,69 @@ function loadPageOnEnterKey(e) {
     }
 }
 
-function updateSwatch(target, color) {
-
-    var textbox = target;
-    if(!Color.isParsableString(color)){
+function updateSwatchWithExplicitValue(e) {
+    if (!e){
+        e = window.event;
+    }
+    
+    var swatchElement = e.target.parentNode;
+    var swatch = swatchElement.relatedObjects.swatch;
+    var textbox = swatchElement.relatedObjects.inputTextbox;
+    var colorString = textbox.value;
+    
+    //Try to get a color from the given string
+    if(!Color.isParsableString(colorString)){
         textbox.addClass("invalid");
         return false;
     }
+    
     var newColor;
     try{
-        newColor = Color.from_css(color);
+        newColor = Color.from_css(colorString);
     }
     catch(e){
         alert(e);
         return false;
     }
 
-    /**
-     * Show and hide the modified swatch. Show the swatch
-     * when it is different from the original swatch.
-     * Hide it when it is the same as the original swatch.
-     */
-    var swatch1 = target.parentNode.getElementsByTagName("box")[0];
-    var swatch2 = target.parentNode.getElementsByTagName("box")[1];
-    //If the new color is the same as the original color
-    if (Color.from_css(swatch1.style.backgroundColor).equals(newColor)){
-        swatch2.addClass("hidden");
-    }
-    //The new color is different from the original color
-    else {
-        //Make the swatch the new background color
-        swatch2.setAttribute(
-            "style",
-            "background-color: " + newColor.getCSSHex());
-        swatch2.removeClass("hidden");
-    }
-
-    //Valid color
-    textbox.removeClass("invalid");
-
-    // Update textbox
-    //target.parentNode.relatedObjects.get(textbox).value = newColor;
-    return true;
-}
-
-function updateSwatchWithExplicitValue(e) {
-    if (!e){
-        e = window.event;
-    }
-
     //Actually update the real Swatches and page with
     //the new color
-    //     e.target.parentNode.swatch.updateProperties(e.target.value);
-
-    if (updateSwatch(e.target, e.target.value)) {
-        return e.target.parentNode.swatch.updateProperties(e.target.value)
-    }
+    swatch.setColor(newColor, Color.getFormat(colorString));
+    swatchElement.updateControl();
+    return true;
 };
 
+/**
+ * Undo the most recent action on a particular swatch.
+ * Assumes the element generating the event is a child
+ * of the main swatch UI container element.
+ */
 function undoSwatch(e) {
     if (!e){
         e = window.event;
     }
-
-    return updateSwatch(e.target, e.target.parentNode.swatch.undoProperties());
+    var swatchElement = e.target.parentNode;
+    var swatch = swatchElement.relatedObjects.swatch;
+    swatch.undo();
+    swatchElement.updateControl();
+    swatchElement.updateInputField();
+    return true;
 }
+ 
+ /**
+  * Redo the most recently undone action on a particular
+  * swatch. Assumes that the element generating the event
+  * is a child of the main swatch UI container for the
+  * desired swatch
+  */
+ function redoSwatch(e) {
+     if (!e){
+         e = window.event;
+     }
+     var swatchElement = e.target.parentNode;
+     var swatch = swatchElement.relatedObjects.swatch;
+     swatch.redo();
+     swatchElement.updateControl();
+	 swatchElement.updateInputField();
+     return true;
+ }
