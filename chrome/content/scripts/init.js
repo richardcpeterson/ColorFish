@@ -59,6 +59,20 @@ function initApp(){
             this.className = this.className.replace(reg,' ');
         }
     }
+    
+    /**
+     * Add a "relatedObjects" object / array to
+     * all Elements. This array can hold
+     * references to other UI elements, so we
+     * don't have to traverse the DOM looking for
+     * siblings, etc.
+     */
+    Element.prototype.addRelatedObject = function(name, object){
+        if (!this.relatedObjects){
+            this.relatedObjects = new Array();
+        }
+        this.relatedObjects[name] = object;
+    }
 
     //Our global browser instance.
     window.Browser = new Browser();
