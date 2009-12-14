@@ -30,7 +30,7 @@
 }
 
 #csLeftPane{
-    width:400px;
+    width:420px;
 }
 
 #csCenterPane{
@@ -38,4 +38,12 @@
 
 #csRightPane{
     width:400px;
+}
+
+button {
+	min-width: 0.1em; 
+}
+
+.undoButton,
+.redoButton {
 }
