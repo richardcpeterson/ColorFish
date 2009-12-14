@@ -103,7 +103,7 @@ function Color() {
             + this.green + ","
             + this.blue + ")";
     }
-	
+
     /**
      * Return the color name for this color if it exists,
      * otherwise return long hex (#FFFFFF)
@@ -121,13 +121,40 @@ function Color() {
 
     /**
      * Return a string representation of this color,
-     * in a parsable format.
+     * in a parsable format. Takes an optional color
+     * format from Enums.colorFormats.
      */
-    this.toString = function(){
-        if (this.specialString)
-            return this.specialString;
-        else
-            return this.getCSSHex();
+    this.toString = function(colorFormat){
+        var newString = "";
+        if (this.specialString){
+            newString = this.specialString;
+        }
+        else if (colorFormat){
+            switch (colorFormat){
+                case Enums.ColorFormats.unknown :
+                    newString = "unknown";
+                    break;
+                case Enums.ColorFormats.rgb :
+                    newString = this.getCSSRGB();
+                    break;
+                case Enums.ColorFormats.longHex : 
+                    newString = this.getCSSHex();
+                    break;
+                case Enums.ColorFormats.shortHex : 
+                    newString = this.getCSSShortHex();
+                    break;
+                case Enums.ColorFormats.colorName : 
+                    newString = this.getColorName();
+                    break;
+                case Enums.ColorFormats.specialString :
+                    newString = (this.specialString?this.specialString:"unknown");
+                    break;
+            }
+        }
+        else{ //Default
+            newString = this.getCSSHex();
+        }
+        return newString;
     }
 
     /**
