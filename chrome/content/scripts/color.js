@@ -103,6 +103,21 @@ function Color() {
             + this.green + ","
             + this.blue + ")";
     }
+	
+    /**
+     * Return the color name for this color if it exists,
+     * otherwise return long hex (#FFFFFF)
+     */
+    this.getColorName = function(){
+        var thisName = false;
+        var thisHex = this.getCSSHex().substr(1,6).toLowerCase();
+        for (let [name,hex] in Iterator(Color.colorNames)){  
+            if(hex == thisHex){
+                thisName = name;
+            }
+        }
+        return thisName;
+    }
 
     /**
      * Return a string representation of this color,
