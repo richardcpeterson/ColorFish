@@ -77,20 +77,20 @@ function Color() {
         var b = this.padHex(this.blue.toString(16));
         return "#"+r+g+b;
     }
-	
+    
     /**
      * Return a string of the form
      * #FFF if possible. If not, fall back to
      * long hex - #ABCDEF
      */
     this.getCSSShortHex = function(){
-	    var str = this.getCSSHex();
-	    if (str.charAt(1)==str.charAt(2)
-		    && str.charAt(3)==str.charAt(4)
-		    && str.charAt(5)==str.charAt(6)){
-		    str = "#"+str.charAt(1)+str.charAt(3)+str.charAt(5);
-	    }
-	    return str;
+        var str = this.getCSSHex();
+        if (str.charAt(1)==str.charAt(2)
+            && str.charAt(3)==str.charAt(4)
+            && str.charAt(5)==str.charAt(6)){
+            str = "#"+str.charAt(1)+str.charAt(3)+str.charAt(5);
+        }
+        return str;
     }
 
     /**
