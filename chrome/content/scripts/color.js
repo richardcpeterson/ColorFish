@@ -302,6 +302,21 @@ Color.getFormat = function(colorString){
     return Enums.ColorFormats.specialString;
 }
 
+/**
+ * Take a parsable color string and return a new
+ * string in the given format representing the
+ * same color. This is not guaranteed to return
+ * the desired format, as some formats can only
+ * represent a subset of the possible colors.
+ */
+Color.formatColor = function(colorString, colorFormat){
+    if (!Color.isParsableString(colorString)){
+        return null;
+    }
+    var newColor = Color.from_css(colorString);
+    return newColor.toString(colorFormat);
+}
+
 /***
  * Returns a boolean indicating if the given color (string) is in
  * either the hex format #fff or #ffffff;
