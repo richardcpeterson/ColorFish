@@ -71,4 +71,32 @@ function csStylesheet(sheet) {
             }
         }
     }
+    
+    /**
+     * Output the transformed source code representing
+     * the current, modified version of this
+     * stylesheet
+     */
+    this.getResultingSourceCode = function() {
+        var output = "";
+        var styleSheet = this.originalSheet;
+        if(styleSheet.cssRules){
+            for (var j = 0; j < styleSheet.cssRules.length; j++){
+                if (styleSheet.cssRules[j].cssText){
+                    output += styleSheet.cssRules[j].cssText;
+                    output += "\r\n\r\n";
+                }
+            }
+        }
+        else{
+            output = "Could not generate stylesheet output";
+        }
+
+        //Pretty format
+        output = output.replace(/{ /g, "{\n    ");
+        output = output.replace(/; /g, ";\n    ");
+        output = output.replace(/    }/g, "}");
+
+        return output;
+    }
 }
