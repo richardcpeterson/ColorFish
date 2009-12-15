@@ -1,62 +1,77 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>Style Properties</title>
-    <style type="text/css">
+    <style id="style" type="text/css">
       #rgbColor{
-          color: rgb(255,255,255);
+          color: rgb(0,0,0);
       }
 
       #hexColor{
-	  color: #AAAAAA;
+          color: #111111;
       }
 
       #hexShorthand{
-	  color: #BBB;
+          color: #222;
       }
 
       #colorName{
-	  background-color: Green;
+          background-color: Green;
       }
 
       #backgroundShorthand{
-	  background:#ffffff url('img.png') no-repeat top right
+          background:#333333 url('img.png') no-repeat top right
       }
 
       #borderColor{
-	  border-color: #444444;
+          border-color: #444444;
       }
 
       #borderShorthand{
-	  border: 1px solid #000000;
+          border: 1px solid #555555;
       }
 
       #borderIndividual{
-	  border-left: 1px solid #000;
-	  border-top: 1px solid #111;
-	  border-right: 1px solid #222;
-	  border-bottom: 1px solid #333;
+          border-left: 1px solid #110000;
+          border-top: 1px solid #220000;
+          border-right: 1px solid #330000;
+          border-bottom: 1px solid #440000;
       }
 
       #borderIndividualColor{
-	  border-left-color: #000;
-	  border-top-color: #111;
-	  border-right-color: #222;
-	  border-bottom-color: #333;
+          border-left-color: #000011;
+          border-top-color: #000022;
+          border-right-color: #000033;
+          border-bottom-color: #000044;
       }
 
       #outline{
-	  outline: #333 solid 1px;
+          outline: #666666 solid 1px;
       }
 
       #outlineColor{
-	  outline-color: #111;
+          outline-color: #777777;
       }
     </style>
 
   </head>
   <body>
-    This file contains all known color
-    properties and variants.
+    <h1>All Properties</h1>
+    <h2>
+      This file contains all known color
+      properties and variants.
+    </h2>
+    <p>
+      The following is the contents of the script
+      tag for this page:
+    </p>
+<pre>
+&lt;style&gt;
+<script>
+   var el = document.getElementById("style");
+   document.write(el.innerHTML);
+</script>
+&lt;/style&gt;
+</pre>
   </body>
 </html>
 
