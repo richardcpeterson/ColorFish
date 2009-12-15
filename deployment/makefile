@@ -1,5 +1,5 @@
 XULVER = 1.9.1.4
-NSISVER = 2.45
+NSISVER = 2.46
 NSIS = nsis-$(NSISVER)
 NSISDIR = nsis/
 APPNAME = csschemer
