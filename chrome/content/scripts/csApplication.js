@@ -66,7 +66,7 @@ function CSApplication(){
             saveButton.setAttribute("label","Save");
             saveButton.setAttribute(
                 "oncommand",
-                "csApp.save((this.styleSheet.getResultingSourceCode()),'" + sheetName + "');");
+                "csApp.save((this.styleSheet.getPrettyPrintText()),'" + sheetName + "');");
             saveButton.styleSheet = sheet;
             newNode.appendChild(saveButton);
             newNode.appendChild(label);

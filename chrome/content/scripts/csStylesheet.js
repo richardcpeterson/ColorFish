@@ -27,18 +27,18 @@ function csRuleStyle(style) {
 
     this.property = function (property) {
         return this.style[property];
-    }
+    };
 
     this.update = function (property, colorString) {
         this.style[property] = colorString;
-    }
+    };
 
     this.redo = function () {
         if (this.redoList.top()) {
             this.undoList.push( this.undoList.top()[0], this.style[ this.redoList.top()[0] ] );
             this.style[ this.redoList.top()[0] ] = this.redoList.pop()[1];
         }
-    }
+    };
 }
 
 /***
@@ -55,6 +55,13 @@ function csRuleStyle(style) {
  *
  *     Takes a CSSStyleRule and associates it with the stylesheet.
  *
+ *
+ * - getPrettyPrintText()
+ *
+ *     Returns a string representing a pretty-printed version of the
+ *     style sheet.  This string will be empty if the sheet has no
+ *     associated rules.  Imported style sheets are not handled.
+ *
  */
 function csStyleSheet(sheet) {
     this.sheet = sheet;
@@ -63,7 +70,7 @@ function csStyleSheet(sheet) {
 
     this.addRule = function (rule) {
         this.rules.push(new csRuleStyle(rule.style));
-    }
+    };
 
     // Loop through the sheet we were given and add all of the rules.
     // Also check for stylesheets that are @import'ed and store those
@@ -79,4 +86,23 @@ function csStyleSheet(sheet) {
         },
         this
     );
+
+    this.getPrettyPrintText = function () {
+        var output = "";
+
+        if (!this.sheet.cssRules) {
+            return output;
+        }
+
+        this.rules.forEach(
+            function (rule) {
+                if (rule.style.cssText) {
+                    output += rule.style.parentRule.selectorText + " {\n";
+                    output += "\t" + rule.style.cssText + "\n}\n\n";
+                }
+            }
+        );
+
+        return output.replace(/; /g, ";\n\t");
+    };
 }
