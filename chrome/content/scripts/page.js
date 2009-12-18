@@ -11,14 +11,10 @@ function Page(contentDocument) {
     this.resultPalette = null;
     this.styleSheets = null;
 
-    if (contentDocument){
+    if (contentDocument) {
         this.document = new csDocument(contentDocument);
         this.styleSheets = this.document.styleSheets;
         this.originalPalette = this.document.Palette;
-        // this.styleSheets = this.originalPalette.styleSheets;
-
-        //this.resultPalette = new Palette(this.document);
-        //this.resultPalette = originalPalette.clone();
     }
 }
 
