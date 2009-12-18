@@ -47,3 +47,7 @@ button {
 .undoButton,
 .redoButton {
 }
+
+swatchControl {
+    -moz-binding: url("chrome://csschemer/content/bindings.xml#swatchControl");
+}

@@ -1,0 +1,159 @@
+<?xml version="1.0"?>
+<bindings
+  xmlns="http://www.mozilla.org/xbl"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+     xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+>
+  
+
+<binding id="swatchControl">
+    <content>
+        <xul:hbox
+            id="container"
+            align="end"
+            anonid="container">
+            <xul:textbox
+                id="originalText"
+                class="code"
+                size="10"
+                readonly="true">
+            </xul:textbox>
+            <xul:box
+                id="originalColor"
+                class="colorSwatch">
+            </xul:box>
+            <xul:textbox
+                id="newText"
+                class="code"
+                size="10">
+            </xul:textbox>
+            <xul:box
+                id="newColor"
+                class="colorSwatch">
+            </xul:box>
+            <xul:button
+                label="Undo"
+                class="undoButton">
+            </xul:button>
+            <xul:button
+                label="Redo"
+                class="redoButton">
+            </xul:button>
+        </xul:hbox>
+    </content>
+
+    <implementation>
+        <constructor><![CDATA[
+            //Parent element for the whole control
+            this.container = document.getAnonymousElementByAttribute(this, "anonid", "container");
+            
+            dump(this.container);
+            this.container = this.getElementById("container");
+            this.originalTextbox = this.getElementById("originalText");
+            this.newTextbox = this.getElementById("newText");
+            this.originalColorBox = this.getElementById("originalColor");
+            this.newColorBox = this.getElementById("newColor");
+            this.undoButton = this.getElementById("undoButton");
+            this.redoButton = this.getElementById("redoButton");
+
+            //Add textbox input handler
+            addHandlerToElement(
+                textbox,
+                "input",
+                updateSwatchWithExplicitValue
+            );
+    
+            addHandlerToElement(
+                undoButton,
+                "command",
+                undoSwatch
+            );
+            
+            addHandlerToElement(
+                redoButton,
+                "command",
+                redoSwatch
+            );
+        ]]></constructor>
+        
+        <method name="setSwatch">
+            <parameter name="swatch"/>
+            <body><![CDATA[
+                if(!this.swatch){
+                    //Set up the original swatch text box
+                    this.originalTextbox.setAttribute(
+                        "value", swatch.color.toString()
+                    );
+                    //Set up the original color box
+                    this.originalColorBox.setAttribute(
+                        "style",
+                        "background-color: " + swatch.color.getCSSHex());
+                    
+                }
+                this.swatch = swatch;
+                
+                var toolTip = "Found in " + swatch.count() + " style rule"
+                        + (swatch.count()==1?"":"s");
+                this.setAttribute("tooltiptext", toolTip);
+                
+                
+                //Set up the modified swatch color box
+                this.newColorBox.setAttribute(
+                    "style",
+                    "background-color: " + swatch.color.getCSSHex());
+                
+                //Set up the input box
+                this.newTextbox.setAttribute("value", swatch.color.toString());
+            
+                this.updateControl();
+            ]]>
+            </body>
+        </method>
+
+        <method name="updateControl">
+            <body><![CDATA[
+                if (!this.swatch || !this.swatch.color){
+                    return null;
+                }
+                var newColor = this.swatch.color;
+                
+                //If the new color is the same as the original color
+                if (Color.from_css(this.originalColorBox.style.backgroundColor).equals(newColor)){
+                    this.newColorBox.addClass("hidden");
+                }
+                //The new color is different from the original color
+                else {
+                    //Make the swatch the new background color
+                    this.newColorBox.setAttribute(
+                        "style",
+                        "background-color: " + newColor.getCSSHex());
+                    this.newColorBox.removeClass("hidden");
+                }
+                
+                //Valid color
+                this.newTextbox.removeClass("invalid");
+            ]]></body>
+        </method>
+        <method name="updateText">
+            <body><![CDATA[
+                if (!this.swatch || !this.swatch.color){
+                    return null;
+                }
+                this.newTextbox.value = this.swatch.color.toString(this.swatch.format);
+            ]]>
+            </body>
+        </method>
+        
+        
+    </implementation>
+
+    <handlers>
+        <handler event="mousedown" button="0"><![CDATA[
+            alert("swatch event handler");
+            event.stopPropagation();
+            var target = event.target;
+        ]]></handler>
+    </handlers>
+</binding>
+
+</bindings>
