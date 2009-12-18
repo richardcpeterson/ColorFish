@@ -55,6 +55,10 @@
   <keyset>
     <key id="save-key" modifiers="control" key="S" command="cmd_menuFileSave"/>
     <key id="quit-key" modifiers="control" key="Q" command="cmd_menuFileQuit"/>
+    <key id="back-key" modifiers="alt" keycode="VK_LEFT" command="cmd_browseBack"/>
+    <key id="forward-key" modifiers="alt" keycode="VK_RIGHT" command="cmd_browseForward"/>
+    <key id="back-key" modifiers="alt" key="B" command="cmd_browseBack"/>
+    <key id="forward-key" modifiers="alt" key="F" command="cmd_browseForward"/>
   </keyset>
 
   <menubar id="menubar">
