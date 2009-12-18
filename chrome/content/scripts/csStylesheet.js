@@ -1,102 +1,82 @@
-function csStylesheetRule(rule) {
-    this.originalRule = rule;
-    this.style = new csRuleStyle(rule.style);
+/***
+ * [Class]  csRuleStyle
+ *
+ * Represents an individual rule from a stylesheet, but also keeps
+ * track of its state, providing methods for changing and reverting
+ * that state.  Objects are constructed from CSSStyleRule objects.
+ *
+ * [Public Interface]
+ *
+ * - property(foo)
+ *
+ *     Returns the property 'foo' from the style.
+ *
+ * - update(foo, color)
+ *
+ *     Sets the property 'foo' to the 'color' string.  The color
+ *     should be a valid CSS color string.  Behavior is undefined if
+ *     it is not.
+ *
+ * - redo()
+ *
+ *     Reverts the rule to its last state.
+ *
+ */
+function csRuleStyle(style) {
+    this.style = style;
 
+    this.property = function (property) {
+        return this.style[property];
+    }
 
+    this.update = function (property, colorString) {
+        this.style[property] = colorString;
+    }
+
+    this.redo = function () {
+        if (this.redoList.top()) {
+            this.undoList.push( this.undoList.top()[0], this.style[ this.redoList.top()[0] ] );
+            this.style[ this.redoList.top()[0] ] = this.redoList.pop()[1];
+        }
+    }
 }
 
-    function csRuleStyle(style) {
-        this.originalStyle = style;
-        this.currentStyle = style;
+/***
+ * [Class]  csStyleSheet
+ *
+ * Encapsulates a stylesheet---particularly, a CSSStyleSheet object,
+ * which is the sole argument of the constructor.  Provides access to
+ * the contents of a stylesheet, along with ways of ouptutting that
+ * stylesheet in particular formats.
+ *
+ * [Public Interface]
+ *
+ * - addRule(rule)
+ *
+ *     Takes a CSSStyleRule and associates it with the stylesheet.
+ *
+ */
+function csStyleSheet(sheet) {
+    this.sheet = sheet;
+    this.rules = [];
+    this.importedSheets = [];
 
-        this.property = function(property) {
-            return this.currentStyle[property];
-        }
+    this.addRule = function (rule) {
+        this.rules.push(new csRuleStyle(rule.style));
+    }
 
-        this.update = function(property, colorString) {
-            this.currentStyle[property] = colorString;
-        }
-
-        // Not tested yet
-        this.redo = function() {
-            if ( this.redoList.top() ) {
-                this.undoList.push(this.undoList.top()[0], this.currentStyle[this.redoList.top()[0]]);
-                this.currentStyle[this.redoList.top()[0]] = this.redoList.pop()[1];
+    // Loop through the sheet we were given and add all of the rules.
+    // Also check for stylesheets that are @import'ed and store those
+    // within our object.
+    Array.forEach(
+        this.sheet.cssRules, function (rule) {
+            if (rule.style) {
+                this.addRule(rule);
             }
-        }
-
-        // Don't use this if you don't absolutely need to
-        this.get = function() {
-            return this.currentStyle;
-        }
-    }
-
-function csStylesheet(sheet) {
-    this.originalSheet = sheet;
-    this.href = sheet.href;
-    // this.locked = boolean;
-    this.rules = new Array();
-    
-    //List of DOM stylesheets that are imported
-    //by this csStylesheet using @import rules
-    this.importedSheets = new Array();
-
-    this.addRule = function(rule) {
-        this.rules.push(new csStylesheetRule(rule));
-    }
-
-    /**
-     * Load all rules into the rules array, and all
-     * imported stylesheets into the importedSheets
-     * array
-     */
-    var DOMRules = this.originalSheet.cssRules;
-        
-    /**
-     * Process each rule in the stylesheet
-     */
-    for (var i = 0; i < DOMRules.length; i++){
-        //Only process style rules, not things like
-        //charset rules, etc.
-        if (DOMRules[i].style){
-            this.addRule(DOMRules[i]);
-        }
-        else {
-            //Add @import stylesheets to the
-            //importedSheets array
-            if (DOMRules[i].type == DOMRules[i].IMPORT_RULE
-                && (DOMRules[i].styleSheet)){
-                dump("importing a sheet...\n");
-                this.importedSheets.push(DOMRules[i].styleSheet);
+            else if (rule.type === rule.IMPORT_RULE && rule.styleSheet) {
+                this.importedSheets.push( new csStyleSheet( rule.styleSheet ) );
             }
-        }
-    }
-    
-    /**
-     * Output the transformed source code representing
-     * the current, modified version of this
-     * stylesheet
-     */
-    this.getResultingSourceCode = function() {
-        var output = "";
-        var styleSheet = this.originalSheet;
-        if(styleSheet.cssRules){
-            for (var j = 0; j < styleSheet.cssRules.length; j++){
-                if (styleSheet.cssRules[j].cssText){
-                    output += styleSheet.cssRules[j].cssText;
-                    output += "\r\n\r\n";
-                }
-            }
-        }
-        else{
-            output = "Could not generate stylesheet output";
-        }
-
-        //Pretty format
-        output = output.replace(/{ /g, "{\n    ");
-        output = output.replace(/; /g, ";\n    ");
-        output = output.replace(/    }/g, "}");
-
-        return output;
-    }
+        },
+        this
+    );
 }

@@ -6,7 +6,7 @@ function csDocument(sourceDocument) {
         var sheetsToAdd = new Array();
         var sheets = new Array();
 
-        
+
         /**
          * Put the initial list of stylesheets into
          * the list of sheets to add. More sheets
@@ -24,8 +24,8 @@ function csDocument(sourceDocument) {
          */
         while(sheetsToAdd.length > 0) {
             var sheet = sheetsToAdd.pop();
-            if (sheet.cssRules) {
-                sheets.push(new csStylesheet(sheet));
+            if (sheet && sheet.cssRules) {
+                sheets.push(new csStyleSheet(sheet));
                 //Add any stylesheets imported
                 //by sheet into the list of sheets
                 //that need to be added.
@@ -42,7 +42,7 @@ function csDocument(sourceDocument) {
 
         this.styleSheets.forEach( function(sheet) {
             sheet.rules.forEach( function(rule) {
-                palette.insertStyle(rule.style);
+                palette.insertStyle(rule);
             });
         });
 

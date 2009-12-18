@@ -59,7 +59,7 @@ function Palette(){
         ];
 
         properties.forEach( function(property) {
-            if (style.property(property)) {
+            if (style && style.property(property)) {
                 palette.insertProperty(
                     new ColorProperty(style, property)
                 );
