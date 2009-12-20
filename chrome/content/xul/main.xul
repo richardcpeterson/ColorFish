@@ -59,6 +59,7 @@
     <key id="forward-key" modifiers="alt" keycode="VK_RIGHT" command="cmd_browseForward"/>
     <key id="back-key" modifiers="alt" key="B" command="cmd_browseBack"/>
     <key id="forward-key" modifiers="alt" key="F" command="cmd_browseForward"/>
+    <key id="backspace-key" keycode="VK_BACK" command="cmd_browseBack"/>
   </keyset>
 
   <menubar id="menubar">
