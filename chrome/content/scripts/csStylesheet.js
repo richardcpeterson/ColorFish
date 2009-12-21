@@ -55,12 +55,20 @@ function csRuleStyle(style) {
  *
  *     Takes a CSSStyleRule and associates it with the stylesheet.
  *
- *
  * - getPrettyPrintText()
  *
  *     Returns a string representing a pretty-printed version of the
  *     style sheet.  This string will be empty if the sheet has no
  *     associated rules.  Imported style sheets are not handled.
+ *
+ * - getOriginalText()
+ *
+ *     Returns a string containing the original, unmodified CSS text.
+ *     There is a possibility that the function will throw an
+ *     exception; it makes an XML HTTP request to fetch the
+ *     stylesheet, and this can fail.  If the request is successful
+ *     there is still a chance that we may not get back CSS.  In that
+ *     case the function returns nothing.
  *
  */
 function csStyleSheet(sheet) {
@@ -116,5 +124,52 @@ function csStyleSheet(sheet) {
         );
 
         return output.replace(/; /g, ";\n\t");
+    };
+
+    this.getOriginalText = function () {
+
+        // If the sheet has an owner node and does not have an href or
+        // src attribute then we are dealing with inline <style>
+        // content.
+        if (    this.sheet.ownerNode
+            && !this.sheet.ownerNode.getAttribute("src")
+            && !this.sheet.ownerNode.href ) {
+            return this.sheet.ownerNode.innerHTML;
+        }
+
+        // Check to see if exists directly in the href.
+        if (this.sheet.href.substr(0, 13) === "data:text/css") {
+            return unescape(this.sheet.href.slice(14));
+        }
+
+        // Otherwise we're going to fetch the file sychronously with
+        // Ajax (SJax)?
+        var request = new XMLHttpRequest();
+        request.open("GET", this.sheet.href, false);
+        request.overrideMimeType("text/plain");
+        request.send(null);
+
+        switch (request.status) {
+        case 0:    // Local
+        case 304:  // Not Modified
+            return request.responseText;
+            break;
+
+            // Just because we have a status of 200 everything may not
+            // actually be OK.  Some websites will redirect to other
+            // pages instead of sending back a 404 when accessing a
+            // missing page.  If we try to load a stylesheet that
+            // isn't really there we can end up with
+            // request.responseText containing all the markup for some
+            // arbitrary web page.
+            //
+            // So we have to make sure our content is really CSS
+            // before handing it back.
+        case 200:
+            if (request.responseText.isValidStylesheet()) {
+                return request.responseText;
+            }
+            break;
+        }
     };
 }

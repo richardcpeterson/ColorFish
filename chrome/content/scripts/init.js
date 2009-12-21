@@ -156,7 +156,7 @@ function initApp(){
             this.className = this.className.replace(reg,' ');
         }
     }
-    
+
     /**
      * Add a "relatedObjects" object / array to
      * all Elements. This array can hold
@@ -180,6 +180,45 @@ function initApp(){
         while (nodeCount--) {
             this.removeChild( this.firstChild );
         }
+    };
+
+    /***
+     * If a string is intended to contain a stylesheet then it is
+     * useful to have a way of validating those contents.  See the
+     * comments within csStylesheet.getOriginalText() for a situation
+     * where we need to know this (when we get a status code 200).
+     *
+     * To check for validity we use a simple heuristic: if the
+     * character '<' appears outside of comments or the token '<!--'
+     * then the string is not a valid stylesheet.  The grammar for CSS
+     * does not permit that character to appear anywhere else.  So our
+     * test is to look for it, and if we find it then we scan ahead to
+     * see if we are in a comment or not.  If not, the string is not
+     * valid CSS and we return a boolean indicating that.
+     */
+    String.prototype.isValidStylesheet = function () {
+        var bracket_index = this.indexOf("<");
+
+        while (bracket_index !== -1) {
+
+            if (this.charAt(bracket_index + 1) !== "!" ||
+                this.charAt(bracket_index + 2) !== "-" ||
+                this.charAt(bracket_index + 3) !== "-" ) {
+
+                var start_of_comment = this.indexOf("/*", bracket_index);
+                var end_of_comment   = this.indexOf("*/", bracket_index);
+
+                if (start_of_comment === -1           ||
+                    start_of_comment < end_of_comment ||
+                    end_of_comment === -1 ) {
+                    return false;
+                }
+            }
+
+            bracket_index = this.indexOf("<", bracket_index + 1);
+        }
+
+        return true;
     };
 
     //Our global browser instance.
