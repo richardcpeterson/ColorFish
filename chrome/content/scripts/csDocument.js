@@ -12,7 +12,7 @@ function csDocument(sourceDocument) {
          * the list of sheets to add. More sheets
          * may be added later via @import rules
          */
-        for (i = 0; i < this.source.styleSheets.length; i++) {
+        for (var i = 0; i < this.source.styleSheets.length; i++) {
             sheetsToAdd.push(this.source.styleSheets[i]);
         }
 
