@@ -2,6 +2,90 @@
  * Initializes the application
  */
 function initApp(){
+    
+    /**
+     * Teach all objects to recursively dump
+     * their properties to the terminal. Use this
+     * like
+     *    myObj.dumpProps()
+     * or set a max depth, like
+     *    myObj.dumpProps(2)
+     * Be careful with how deep you set that, and
+     * beware of infinite reference loops...
+     *
+     * Do not pass this function a second argument.
+     */
+    Object.prototype.dumpProps = function(maxDepth, currentDepth) {
+        //Default max depth
+        if(!maxDepth){
+            maxDepth = 0;
+        }
+        
+        //Initial output heading
+        if(!currentDepth){
+            currentDepth = 0;
+            dump("\n===Dumping Object===\n");
+            dump(this + "\n");
+        }
+        
+        //Set the current indentation level
+        var indent = "   ";
+        indent = indent.repeat(currentDepth);
+        
+        //Current output text
+        var text = "";
+        //Type of current property
+        var type = null;
+        
+        /**
+         * Output all the properties of this object,
+         * and recurse where the property is an
+         * object
+         */
+        for (var prop in this) {
+            //We _could_ decide not to show dumpProps
+            //among the fields, and this code would
+            //do that. But that would be lying.
+            //if (prop == "dumpProps"){
+            //    continue;
+            //}
+            
+            //Text always starts with an indent
+            text = indent;
+            
+            //Try to figure out the type of the current
+            //property. Sometimes this doesn't work,
+            //and we just leave it at that.
+            type = null;
+            try{
+                type = typeof this[prop];
+            }
+            catch(error){
+                text += prop + ": This member does not support 'typeof'\n";
+            }
+            
+            //Don't print the body of functions
+            if (type == "function"){
+                text +=  "function " + prop + " {...}\n";
+            }
+            //Print out all other members
+            else if (type != null){
+                text += prop + " = " + this[prop] + "\n";
+            }
+            dump(text);
+            
+            //Recursively dump child objects
+            if (type == "object"
+                && this[prop] != null
+                && currentDepth < maxDepth) {
+                this[prop].dumpProps(maxDepth, currentDepth + 1);
+            }
+        }
+        //Final newlines
+        if (currentDepth == 0){
+            dump("\n\n");
+        }
+    }
 
     //Add repeat functionality to string
     String.prototype.repeat = function(count){
