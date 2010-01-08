@@ -29,7 +29,7 @@ function csDocument(sourceDocument) {
                 //Add any stylesheets imported
                 //by sheet into the list of sheets
                 //that need to be added.
-                sheetsToAdd = sheetsToAdd.concat(sheets.top().importedSheets);
+                sheets = sheets.concat( sheets.top().importedSheets );
             }
         }
 
