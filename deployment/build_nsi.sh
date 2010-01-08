@@ -47,6 +47,50 @@ done
 cd "$CUR_DIR"
 
 SCRIPT="$SCRIPT
+
+writeUninstaller \$INSTDIR\uninstaller.exe
+
+sectionEnd
+
+# Create a sectioin to define what the uninstaller does.
+section \"Uninstall\"
+
+# Always delete uninstaller first
+delete \$INSTDIR\uninstaller.exe
+
+# delete the rest of the files
+
+delete \$INSTDIR\application.ini
+delete \$INSTDIR\csschemer.exe
+
+"
+
+CUR_DIR=$( pwd )
+
+cd $APP_DIR
+#find . -type d | cut -d. -f2-
+#find . -type d -printf "%d %h/%f\n" | sort -nr | cut -d. -f2-
+
+for dir in $( find . -type d -printf "%d %h/%f\n" | sort -nr | cut -d. -f2- ); do
+    for file in $( find ."$dir" -maxdepth 1 -type f | cut -d/ -f2- ); do
+        file=$( echo "$file" | sed 's|/|\\|g' )
+        SCRIPT="$SCRIPT delete \$INSTDIR\\$file
+"
+    done
+    dir=$( echo "$dir" | sed 's|/|\\|g' )
+    SCRIPT="$SCRIPT RMDir \$INSTDIR${dir}\\
+"
+    SCRIPT="$SCRIPT
+
+"
+done
+
+cd "$CUR_DIR"
+
+SCRIPT="$SCRIPT
+
+RMDir \$INSTDIR
+
 sectionEnd"
 
 echo "$SCRIPT" > "$APP_NAME".nsi
