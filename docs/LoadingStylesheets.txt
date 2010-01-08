@@ -1,0 +1,46 @@
+======================================================================
+How CSSchemer Loads Stylesheets
+======================================================================
+
+In a nutshell:
+
+    CSApplication                   <browser>
+        |                               |
+        |                               |
+        |                               |
+        |                               V
+        ---- activePage = new Page( contentDocument )
+                               |
+                               |
+                               |
+                               V
+                         styleSheets = contentDocument.styleSheets
+                               |
+                               |
+                               |
+                               V
+           [ csStyleSheet, csStyleSheet, csStyleSheet, ... ]
+
+Everything begins in CSApplication.  The 'init.js' code creates a
+global instance of this class, called csApp.  When the user browses to
+a page the csApp stores that page as the 'activePage', which is a
+member of CSApplication.  The function update_active_page() is
+responsible for updating the activePage when the user browsers
+somewhere.
+
+The update_active_page() function takes the contentDocument from the
+browser and passes it into a new Page object.  That Page object, in
+turn, wraps the contentDocument in a new instance of csDocument.  This
+happens _before_ we get the stylesheets.
+
+This happens because csDocument provides a method called
+LoadStyleSheets(), which runs through all of the stylesheet references
+in the given document and builds an array of csStyleSheet objects to
+represent them all.  That array is stored in csDocument.styleSheets.
+The Page class also has a styleSheets attribute which is assigned to
+csDocument.styleSheets after we have loaded them all.
+
+That gives Page direct access to the stylesheets, and since csApp
+stores a Page object as the activePage, we can use
+'activePage.styleSheets' in the csApp code to access the array of
+sheets for the current page.
