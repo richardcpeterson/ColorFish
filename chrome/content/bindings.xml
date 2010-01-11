@@ -9,35 +9,36 @@
 <binding id="swatchControl">
     <content>
         <xul:hbox
-            id="container"
             align="end"
             anonid="container">
             <xul:textbox
-                id="originalText"
+                anonid="originalText"
                 class="code"
                 size="10"
                 readonly="true">
             </xul:textbox>
             <xul:box
-                id="originalColor"
+                anonid="originalColor"
                 class="colorSwatch">
             </xul:box>
             <xul:textbox
-                id="newText"
+                anonid="newText"
                 class="code"
                 size="10">
             </xul:textbox>
             <xul:box
-                id="newColor"
+                anonid="newColor"
                 class="colorSwatch">
             </xul:box>
             <xul:button
                 label="Undo"
-                class="undoButton">
+                class="undoButton"
+                anonid="undoButton">
             </xul:button>
             <xul:button
                 label="Redo"
-                class="redoButton">
+                class="redoButton"
+                anonid="redoButton">
             </xul:button>
         </xul:hbox>
     </content>
@@ -46,19 +47,29 @@
         <constructor><![CDATA[
             //Parent element for the whole control
             this.container = document.getAnonymousElementByAttribute(this, "anonid", "container");
+            this.originalTextbox = document.getAnonymousElementByAttribute(this, "anonid", "originalText");
+            this.newTextbox = document.getAnonymousElementByAttribute(this, "anonid", "newText");
+            this.originalColorBox = document.getAnonymousElementByAttribute(this, "anonid", "originalColor");
+            this.newColorBox = document.getAnonymousElementByAttribute(this, "anonid", "newColor");
+            this.undoButton = document.getAnonymousElementByAttribute(this, "anonid", "undoButton");
+            this.redoButton = document.getAnonymousElementByAttribute(this, "anonid", "redoButton");
             
-            dump(this.container);
-            this.container = this.getElementById("container");
-            this.originalTextbox = this.getElementById("originalText");
-            this.newTextbox = this.getElementById("newText");
-            this.originalColorBox = this.getElementById("originalColor");
-            this.newColorBox = this.getElementById("newColor");
-            this.undoButton = this.getElementById("undoButton");
-            this.redoButton = this.getElementById("redoButton");
+            //Relate the parent swatch control to each
+            //element in a way that doesn't depend
+            //on traversing the DOM
+            this.container.swatchControl = this;
+            this.originalTextbox.swatchControl = this;
+            this.newTextbox.swatchControl = this;
+            this.originalColorBox.swatchControl = this;
+            this.newColorBox.swatchControl = this;
+            this.undoButton.swatchControl = this;
+            this.redoButton.swatchControl = this;
 
+            this.setSwatch(this.originalSwatch);
+            
             //Add textbox input handler
             addHandlerToElement(
-                textbox,
+                newTextbox,
                 "input",
                 updateSwatchWithExplicitValue
             );
@@ -75,7 +86,6 @@
                 redoSwatch
             );
         ]]></constructor>
-        
         <method name="setSwatch">
             <parameter name="swatch"/>
             <body><![CDATA[
@@ -104,10 +114,8 @@
                 
                 //Set up the input box
                 this.newTextbox.setAttribute("value", swatch.color.toString());
-            
                 this.updateControl();
-            ]]>
-            </body>
+            ]]></body>
         </method>
 
         <method name="updateControl">
@@ -132,7 +140,8 @@
                 
                 //Valid color
                 this.newTextbox.removeClass("invalid");
-            ]]></body>
+            ]]>
+            </body>
         </method>
         <method name="updateText">
             <body><![CDATA[
@@ -147,13 +156,14 @@
         
     </implementation>
 
+    <!-- We may need this later.
     <handlers>
         <handler event="mousedown" button="0"><![CDATA[
             alert("swatch event handler");
             event.stopPropagation();
             var target = event.target;
         ]]></handler>
-    </handlers>
+    </handlers>-->
 </binding>
 
 </bindings>
