@@ -49,9 +49,9 @@ function updateSwatchWithExplicitValue(e) {
         e = window.event;
     }
     
-    var swatchElement = e.target.parentNode;
-    var swatch = swatchElement.relatedObjects.swatch;
-    var textbox = swatchElement.relatedObjects.inputTextbox;
+    var swatchElement = e.target.swatchControl;
+    var swatch = swatchElement.swatch;
+    var textbox = swatchElement.newTextbox;
     var colorString = textbox.value;
     
     //Try to get a color from the given string
@@ -85,11 +85,11 @@ function undoSwatch(e) {
     if (!e){
         e = window.event;
     }
-    var swatchElement = e.target.parentNode;
-    var swatch = swatchElement.relatedObjects.swatch;
+    var swatchElement = e.target.swatchControl;
+    var swatch = swatchElement.swatch;
     swatch.undo();
     swatchElement.updateControl();
-    swatchElement.updateInputField();
+    swatchElement.updateText();
     return true;
 }
  
@@ -103,10 +103,10 @@ function undoSwatch(e) {
      if (!e){
          e = window.event;
      }
-     var swatchElement = e.target.parentNode;
-     var swatch = swatchElement.relatedObjects.swatch;
+     var swatchElement = e.target.swatchControl;
+     var swatch = swatchElement.swatch;
      swatch.redo();
      swatchElement.updateControl();
-	 swatchElement.updateInputField();
+	 swatchElement.updateText();
      return true;
  }
