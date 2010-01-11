@@ -99,7 +99,16 @@ function CSApplication(){
         //Parent element for the whole control
         var swatchControl = window.document.createElement("swatchControl");
         
-        //swatchControl.setSwatch(swatch);
+        //The constructor for the swatch element has
+        //not yet been called. It only
+        //gets called when the stylesheet is read and
+        //the XBL binding is bound.  Thus we can't
+        //call any methods defined in the binding,
+        //like "setSwatch()", here.
+        //Instead, we do the following kludge to pass
+        //the swatch to the constructor.
+        swatchControl.originalSwatch = swatch;
+        
         return swatchControl;
     }
 
