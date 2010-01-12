@@ -125,6 +125,11 @@ function Swatch(color, colorFormat){
      * Add an observer that will be notified when this
      * swatch's color is SET - IE a history state is
      * changed.
+     *
+     * In order to be notified, the observer must have the
+     * updateSwatchHistory(Swatch)
+     * method, where "Swatch" will be a reference to this
+     * swatch.
      */
     this.addHistoryObserver = function (observer) {
         historyObservers.push(observer);
@@ -134,6 +139,11 @@ function Swatch(color, colorFormat){
      * Add an observer that will be notified when this
      * swatch's live color is changed. This occurs during
      * live editing, when a history state is not set.
+     * 
+     * In order to be notified, the observer must have the
+     * updateLiveColor(Swatch)
+     * method, where "Swatch" will be a reference to this
+     * swatch.
      */
     this.addLiveColorObserver = function (observer) {
         liveColorObservers.push(observer);
@@ -151,6 +161,11 @@ function Swatch(color, colorFormat){
     /************************************************
      * Private members
      ***********************************************/
+    //Save a reference to this Swatch, as "this" will
+    //not necessarily refer to this swatch within
+    //the non-member "private" functions below
+    var thisSwatch = this;
+    
     var undoList = new Array();
     var redoList = new Array();
 
@@ -173,9 +188,9 @@ function Swatch(color, colorFormat){
     function updateProperties(color){
         if (typeof color == "string")
             color = Color.from_css(color);
-        this.color = color;
+        thisSwatch.color = color;
         for(var i = 0; i < properties.length; i++) {
-            properties[i].setColor(this.color);
+            properties[i].setColor(thisSwatch.color);
         }
     }
     
@@ -184,9 +199,8 @@ function Swatch(color, colorFormat){
      * has changed in the history.
      */
     function notifyHistoryObservers(){
-        dump("Notifying History Observers");
         for(var i = 0; i < historyObservers.length; i++){
-            historyObservers[i].updateSwatchHistory(this);
+            historyObservers[i].updateSwatchHistory(thisSwatch);
         }
     }
     
@@ -196,7 +210,7 @@ function Swatch(color, colorFormat){
      */
     function notifyLiveColorObservers(){
         for(var i = 0; i < liveColorObservers.length; i++){
-            liveColorObservers[i].updateLiveColor(this);
+            liveColorObservers[i].updateLiveColor(thisSwatch);
         }
     }
 }
