@@ -105,6 +105,19 @@ function initApp(){
         }
         return found;
     }
+    
+    /**
+     * Teach arrays to remove individual items.
+     *
+     * If the item is not in the array, nothing
+     * will happen.
+     */
+    Array.prototype.remove = function(item){
+        var index = this.indexOf(item);
+        if (index >= 0){
+            this.splice(this.indexOf(item), 1);
+        }
+    }
 
     /**
      * Returns the last/top item of an array.
