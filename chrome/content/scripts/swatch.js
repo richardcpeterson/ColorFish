@@ -4,7 +4,15 @@
  */
 
 function Swatch(color, colorFormat){
+    /*************************************************
+     * Public Members
+     ************************************************/
+    //Currently set color
     this.color = color;
+    
+    //Color used during live editing, before the color
+    //has been set and added to the swatch history
+    this.liveEditColor = color.clone();
     
     //Use colorFormat if given, or default value
     this.format =
@@ -12,30 +20,6 @@ function Swatch(color, colorFormat){
          colorFormat:
          Enums.ColorFormats.longHex);
 
-    this.undoList = new Array();
-    this.redoList = new Array();
-
-
-    //An array of color properties
-    this.properties = new Array();
-
-    /**
-     * Update all properties in this swatch to reflect
-     * the value passed in color. This does not create
-     * a new Swatch state to modify the undo stack.
-     * It DOES set this swatch's current color.
-     * This is a transient action.
-     * color may be a valid CSS color string or a
-     * Color object.
-     */
-    this.updateColor = function(color){
-        if (typeof color == "string")
-            color = Color.from_css(color);
-        this.color = color;
-        for(var i = 0; i < this.properties.length; i++) {
-            this.properties[i].setColor(this.color);
-        }
-    }
     
     /**
      * Sets the color of the current swatch, setting
@@ -46,20 +30,15 @@ function Swatch(color, colorFormat){
      * use the new color format. If neither
      * parameter is given, the current values in
      * the swatch will be used, and a new Swatch
-     * state will be created from these values. So
-     * for instance, you could use
-     * updateProperties(color)
-     * several times, and use
-     * setColor() with no arguments to set an undoable
-     * swatch state with the current swatch properties.
+     * state will be created from these values.
      */
     this.setColor = function(newColor, colorFormat) {
         //Push the old state onto the undo stack
-        this.undoList.push(new Array(this.color, this.format) );
+        undoList.push(new Array(this.color, this.format) );
         
         //Update properties and color format if needed
         if (newColor){
-            this.updateColor(newColor);
+            updateProperties(newColor);
         }
         if (colorFormat){
             this.format = colorFormat;
@@ -67,47 +46,158 @@ function Swatch(color, colorFormat){
         
         //Clear the redo list - this wasn't an undone
         //command
-		this.redoList = new Array();
+        redoList = new Array();
+        
+        notifyHistoryObservers();
+    }
+    
+    /**
+     * Set the transient color used to display this swatch
+     * during live editing. This does not set any history
+     * state.
+     */
+    this.setLiveEditColor = function(newColor){
+        this.liveEditColor = newColor;
+        updateProperties(newColor);
+        notifyLiveColorObservers();
     }
 
     /**
-     * Undo the most recent setColor action
+     * Undo the most recent setColor action that hasn't
+     * already been undone. That is, go one step back in
+     * the swatch's history
      */
     this.undo = function() {
-        if (this.undoList.top()) {
+        if (undoList.top()) {
             //Save the current state in the redo stack
-            this.redoList.push(new Array(this.color, this.format));
-            this.updateColor(this.undoList.top()[0]);
-            this.format = this.undoList.top()[1];
-            this.undoList.pop();
+            redoList.push(new Array(this.color, this.format));
+            updateProperties(undoList.top()[0]);
+            this.format = undoList.top()[1];
+            undoList.pop();
+            notifyHistoryObservers();
         }
     };
     
     /**
-     * Redo the most recently undone setColor action
+     * Redo the most recently undone setColor action.
+     * That is, go forward one step in the history.
      */
     this.redo = function() {
-        if (this.redoList.top()) {
+        if (redoList.top()) {
             //Save the current state in the undo stack
-            this.undoList.push(new Array(this.color, this.format));
-            this.updateColor(this.redoList.top()[0]);
-            this.format = this.redoList.top()[1];
-            this.redoList.pop();
+            undoList.push(new Array(this.color, this.format));
+            updateProperties(redoList.top()[0]);
+            this.format = redoList.top()[1];
+            redoList.pop();
+            notifyHistoryObservers();
         }
     };
+    
+    /**
+     * Lets us know if this swatch has any undo states.
+     */
+    this.canUndo = function(){
+       return (undoList.length > 0);
+    }
+    
+    /**
+     * Lets us know if this swatch has any redo states
+     */
+    this.canRedo = function(){
+        return (redoList.length > 0);
+    }
 
     /**
      * Add a color property to this swatch
      */
     this.addProperty = function(newProperty){
-        this.properties.push(newProperty);
+        properties.push(newProperty);
     }
 
     /**
      * Return number of references in this swatch
      */
     this.count = function(){
-        return this.properties.length;
+        return properties.length;
+    }
+    
+    /**
+     * Add an observer that will be notified when this
+     * swatch's color is SET - IE a history state is
+     * changed.
+     */
+    this.addHistoryObserver = function (observer) {
+        historyObservers.push(observer);
+    }
+    
+    /**
+     * Add an observer that will be notified when this
+     * swatch's live color is changed. This occurs during
+     * live editing, when a history state is not set.
+     */
+    this.addLiveColorObserver = function (observer) {
+        liveColorObservers.push(observer);
+    }
+    
+    this.removeHistoryObserver = function(observer){
+        historyObservers.remove(observer);
+    }
+    
+    this.removeLiveColorObserver = function(observer){
+        liveColorObservers.remove(observer);
+    }
+    
+    
+    /************************************************
+     * Private members
+     ***********************************************/
+    var undoList = new Array();
+    var redoList = new Array();
+
+    //An array of color properties
+    var properties = new Array();
+    
+    //Lists of objects that observe this swatch's state
+    var historyObservers = new Array();
+    var liveColorObservers = new Array();
+
+    
+    
+    /**
+     * Update all properties in this swatch to reflect
+     * the value passed in color. This does not create
+     * a new Swatch state to modify the undo stack.
+     * color may be a valid CSS color string or a
+     * Color object.
+     */
+    function updateProperties(color){
+        if (typeof color == "string")
+            color = Color.from_css(color);
+        this.color = color;
+        for(var i = 0; i < properties.length; i++) {
+            properties[i].setColor(this.color);
+        }
+    }
+    
+    /**
+     * Notify all registered observers that the color
+     * has changed in the history.
+     */
+    function notifyHistoryObservers(){
+        dump("Notifying History Observers");
+        for(var i = 0; i < historyObservers.length; i++){
+            historyObservers[i].updateSwatchHistory(this);
+        }
+    }
+    
+    /**
+     * Notify all registered observers that the live editing
+     * color has changed
+     */
+    function notifyLiveColorObservers(){
+        for(var i = 0; i < liveColorObservers.length; i++){
+            liveColorObservers[i].updateLiveColor(this);
+        }
     }
 }
 
