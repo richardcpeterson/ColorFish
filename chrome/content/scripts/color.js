@@ -34,6 +34,19 @@ function Color() {
             )
         );
     }
+    
+    /**
+     * Return a new Color with the same color value as
+     * this Color
+     */
+    this.clone = function(){
+        var cloned = new Color();
+        cloned.red = this.red;
+        cloned.green = this.green;
+        cloned.blue = this.blue;
+        cloned.specialString = this.specialString;
+        return cloned;
+    }
 
     /***
      * Sets the component values by reading an 'rgb(...)' string.
@@ -240,6 +253,7 @@ function Color() {
  * returns a new Color object representing that color.
  */
 Color.from_css = function(colorString) {
+    colorString = colorString.toLowerCase();
     var color  = new Color();
     var format = Color.getFormat(colorString);
 
@@ -254,7 +268,7 @@ Color.from_css = function(colorString) {
         break;
 
         case Enums.ColorFormats.colorName:
-        color.read_hex("#"+Color.colorNames[colorString.toLowerCase()]);
+        color.read_hex("#"+Color.colorNames[colorString]);
         break;
 
         case Enums.ColorFormats.specialString:
@@ -271,6 +285,7 @@ Color.from_css = function(colorString) {
  * that we can deal with?
  */
 Color.isParsableString = function(colorString){
+    colorString = colorString.toLowerCase();
     //Use the (?:) in order to
     //return "true" or "false", not just "undefined"
     //or the resulting evaluated boolean (which sometimes)
@@ -287,6 +302,7 @@ Color.isParsableString = function(colorString){
  * Return the Enum.ColorFormat of the given string
  */
 Color.getFormat = function(colorString){
+    colorString = colorString.toLowerCase();
     if(colorString.match(Color.rgbPattern)){
         return Enums.ColorFormats.rgb;
     }
