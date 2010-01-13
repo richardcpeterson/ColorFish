@@ -221,6 +221,15 @@ function initApp(){
         return true;
     };
 
+    /***
+     * This function takes the given string and removes all CSS
+     * comment blocks from it.  It returns a new string, and does not
+     * modify the original.
+     */
+    String.prototype.removeComments = function () {
+        return this.replace(/\/\*[\s\S]*?\*\//g, "");
+    };
+
     //Our global browser instance.
     window.Browser = new Browser();
     window.csApp = new CSApplication();
