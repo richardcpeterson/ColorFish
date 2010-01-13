@@ -1,4 +1,7 @@
 /*Imported stylesheet*/
+
+@import url(./nested_import.css);
+
 h4{
     color: #543;
 }
