@@ -4,8 +4,7 @@ function csDocument(sourceDocument) {
 
     this.LoadStyleSheets = function () {
         var sheetsToAdd = new Array();
-        var sheets = new Array();
-
+        var csStyleSheets = new Array();
 
         /**
          * Put the initial list of stylesheets into
@@ -24,16 +23,22 @@ function csDocument(sourceDocument) {
          */
         while(sheetsToAdd.length > 0) {
             var sheet = sheetsToAdd.pop();
+
             if (sheet && sheet.cssRules) {
-                sheets.push(new csStyleSheet(sheet));
-                //Add any stylesheets imported
-                //by sheet into the list of sheets
-                //that need to be added.
-                sheets = sheets.concat( sheets.top().importedSheets );
+                //Add a new csStyleSheet
+                var csSheet = new csStyleSheet(sheet);
+                var imports = csSheet.importedSheets;
+
+                csStyleSheets.push(csSheet);
+
+                //Add any imported stylesheets to sheetsToAdd
+                //This has the effect of creating a flat
+                //list of sheets in csStyleSheets
+                sheetsToAdd = sheetsToAdd.concat(imports);
             }
         }
 
-        return sheets;
+        return csStyleSheets;
     }
     this.styleSheets = this.LoadStyleSheets();
 

@@ -81,7 +81,12 @@ function csStyleSheet(sheet) {
                 this.addRule(rule);
             }
             else if (rule.type === rule.IMPORT_RULE && rule.styleSheet) {
-                this.importedSheets.push( new csStyleSheet( rule.styleSheet ) );
+                var nestedSheet = rule.styleSheet;
+                var match       = importURLRegex.exec(rule.cssText);
+
+                if (match) {
+                    this.importedSheets.push(nestedSheet);
+                }
             }
         },
         this
