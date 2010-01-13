@@ -72,6 +72,13 @@ function csStyleSheet(sheet) {
         this.rules.push(new csRuleStyle(rule.style));
     };
 
+    // This regular expression is used in the loop below for
+    // extracting the value out of @import URLs.  If it matches then
+    // the first captured group will be the path to the sheet being
+    // imported.  If that path begins with './' then that will be
+    // removed.
+    var importURLRegex = /^@import url\((?:\.\/)?(.+)\);$/i;
+
     // Loop through the sheet we were given and add all of the rules.
     // Also check for stylesheets that are @import'ed and store those
     // within our object.
