@@ -68,9 +68,6 @@ delete \$INSTDIR\csschemer.exe
 CUR_DIR=$( pwd )
 
 cd $APP_DIR
-#find . -type d | cut -d. -f2-
-#find . -type d -printf "%d %h/%f\n" | sort -nr | cut -d. -f2-
-
 for dir in $( find . -type d -printf "%d %h/%f\n" | sort -nr | cut -d. -f2- ); do
     for file in $( find ."$dir" -maxdepth 1 -type f | cut -d/ -f2- ); do
         file=$( echo "$file" | sed 's|/|\\|g' )
