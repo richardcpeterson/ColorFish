@@ -47,3 +47,8 @@ box, hbox, vbox, browser{
 
 swatchControl{
 }
+
+.swatchSelectionBox.selected{
+    background-color: #666;
+    border: 1px solid #888;
+}

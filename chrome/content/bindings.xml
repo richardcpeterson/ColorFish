@@ -9,11 +9,17 @@
 <binding id="swatchControl">
     <content>
         <xul:hbox
-            align="end"
             anonid="container">
             <xul:box
-                anonid="newColor"
-                class="colorSwatch">
+                align="center"
+                pack="center"
+                anonid="selectionBox"
+                class="swatchSelectionBox"
+                orient="vertical">
+                <xul:box
+                    anonid="newColor"
+                    class="colorSwatch">
+                </xul:box>
             </xul:box>
         </xul:hbox>
     </content>
@@ -22,6 +28,7 @@
         <constructor><![CDATA[
             //Parent element for the whole control
             this.newColorBox = document.getAnonymousElementByAttribute(this, "anonid", "newColor");
+            this.selectionBox = document.getAnonymousElementByAttribute(this, "anonid", "selectionBox");
             
             //Relate the parent swatch control to each
             //element in a way that doesn't depend
@@ -32,6 +39,7 @@
             
             this.swatch.addLiveColorObserver(this);
             this.swatch.addHistoryObserver(this);
+            this.swatch.addSelectionObserver(this);
             
         ]]></constructor>
         <method name="setSwatch">
@@ -98,20 +106,36 @@
         <method name="updateSwatchHistory">
             <parameter name="swatch"/>
             <body><![CDATA[
+                this.updateColor(swatch.color);
+            ]]>
+            </body>
+        </method>
+        <method name="updateSelection">
+            <parameter name="swatch"/>
+            <body><![CDATA[
+                if(swatch.isSelected()){
+                    this.selectionBox.addClass("selected");
+                }
+                else{
+                    this.selectionBox.removeClass("selected");
+                }
             ]]>
             </body>
         </method>
         
     </implementation>
 
-    <!-- We may need this later.
     <handlers>
-        <handler event="mousedown" button="0"><![CDATA[
-            alert("swatch event handler");
+        <handler event="mousedown" button="0" modifiers="-accel"><![CDATA[
+            swatch.palette.deselectAllSwatches();
+            swatch.select();
             event.stopPropagation();
-            var target = event.target;
         ]]></handler>
-    </handlers>-->
+        <handler event="mousedown" button="0" modifiers="accel"><![CDATA[
+            swatch.reverseSelection();
+            event.stopPropagation();
+        ]]></handler>
+    </handlers>
 </binding>
 
 </bindings>

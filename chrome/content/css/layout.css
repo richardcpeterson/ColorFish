@@ -28,7 +28,6 @@
 .colorSwatch{
     width: 20px;
     height: 20px;
-    margin-bottom: 2px;
     border:1px solid white;
 }
 
@@ -64,3 +63,12 @@ swatchControl {
     min-width: 30px;
     -moz-binding: url("chrome://csschemer/content/bindings.xml#swatchControl");
 }
+
+.swatchSelectionBox {
+    min-width: 30px;
+    max-width: 30px;
+    min-height: 24px;
+    max-height: 24px;
+    background: transparent;
+}
+

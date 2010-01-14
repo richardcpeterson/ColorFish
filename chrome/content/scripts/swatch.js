@@ -3,7 +3,7 @@
  * CSS color properties associated with that color.
  */
 
-function Swatch(color, colorFormat){
+function Swatch(color, colorFormat, palette){
     /*************************************************
      * Public Members
      ************************************************/
@@ -19,6 +19,9 @@ function Swatch(color, colorFormat){
         (colorFormat?
          colorFormat:
          Enums.ColorFormats.longHex);
+    
+    //Save an association to the parent palette
+    this.palette = palette;
 
     
     /**
@@ -49,6 +52,35 @@ function Swatch(color, colorFormat){
         redoList = new Array();
         
         notifyHistoryObservers();
+    }
+    
+    this.isSelected = function(){
+        return selected;
+    }
+    
+    /**
+     * Select this swatch
+     */
+    this.select = function(){
+        if(!selected){
+            selected = true;
+            notifySelectionObservers();
+        }
+    }
+    
+    /**
+     * Deselect this swatch
+     */
+    this.deselect = function(){
+        if(selected){
+            selected = false;
+            notifySelectionObservers();
+        }
+    }
+    
+    this.reverseSelection = function(){
+        selected = !selected;
+        notifySelectionObservers();
     }
     
     /**
@@ -149,12 +181,29 @@ function Swatch(color, colorFormat){
         liveColorObservers.push(observer);
     }
     
+    /**
+     * Add an observer that will be notified when this
+     * swatch's selection state is changed.
+     * 
+     * In order to be notified, the observer must have the
+     * updateSelection(Swatch)
+     * method, where "Swatch" will be a reference to this
+     * swatch.
+     */
+    this.addSelectionObserver = function (observer) {
+        selectionObservers.push(observer);
+    }
+    
     this.removeHistoryObserver = function(observer){
         historyObservers.remove(observer);
     }
     
     this.removeLiveColorObserver = function(observer){
         liveColorObservers.remove(observer);
+    }
+    
+    this.removeSelectionObserver = function(observer){
+        selectionObservers.remove(observer);
     }
     
     
@@ -175,8 +224,9 @@ function Swatch(color, colorFormat){
     //Lists of objects that observe this swatch's state
     var historyObservers = new Array();
     var liveColorObservers = new Array();
+    var selectionObservers = new Array();
 
-    
+    var selected = false;
     
     /**
      * Update all properties in this swatch to reflect
@@ -211,6 +261,16 @@ function Swatch(color, colorFormat){
     function notifyLiveColorObservers(){
         for(var i = 0; i < liveColorObservers.length; i++){
             liveColorObservers[i].updateLiveColor(thisSwatch);
+        }
+    }
+    
+    /**
+     * Notify all registered observers that this swatch's
+     * selection state has changed
+     */
+    function notifySelectionObservers(){
+        for(var i = 0; i < selectionObservers.length; i++){
+            selectionObservers[i].updateSelection(thisSwatch);
         }
     }
 }
