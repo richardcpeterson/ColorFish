@@ -44,3 +44,6 @@ box, hbox, vbox, browser{
 .hidden{
     visibility: hidden;
 }
+
+swatchControl{
+}

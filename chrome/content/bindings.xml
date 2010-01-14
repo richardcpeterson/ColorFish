@@ -11,101 +11,32 @@
         <xul:hbox
             align="end"
             anonid="container">
-            <xul:textbox
-                anonid="originalText"
-                class="code"
-                size="10"
-                readonly="true">
-            </xul:textbox>
-            <xul:box
-                anonid="originalColor"
-                class="colorSwatch">
-            </xul:box>
-            <xul:textbox
-                anonid="newText"
-                class="code"
-                size="10">
-            </xul:textbox>
             <xul:box
                 anonid="newColor"
                 class="colorSwatch">
             </xul:box>
-            <xul:button
-                label="Undo"
-                class="undoButton"
-                anonid="undoButton">
-            </xul:button>
-            <xul:button
-                label="Redo"
-                class="redoButton"
-                anonid="redoButton">
-            </xul:button>
         </xul:hbox>
     </content>
 
     <implementation>
         <constructor><![CDATA[
             //Parent element for the whole control
-            this.container = document.getAnonymousElementByAttribute(this, "anonid", "container");
-            this.originalTextbox = document.getAnonymousElementByAttribute(this, "anonid", "originalText");
-            this.newTextbox = document.getAnonymousElementByAttribute(this, "anonid", "newText");
-            this.originalColorBox = document.getAnonymousElementByAttribute(this, "anonid", "originalColor");
             this.newColorBox = document.getAnonymousElementByAttribute(this, "anonid", "newColor");
-            this.undoButton = document.getAnonymousElementByAttribute(this, "anonid", "undoButton");
-            this.redoButton = document.getAnonymousElementByAttribute(this, "anonid", "redoButton");
             
             //Relate the parent swatch control to each
             //element in a way that doesn't depend
             //on traversing the DOM
-            this.container.swatchControl = this;
-            this.originalTextbox.swatchControl = this;
-            this.newTextbox.swatchControl = this;
-            this.originalColorBox.swatchControl = this;
             this.newColorBox.swatchControl = this;
-            this.undoButton.swatchControl = this;
-            this.redoButton.swatchControl = this;
 
             this.setSwatch(this.originalSwatch);
             
             this.swatch.addLiveColorObserver(this);
             this.swatch.addHistoryObserver(this);
             
-            this.undoButton.disabled = !this.swatch.canUndo();
-            this.redoButton.disabled = !this.swatch.canRedo();
-            
-            //Add textbox input handler
-            addHandlerToElement(
-                newTextbox,
-                "input",
-                updateSwatchWithExplicitValue
-            );
-    
-            addHandlerToElement(
-                undoButton,
-                "command",
-                undoSwatch
-            );
-            
-            addHandlerToElement(
-                redoButton,
-                "command",
-                redoSwatch
-            );
         ]]></constructor>
         <method name="setSwatch">
             <parameter name="swatch"/>
             <body><![CDATA[
-                if(!this.swatch){
-                    //Set up the original swatch text box
-                    this.originalTextbox.setAttribute(
-                        "value", swatch.color.toString()
-                    );
-                    //Set up the original color box
-                    this.originalColorBox.setAttribute(
-                        "style",
-                        "background-color: " + swatch.color.getCSSHex());
-                    
-                }
                 this.swatch = swatch;
                 
                 var toolTip = "Found in " + swatch.count() + " style rule"
@@ -119,7 +50,6 @@
                     "background-color: " + swatch.color.getCSSHex());
                 
                 //Set up the input box
-                this.newTextbox.setAttribute("value", swatch.color.toString());
                 this.updateControl();
             ]]></body>
         </method>
@@ -131,9 +61,6 @@
                 }
                 
                 this.updateColor(this.swatch.color)
-                
-                //Valid color
-                this.newTextbox.removeClass("invalid");
             ]]>
             </body>
         </method>
@@ -143,7 +70,6 @@
                 if (!this.swatch || !this.swatch.color){
                     return null;
                 }
-                this.newTextbox.value = this.swatch.color.toString(this.swatch.format);
             ]]>
             </body>
         </method>
@@ -151,18 +77,12 @@
         <method name="updateColor">
             <parameter name="color"/>
             <body><![CDATA[
-                //If the new color is the same as the original color
-                if (Color.from_css(this.originalColorBox.style.backgroundColor).equals(color)){
-                    this.newColorBox.addClass("hidden");
-                }
                 //The new color is different from the original color
-                else {
-                    //Make the swatch the new background color
-                    this.newColorBox.setAttribute(
-                        "style",
-                        "background-color: " + color.getCSSHex());
-                    this.newColorBox.removeClass("hidden");
-                }
+                //Make the swatch the new background color
+                this.newColorBox.setAttribute(
+                    "style",
+                    "background-color: " + color.getCSSHex());
+            
             ]]>
             </body>
         </method>
@@ -178,8 +98,6 @@
         <method name="updateSwatchHistory">
             <parameter name="swatch"/>
             <body><![CDATA[
-                this.undoButton.disabled = !swatch.canUndo();
-                this.redoButton.disabled = !swatch.canRedo();
             ]]>
             </body>
         </method>

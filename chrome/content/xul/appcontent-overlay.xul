@@ -6,7 +6,7 @@
     </toolbar>
     <hbox id="csContentBox" flex="1">
       <vbox id="csLeftPane" class="pane">
-        <vbox id="toolPane" class="pane" ></vbox>
+        <description id="toolPane" class="pane"></description>
       </vbox>
       <vbox id="csCenterPane" class="pane" flex="1">
       </vbox>
