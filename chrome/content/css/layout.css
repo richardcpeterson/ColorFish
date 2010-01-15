@@ -56,17 +56,24 @@ button {
 }
 
 swatchControl {
-    max-width: 30px;
-    min-width: 30px;
+    max-width: 24px;
+    min-width: 24px;
+    margin: 2px 0px;
     -moz-binding: url("chrome://csschemer/content/bindings.xml#swatchControl");
 }
+
+paletteControl {
+    -moz-binding: url("chrome://csschemer/content/bindings.xml#paletteControl");
+    -moz-user-focus: normal;
+}
+
 .colorSwatch{
     width: 20px;
     height: 20px;
 }
 .swatchSelectionBox {
-    min-width: 30px;
-    max-width: 30px;
+    min-width: 24px;
+    max-width: 24px;
     min-height: 24px;
     max-height: 24px;
     background: transparent;

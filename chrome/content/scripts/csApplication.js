@@ -124,15 +124,9 @@ function CSApplication(){
         {
            this.toolPane.removeChild( this.toolPane.firstChild );
         }
-        //Add new children
-        var newNode;
-        var label;
-        var swatches = this.activePage.originalPalette.swatches;
-
-        for (var i = 0; i < swatches.length; i++){
-            this.toolPane.appendChild(this.makeSwatchControl(swatches[i]));
-        }
-
+        var paletteControl = window.document.createElement("paletteControl");
+        paletteControl.originalPalette = this.activePage.originalPalette;
+        this.toolPane.appendChild(paletteControl);
     }
 
     /**
@@ -159,27 +153,6 @@ function CSApplication(){
      */
     this.showAppPanel = function(){
         this.appPanel.removeClass("collapsed");
-    }
-
-    /**
-     * Make an individual swatch control within the palette
-     * display.
-     */
-    this.makeSwatchControl = function(swatch){
-        //Parent element for the whole control
-        var swatchControl = window.document.createElement("swatchControl");
-
-        //The constructor for the swatch element has
-        //not yet been called. It only
-        //gets called when the stylesheet is read and
-        //the XBL binding is bound.  Thus we can't
-        //call any methods defined in the binding,
-        //like "setSwatch()", here.
-        //Instead, we do the following kludge to pass
-        //the swatch to the constructor.
-        swatchControl.originalSwatch = swatch;
-
-        return swatchControl;
     }
 
     /***

@@ -42,17 +42,13 @@
             <body><![CDATA[
                 //Unregister from any previous swatch
                 if(this.swatch){
-                    this.swatch.removeLiveColorObserver(this);
-                    this.swatch.removeHistoryObserver(this);
-                    this.swatch.removeSelectionObserver(this);
+                    this.stopObserving(this.swatch)
                 }
                 
                 this.swatch = swatch;
                 
                 //Register with the new swatch
-                this.swatch.addLiveColorObserver(this);
-                this.swatch.addHistoryObserver(this);
-                this.swatch.addSelectionObserver(this);
+                this.observe(this.swatch);
                 
                 var toolTip = "Found in " + swatch.count() + " style rule"
                         + (swatch.count()==1?"":"s");
@@ -102,6 +98,21 @@
             </body>
         </method>
         
+        <method name="isSelected">
+            <body><![CDATA[
+                return this.swatch.isSelected();
+            ]]>
+            </body>
+        </method>
+        
+        <method name="getSwatch">
+            <body><![CDATA[
+                return this.swatch;
+            ]]>
+            </body>
+        </method>
+            
+        
         <method name="updateLiveColor">
             <parameter name="swatch"/>
             <body><![CDATA[
@@ -129,7 +140,34 @@
             ]]>
             </body>
         </method>
-        
+        <method name="observe">
+            <parameter name="swatch"/>
+            <body><![CDATA[
+                //Register with the new swatch
+                swatch.addLiveColorObserver(this);
+                swatch.addHistoryObserver(this);
+                swatch.addSelectionObserver(this);
+            ]]>
+            </body>
+        </method>
+        <method name="stopObserving">
+            <parameter name="swatch"/>
+            <body><![CDATA[
+                //Un register with the swatch
+                swatch.removeLiveColorObserver(this);
+                swatch.removeHistoryObserver(this);
+                swatch.removeSelectionObserver(this);
+            ]]>
+            </body>
+        </method>
+        <method name="destroy">
+            <body><![CDATA[
+                if(this.swatch){
+                    this.stopObserving(this.swatch);
+                }
+            ]]>
+            </body>
+        </method>
     </implementation>
 
     <handlers>
@@ -155,9 +193,252 @@
             event.stopPropagation();
         ]]>
         </handler>
+    </handlers>
+</binding>
+
+<binding id="paletteControl">
+    <content>
+        <xul:hbox
+            anonid="container">
+            <xul:grid>
+                <xul:columns
+                    anonid="columnsTag">
+                </xul:columns>
+                <xul:rows
+                    anonid="rowsTag">
+                </xul:rows>
+            </xul:grid>
+        </xul:hbox>
+    </content>
+
+    <implementation>
+        <constructor><![CDATA[
+            //Parent element for the whole control
+            this.container = document.getAnonymousElementByAttribute(this, "anonid", "container");
+            this.columnsTag = document.getAnonymousElementByAttribute(this, "anonid", "columnsTag");
+            this.rowsTag = document.getAnonymousElementByAttribute(this, "anonid", "rowsTag");
+            
+            this.columnCount = 16;
+            this.setPalette(this.originalPalette);
+        ]]></constructor>
         
+        <method name="setPalette">
+            <parameter name="palette"/>
+            <body><![CDATA[
+                //Clean up the old palette
+                this.removeSwatchControls();
+                this.createSwatchControls(palette.swatches);
+                this.palette = palette;
+                this.doLayout();
+            ]]></body>
+        </method>
         
-        mostRecentlySelectedSwatch
+        <!--Remove and destroy all swatch controls
+            currently in this paletteControl-->
+        <method name="removeSwatchControls">
+            <body><![CDATA[
+                if(this.swatchControls){
+                    for(var i=0; i<this.swatchControls.length; i++){
+                        this.swatchControls[i].destroy();
+                    }
+                }
+                this.swatchControls = [];
+            ]]>
+            </body>
+        </method>
+        
+        <!--Generate all the swatchControls for the
+            given set of swatches, and save them in
+            this.swatchControls.-->
+        <method name="createSwatchControls">
+            <parameter name="swatches"/>
+            <body><![CDATA[
+                this.swatchControls = [];
+                for (var i=0; i < swatches.length; i++){
+                    var swatchControl = window.document.createElement("swatchControl");
+        
+                    //The constructor for the swatch element has
+                    //not yet been called. It only
+                    //gets called when the stylesheet is read and
+                    //the XBL binding is bound.  Thus we can't
+                    //call any methods defined in the binding,
+                    //like "setSwatch()", here.
+                    //Instead, we do the following kluge to pass
+                    //the swatch to the constructor.
+                    swatchControl.originalSwatch = swatches[i];
+                    this.swatchControls.push(swatchControl);
+                }
+            ]]>
+            </body>
+        </method>
+        
+        <!--Set the number of columns that should
+            be used to lay out this paletteControl.
+            Update the GUI to reflect this change-->
+        <method name="setColumnCount">
+            <parameter name="count"/>
+            <body><![CDATA[
+                this.columnCount = count;
+                this.doLayout();
+            ]]>
+            </body>
+        </method>
+        
+        <!--Return the row index that a given swatch's
+            swatch control is in-->
+        <method name="getRowOf">
+            <parameter name="swatch" />
+            <body><![CDATA[
+                var index = this.getIndexOfSwatch(swatch);
+                return Math.floor(index/this.columnCount);
+                    var col = i%this.columnCount;
+            ]]>
+            </body>
+        </method>
+        
+        <!--Return the column index that a given swatch's
+            swatch control is in-->
+        <method name="getColumnOf">
+            <parameter name="swatch" />
+            <body><![CDATA[
+                var index = this.getIndexOfSwatch(swatch);
+                return index%this.columnCount;
+            ]]>
+            </body>
+        </method>
+        
+        <!--Return the index into this.swatchControls
+            that a partilar swatch's swatchControl is
+            located at-->
+        <method name="getIndexOfSwatch">
+            <parameter name="swatch" />
+            <body><![CDATA[
+                var index = 0;
+                while(index < this.swatchControls.length){
+                    if(this.swatchControls[index].getSwatch() == swatch){
+                        return index;
+                    }
+                    index++;
+                }
+                return -1;
+            ]]>
+            </body>
+        </method>
+        
+        <!--Move a single selected swatch by the given
+            vector, or not at all, if the vector produces
+            an out of bounds result-->
+        <method name="moveSingleSelection">
+            <parameter name="rowVector" />
+            <parameter name="colVector" />
+            <body><![CDATA[
+                var selectedSwatch = this.palette.getSelectedSwatches()[0];
+                var row = this.getRowOf(selectedSwatch);
+                var col = this.getColumnOf(selectedSwatch);
+                
+                //Move the indexes by the amount in the vectors
+                row += rowVector;
+                col += colVector;
+                
+                //Wrap around - kluge version
+                
+                if(col >= this.columnCount){
+                    row++;
+                }
+                if(col < 0){
+                    row--;
+                }
+                col %= this.columnCount;
+                if (col < 0 && row >= 0){
+                    col += this.columnCount;
+                }
+                
+                //Make sure we don't have a bad index
+                row = Math.min(Math.max(row,0),this.rowCount-1);
+                col = Math.min(Math.max(col,0),this.columnCount-1);
+                
+                
+                //Only move if there is a swatch to move to.
+                //the last row is not always full.
+                var index = ((row * this.columnCount) + col);
+                
+                if(index < this.swatchControls.length && index >= 0){
+                    this.palette.deselectAllSwatches();
+                    this.grid[row][col].getSwatch().select();
+                }
+            ]]>
+            </body>
+        </method>
+        
+        <!--Update the layout of this paletteControl
+            to reflect any changes to the palette or
+            other fields of this paletteControl-->
+        <method name="doLayout">
+            <body><![CDATA[
+                var swatchCount = this.swatchControls.length;
+                this.rowCount = Math.ceil(swatchCount/this.columnCount);
+                
+                this.columnsTag.removeAllChildren();
+                this.rowsTag.removeAllChildren();
+                
+                //Add all the header column tags
+                for(var i=0; i<this.columnsCount; i++){
+                    this.columnsTag.appendChild(window.document.createElement("column"));
+                }
+                
+                //Add all the row tags 
+                var rowElements = new Array(this.rowCount);
+                for(var i=0; i<this.rowCount; i++){
+                    rowElements[i] = window.document.createElement("row")
+                    this.rowsTag.appendChild(rowElements[i]);
+                }
+                
+                //Build the grid to contain the swatchControls
+                //Model the grid in this.grid for easy
+                //access to swatchControls by grid position
+                this.grid = new Array(this.rowCount);
+                for(var i=0; i<this.grid.length; i++){
+                    this.grid[i] = new Array();
+                }
+                
+                for(var i=0; i<swatchCount; i++){
+                    var row = Math.floor(i/this.columnCount);
+                    var col = i%this.columnCount;
+                    this.grid[row][col] = this.swatchControls[i];
+                    //Actually add the swatchControl to the XUL DOM
+                    rowElements[row].appendChild(this.swatchControls[i]);
+                }
+            ]]></body>
+        </method>
+        
+    </implementation>
+
+    <handlers>
+        <handler event="mousedown" button="0" modifiers="none"><![CDATA[
+            swatch.palette.deselectAllSwatches();
+            event.stopPropagation();
+        ]]>
+        </handler>
+        
+        <handler event="keypress"><![CDATA[
+            if(this.palette.selectionSize() == 1){
+                switch(event.keyCode){
+                    case 37:
+                        this.moveSingleSelection(0,-1);
+                        break;
+                    case 38:
+                        this.moveSingleSelection(-1,0);
+                        break;
+                    case 39:
+                        this.moveSingleSelection(0,1);
+                        break;
+                    case 40:
+                        this.moveSingleSelection(1,0);
+                        break;
+                }
+            }
+        ]]>
+        </handler>
     </handlers>
 </binding>
 

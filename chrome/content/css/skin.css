@@ -48,11 +48,12 @@ box, hbox, vbox, browser{
 swatchControl{
 }
 .colorSwatch{
-    width: 20px;
-    height: 20px;
-    /*background-image: url("chrome://CSSchemer/content/images/swatch_border.png");*/
+    background-image: url("chrome://CSSchemer/content/images/swatch_border.png");
 }
 .swatchSelectionBox.selected{
     background-color: #999;
     border: 1px solid #AAA;
+}
+.swatchSelectionBox.selected .colorSwatch{
+    background-image: url("chrome://CSSchemer/content/images/swatch_border_selected.png");
 }

@@ -7,6 +7,22 @@ function Palette(){
     this.swatches = new Array();
     this.selectedSwatches = new Array();
     this.mostRecentlySelectedSwatch = null;
+    
+    /**
+     * Returns the number of swatches in
+     * this palette
+     */
+    this.size = function(){
+        return this.swatches.length;
+    }
+    
+    /**
+     * Returns the number of selected swatches
+     * in this palette
+     */
+    this.selectionSize = function(){
+        return this.selectedSwatches.length;
+    }
 
     /**
      * Return the set of selecte swatches
