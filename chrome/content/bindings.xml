@@ -36,16 +36,23 @@
             this.newColorBox.swatchControl = this;
 
             this.setSwatch(this.originalSwatch);
-            
-            this.swatch.addLiveColorObserver(this);
-            this.swatch.addHistoryObserver(this);
-            this.swatch.addSelectionObserver(this);
-            
         ]]></constructor>
         <method name="setSwatch">
             <parameter name="swatch"/>
             <body><![CDATA[
+                //Unregister from any previous swatch
+                if(this.swatch){
+                    this.swatch.removeLiveColorObserver(this);
+                    this.swatch.removeHistoryObserver(this);
+                    this.swatch.removeSelectionObserver(this);
+                }
+                
                 this.swatch = swatch;
+                
+                //Register with the new swatch
+                this.swatch.addLiveColorObserver(this);
+                this.swatch.addHistoryObserver(this);
+                this.swatch.addSelectionObserver(this);
                 
                 var toolTip = "Found in " + swatch.count() + " style rule"
                         + (swatch.count()==1?"":"s");
