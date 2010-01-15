@@ -1,0 +1,20 @@
+<!--- --->
+/***
+ * This sheet is used for testing our removal of comments and the detection
+ * of invalid stylesheets.
+ */
+h1 {
+    /* Why can't Chris pronounce 'Apache'.  Is he saying, 'ah-pah-sehy'? */
+    color: blue;
+    /* What's his <problem>? */
+}
+h2 > h3 {
+    /*
+     *
+     * Or maybe it's pronounced that way?
+     *
+     */
+    color: red; <
+    /* Now I have doubts. */
+}
+
