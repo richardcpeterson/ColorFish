@@ -6,6 +6,10 @@ function CSApplication(){
     this.activePage = "blank";
     this.cssFilePane = document.getElementById("cssFilePane");
     this.toolPane = document.getElementById("toolPane");
+    var csLeftPane = document.getElementById("csLeftPane");
+    
+    addHandlerToElement(csLeftPane, "keyup", toolPaneKeyUp);
+    addHandlerToElement(csLeftPane, "mousedown", toolPaneMouseDown);
 
     this.appPanel = document.getElementById("appPanel");
 
@@ -209,7 +213,7 @@ function CSApplication(){
             break;
         }
     }
-
+    
     /***
      * This is called by the File -> Save option from the main menu.
      * It takes a string and saves it to the file with the given name.

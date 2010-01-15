@@ -76,6 +76,18 @@ function updateSwatchWithExplicitValue(e) {
     return true;
 };
 
+function toolPaneKeyUp(e){
+    if(e.keyCode == 65 && e.ctrlKey) {
+        csApp.activePage.originalPalette.selectAllSwatches();
+    }
+};
+
+function toolPaneMouseDown(e){
+    if(!e.ctrlKey && !e.shiftKey){
+        csApp.activePage.originalPalette.deselectAllSwatches();
+    }
+}
+
 /**
  * Undo the most recent action on a particular swatch.
  * Assumes the element generating the event is a child

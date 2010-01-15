@@ -6,6 +6,7 @@
 function Palette(){
     this.swatches = new Array();
     this.selectedSwatches = new Array();
+    this.mostRecentlySelectedSwatch = null;
 
     /**
      * Return the set of selecte swatches
@@ -64,12 +65,34 @@ function Palette(){
     }
     
     /**
+     * Select a range of swatches between swatchA and swatchB
+     */
+    this.selectSwatchRange = function(swatchA, swatchB){
+        if(!this.swatches.contains(swatchA) || !this.swatches.contains(swatchB)){
+            return;
+        }
+        //Find the start and end of the range
+        var startIndex = Math.min(
+                this.swatches.indexOf(swatchA),
+                this.swatches.indexOf(swatchB));
+        var endIndex = Math.max(
+                this.swatches.indexOf(swatchA),
+                this.swatches.indexOf(swatchB));
+        
+        //Select all swatches in the range
+        for(var i = startIndex; i <= endIndex; i++){
+            this.swatches[i].select();
+        }
+    }
+    
+    /**
      * Update this palette with a swatch's state
      */
     this.updateSelection = function(swatch){
         if (swatch.isSelected()){
             if(!this.selectedSwatches.contains(swatch)){
                 this.selectedSwatches.push(swatch);
+                this.mostRecentlySelectedSwatch = swatch;
             }
         }
         else{

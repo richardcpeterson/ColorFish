@@ -126,15 +126,31 @@
     </implementation>
 
     <handlers>
-        <handler event="mousedown" button="0" modifiers="-accel"><![CDATA[
+        <handler event="mousedown" button="0" modifiers="none"><![CDATA[
             swatch.palette.deselectAllSwatches();
             swatch.select();
             event.stopPropagation();
-        ]]></handler>
+        ]]>
+        </handler>
         <handler event="mousedown" button="0" modifiers="accel"><![CDATA[
             swatch.reverseSelection();
             event.stopPropagation();
-        ]]></handler>
+        ]]>
+        </handler>
+        <handler event="mousedown" button="0" modifiers="shift"><![CDATA[
+            var startSwatch = swatch.palette.mostRecentlySelectedSwatch;
+            if(startSwatch && startSwatch.isSelected()){
+                swatch.palette.selectSwatchRange(startSwatch, swatch);
+            }
+            else{
+                swatch.reverseSelection();
+            }
+            event.stopPropagation();
+        ]]>
+        </handler>
+        
+        
+        mostRecentlySelectedSwatch
     </handlers>
 </binding>
 
