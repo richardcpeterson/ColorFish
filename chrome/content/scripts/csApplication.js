@@ -8,7 +8,7 @@ function CSApplication(){
     this.toolPane = document.getElementById("toolPane");
 
     this.appPanel = document.getElementById("appPanel");
-    
+
     /**
      * Set the active page for the application
      */
@@ -28,53 +28,91 @@ function CSApplication(){
     };
 
 
-    /* Update the GUI for the file pane, showing all
-     * needed controls and a list of all CSS files
+    /***
+     * Update the GUI for the file pane, showing all needed controls
+     * and a list of all CSS files
      */
-    this.updateCSSFilePane = function() {
+    this.updateCSSFilePane = function () {
+
         //Remove all old children
         this.cssFilePane.removeAllChildren();
 
+        // We use this in the forEach() below to enumerate embedded
+        // sheets for easier reference by the user.
+        var embeddedCount = 1;
+
         //Add new children
-        var newNode, label, fullName, sheetName, sheet, saveButton;
-        var inlineNumber = 0;
+        this.activePage.styleSheets.forEach(
+            function (item) {
 
-        //Process each stylesheet, building a UI
-        //element for each one
-        for (var i = 0; i < this.activePage.styleSheets.length; i++){
-            sheet = this.activePage.styleSheets[i];
-            fullName = "Stylesheet " + (i+1) + ": ";
+                // We try to set the name in a few ways.
+                //
+                //     1. Using the 'title' attribute.
+                //
+                //     2. Using the 'href', removing everything up to
+                //     and including the last forward slash.
+                //
+                //     3. Associating it with the title of the parent
+                //     document from which it came.
+                //
+                // If all that fails we use a default value, which we
+                // start out with, which hopefully we never use.  The
+                // 'saveName' version is what we default to when
+                // saving the file.
 
-            //Create the strings for the sheet labels
-            if (sheet.href){
-                fullName += sheet.href;
-                var startIndex = sheet.href.lastIndexOf("/");
-                startIndex++;
-                sheetName = sheet.href.substr(startIndex, sheet.href.length-1);
-            }
-            else{
-                inlineNumber++;
-                fullName += "Inline " + sheet.type;
-                sheetName = "style_tag_" + inlineNumber + ".css";
-            }
+                var name     = "Unknown";
+                var saveName = name;
 
-            newNode = window.document.createElement("hbox");
-            label = window.document.createElement("label");
-            label.setAttribute("value", sheetName);
-            newNode.setAttribute("tooltiptext", fullName);
-            newNode.setAttribute("align", "center");
+                if (item.sheet.title) {
+                    name = saveName = item.sheet.title;
+                }
+                else if (item.sheet.href) {
+                    name = saveName = item.sheet.href.substr(
+                        item.sheet.href.lastIndexOf("/") + 1,
+                        item.sheet.href.length - 1
+                    );
 
-            saveButton = window.document.createElement("button");
-            saveButton.setAttribute("label","Save");
-            saveButton.setAttribute(
-                "oncommand",
-                "csApp.save((this.styleSheet.getPrettyPrintText()),'" + sheetName + "');");
-            saveButton.styleSheet = sheet;
-            newNode.appendChild(saveButton);
-            newNode.appendChild(label);
-            this.cssFilePane.appendChild(newNode);
-        }
-    }
+                    // The name may end with a query string, which we
+                    // need to remove.
+                    if (name.indexOf("?") > 0) {
+                        name = saveName =
+                            name.substr(0, name.indexOf("?"));
+                    }
+                }
+                else if (item.sheet.ownerNode) {
+                    if (item.sheet.ownerNode.ownerDocument.title) {
+                        name     = "Embedded Sheet " + embeddedCount;
+                        saveName = "sheet_" + embeddedCount + ".css";
+                        embeddedCount++;
+                    }
+                }
+
+                var node  = window.document.createElement("hbox");
+                var label = window.document.createElement("label");
+
+                label.setAttribute("value", name);
+                label.setAttribute("tooltiptext", name);
+                node.setAttribute("align", "center");
+
+                var button = window.document.createElement("button");
+
+                button.setAttribute("label", "Save");
+                button.setAttribute(
+                    "oncommand",
+                    "csApp.save(this.styleSheet.getPrettyPrintText(), \"" + saveName + "\");"
+                );
+
+                // This cannot be 'item.sheet', or saving will fail.
+                button.styleSheet = item;
+
+                node.appendChild(button);
+                node.appendChild(label);
+
+                this.cssFilePane.appendChild(node);
+            },
+            this
+        );
+    };
 
     this.updateToolPane = function(){
         //Remove all children
@@ -92,7 +130,7 @@ function CSApplication(){
         }
 
     }
-   
+
     /**
      * Toggle the visibility of the main app content pane
      */
@@ -104,21 +142,21 @@ function CSApplication(){
             this.showAppPanel();
         }
     }
-    
+
     /**
      * Make the main app content pane hidden
      */
     this.hideAppPanel = function(){
         this.appPanel.addClass("collapsed");
     }
-    
+
     /**
      * Make the main app content pane visible
      */
     this.showAppPanel = function(){
         this.appPanel.removeClass("collapsed");
     }
-    
+
     /**
      * Make an individual swatch control within the palette
      * display.
@@ -126,7 +164,7 @@ function CSApplication(){
     this.makeSwatchControl = function(swatch){
         //Parent element for the whole control
         var swatchControl = window.document.createElement("swatchControl");
-        
+
         //The constructor for the swatch element has
         //not yet been called. It only
         //gets called when the stylesheet is read and
@@ -136,7 +174,7 @@ function CSApplication(){
         //Instead, we do the following kludge to pass
         //the swatch to the constructor.
         swatchControl.originalSwatch = swatch;
-        
+
         return swatchControl;
     }
 
@@ -171,7 +209,7 @@ function CSApplication(){
             break;
         }
     }
-    
+
     /***
      * This is called by the File -> Save option from the main menu.
      * It currently saves a test string to the output.
