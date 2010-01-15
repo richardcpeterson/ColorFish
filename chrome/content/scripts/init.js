@@ -197,25 +197,18 @@ function initApp(){
      * valid CSS and we return a boolean indicating that.
      */
     String.prototype.isValidStylesheet = function () {
-        var bracket_index = this.indexOf("<");
+        var clean_sheet   = this.removeComments();
+        var bracket_index = clean_sheet.indexOf("<");
 
         while (bracket_index !== -1) {
 
-            if (this.charAt(bracket_index + 1) !== "!" ||
-                this.charAt(bracket_index + 2) !== "-" ||
-                this.charAt(bracket_index + 3) !== "-" ) {
-
-                var start_of_comment = this.indexOf("/*", bracket_index);
-                var end_of_comment   = this.indexOf("*/", bracket_index);
-
-                if (start_of_comment === -1           ||
-                    start_of_comment < end_of_comment ||
-                    end_of_comment === -1 ) {
-                    return false;
-                }
+            if (clean_sheet.charAt(bracket_index + 1) !== "!" ||
+                clean_sheet.charAt(bracket_index + 2) !== "-" ||
+                clean_sheet.charAt(bracket_index + 3) !== "-" ) {
+                return false;
             }
 
-            bracket_index = this.indexOf("<", bracket_index + 1);
+            bracket_index = clean_sheet.indexOf("<", bracket_index + 1);
         }
 
         return true;
