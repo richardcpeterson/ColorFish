@@ -415,7 +415,7 @@
 
     <handlers>
         <handler event="mousedown" button="0" modifiers="none"><![CDATA[
-            swatch.palette.deselectAllSwatches();
+            this.palette.deselectAllSwatches();
             event.stopPropagation();
         ]]>
         </handler>
