@@ -129,7 +129,7 @@ function csStyleSheet(sheet) {
     this.getOriginalText = function () {
 
         // If the sheet has an owner node and does not have an href or
-        // src attribute then we are dealing with inline <style>
+        // src attribute then we are dealing with embedded <style>
         // content.
         if (    this.sheet.ownerNode
             && !this.sheet.ownerNode.getAttribute("src")
