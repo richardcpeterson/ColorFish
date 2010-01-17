@@ -82,7 +82,7 @@ function CSApplication(){
                 else if (item.sheet.ownerNode) {
                     if (item.sheet.ownerNode.ownerDocument.title) {
                         name     = "Embedded Sheet " + embeddedCount;
-                        saveName = "sheet_" + embeddedCount + ".css";
+                        saveName = "embedded_sheet_" + embeddedCount + ".css";
                         embeddedCount++;
                     }
                 }
