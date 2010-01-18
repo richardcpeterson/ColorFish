@@ -1,0 +1,32 @@
+[anonid="container"]{
+    height: 210px;
+    width: 210px;
+}
+[anonid="activeRegion"]{
+    BACKGROUND: #444;
+    COLOR: #AAA;
+    FONT-FAMILY: arial;
+    FONT-SIZE: 11px;
+    line-height: 1em;
+    Z-INDEX: 1;
+    POSITION: absolute;
+    WIDTH: 200px;
+    HEIGHT: 200px;
+    min-width: 200px;
+    min-height: 200px;
+    max-width: 200px;
+    max-height: 200px;
+}
+
+#picker {
+    BACKGROUND: url("images/pickerCursor.gif");
+    HEIGHT: 9px;
+    WIDTH: 9px;
+    POSITION: absolute;
+    line-height: 1px;
+    z-index: 100;
+}
+
+.noCursor {
+    cursor: url("images/invisible_pixel.png"), auto;
+}

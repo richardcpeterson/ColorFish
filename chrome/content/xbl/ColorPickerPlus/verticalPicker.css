@@ -1,0 +1,35 @@
+[anonid="container"]{
+    height: 210px;
+    width: 50px;
+}
+[anonid="activeRegion"]{
+    BACKGROUND: #444;
+    COLOR: #AAA;
+    FONT-FAMILY: arial;
+    FONT-SIZE: 11px;
+    line-height: 1em;
+    Z-INDEX: 1;
+    POSITION: absolute;
+    WIDTH: 21px;
+    HEIGHT: 200px;
+    min-width: 21px;
+    min-height: 200px;
+    max-width: 21px;
+    max-height: 200px;
+}
+
+#slide {
+    -moz-background-clip:border;
+    -moz-background-inline-policy:continuous;
+    -moz-background-origin:padding;
+    height:5px;
+    width:33px;
+    BACKGROUND: transparent url("images/slideCursor.gif");
+    POSITION: absolute;
+    line-height: 1px;
+    z-index: 100;
+}
+
+.noCursor {
+    cursor: url("images/invisible_pixel.png"), auto;
+}

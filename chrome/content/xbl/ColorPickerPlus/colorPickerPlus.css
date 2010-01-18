@@ -1,0 +1,19 @@
+huePicker {
+    -moz-binding: url("bindings.xml#huePicker");
+    -moz-user-focus: normal;
+}
+
+saturationValuePicker {
+    -moz-binding: url("bindings.xml#saturationValuePicker");
+    -moz-user-focus: normal;
+}
+
+twoDimensionalPicker {
+    -moz-binding: url("bindings.xml#twoDimensionalPicker");
+    -moz-user-focus: normal;
+}
+
+verticalPicker {
+    -moz-binding: url("bindings.xml#verticalPicker");
+    -moz-user-focus: normal;
+}

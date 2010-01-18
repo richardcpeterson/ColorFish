@@ -59,11 +59,11 @@ swatchControl {
     max-width: 24px;
     min-width: 24px;
     margin: 2px 0px;
-    -moz-binding: url("chrome://csschemer/content/bindings.xml#swatchControl");
+    -moz-binding: url("chrome://csschemer/content/xbl/bindings.xml#swatchControl");
 }
 
 paletteControl {
-    -moz-binding: url("chrome://csschemer/content/bindings.xml#paletteControl");
+    -moz-binding: url("chrome://csschemer/content/xbl/bindings.xml#paletteControl");
     -moz-user-focus: normal;
 }
 
@@ -79,3 +79,12 @@ paletteControl {
     background: transparent;
 }
 
+toolBox {
+    -moz-binding: url("chrome://csschemer/content/xbl/bindings.xml#toolBox");
+    -moz-user-focus: normal;
+}
+
+colorPickerPlus {
+    -moz-binding: url("chrome://csschemer/content/xbl/ColorPickerPlus/bindings.xml#colorPickerPlus");
+    -moz-user-focus: normal;
+}

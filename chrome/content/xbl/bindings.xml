@@ -442,4 +442,34 @@
     </handlers>
 </binding>
 
+<binding id="toolBox">
+    <content>
+        <xul:hbox
+            anonid="container">
+            <xul:colorPickerPlus/>
+        </xul:hbox>
+    </content>
+
+    <implementation>
+        <constructor><![CDATA[
+            //Parent element for the whole control
+            this.container = document.getAnonymousElementByAttribute(this, "anonid", "container");
+            this.setPalette(this.originalPalette);
+        ]]></constructor>
+        
+        <method name="setPalette">
+            <parameter name="palette"/>
+            <body><![CDATA[
+                this.palette = palette;
+            ]]></body>
+        </method>
+    </implementation>
+
+    <handlers>
+        <handler event="mousedown" button="0" modifiers="none"><![CDATA[
+            event.stopPropagation();
+        ]]>
+        </handler>
+    </handlers>
+</binding>
 </bindings>

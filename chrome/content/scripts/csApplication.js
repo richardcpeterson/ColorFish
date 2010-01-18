@@ -6,6 +6,7 @@ function CSApplication(){
     this.activePage = "blank";
     this.cssFilePane = document.getElementById("cssFilePane");
     this.palettePane = document.getElementById("palettePane");
+    this.toolPane = document.getElementById("toolPane");
     var csLeftPane = document.getElementById("csLeftPane");
     
     addHandlerToElement(csLeftPane, "keyup", leftPaneKeyUp);
@@ -20,6 +21,7 @@ function CSApplication(){
         this.activePage = page;
         this.updateCSSFilePane();
         this.updatePalettePane();
+        this.updateToolPane();
     }
 
     /***
@@ -127,6 +129,19 @@ function CSApplication(){
         var paletteControl = window.document.createElement("paletteControl");
         paletteControl.originalPalette = this.activePage.originalPalette;
         this.palettePane.appendChild(paletteControl);
+    }
+    
+    this.updateToolPane = function (){
+        dump("updateToolPane...\n");
+        //Remove all children
+        while ( this.toolPane.childNodes.length >= 1 )
+        {
+           this.toolPane.removeChild( this.toolPane.firstChild );
+        }
+        var toolBox = window.document.createElement("toolBox");
+        toolBox.originalPalette = this.activePage.originalPalette;
+        dump(this.toolPane);
+        this.toolPane.appendChild(toolBox);
     }
 
     /**

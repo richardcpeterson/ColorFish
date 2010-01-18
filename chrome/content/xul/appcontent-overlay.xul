@@ -9,6 +9,7 @@
         <hbox id="palettePane" class="pane"></hbox>
       </vbox>
       <vbox id="csCenterPane" class="pane" flex="3">
+        <hbox id="toolPane" class="pane"></hbox>
       </vbox>
       <vbox id="csRightPane" class="pane" flex="1">
         <vbox id="cssFilePane" class="pane"></vbox>

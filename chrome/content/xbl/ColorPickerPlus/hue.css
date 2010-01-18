@@ -1,0 +1,8 @@
+[anonid="activeRegion"]{
+    background-image: url(images/verticalHue200px.png);
+    background-repeat: repeat-x;
+}
+
+[anonid="holder"]{
+    border:1px solid #444;
+}

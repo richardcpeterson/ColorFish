@@ -1,0 +1,555 @@
+<?xml version="1.0"?>
+<bindings
+  xmlns="http://www.mozilla.org/xbl"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+     xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+>
+    
+<binding id="verticalPicker">
+    <resources>
+        <stylesheet src="verticalPicker.css"/>
+    </resources>
+
+    <content>
+        <xul:vbox
+            flex="1"
+            anonid="container"
+            pack="center"
+            align="center">
+            <xul:box
+                anonid="holder">
+                <xul:box
+                anonid="activeRegion">
+                    <xul:box
+                        id="slide"
+                        anonid="slide"
+                        style="TOP: -3px; LEFT: -7px;">
+                    </xul:box>
+                </xul:box>
+            </xul:box>
+        </xul:vbox>
+    </content>
+
+    <implementation>
+        <constructor><![CDATA[
+            this.activeRegion = document.getAnonymousElementByAttribute(
+                    this,
+                    "anonid",
+                    "activeRegion"
+            );
+            
+            this.slide = document.getAnonymousElementByAttribute(
+                    this,
+                    "anonid",
+                    "slide"
+            );
+            
+            this.bottomBound =
+                (this.originalBottomBoundaryValue)?
+                 this.originalBottomBoundaryValue :
+                 0;
+            
+            this.topBound =
+                (this.originalTopBoundaryValue)?
+                 this.originalTopBoundaryValue :
+                 100;
+            
+            this.updateRange();
+        ]]>
+        </constructor>
+        
+        <!--Set the numeric value represented when the
+            slide is all the way to the top-->
+        <method name="setTopBoundaryValue">
+            <parameter name="topBoundaryValue"/>
+            <body><![CDATA[
+                this.topBound = topBoundaryValue;
+                this.updateRange();
+            ]]></body>
+        </method>
+        
+        <!--Set the numeric value represented when the
+            slide is all the way to the bottom-->
+        <method name="setBottomBoundaryValue">
+            <parameter name="bottomBoundaryValue"/>
+            <body><![CDATA[
+                this.bottomBound = bottomBoundaryValue;
+                this.updateRange();
+            ]]></body>
+        </method>
+        
+        <!--Set the minValue and maxValue to reflect
+            the current state of bottomBound and topBound.
+            The max and min values are used in order to save
+            comparisons throughout the rest of the code.-->
+        <method name="updateRange">
+            <body><![CDATA[
+                this.maxValue =
+                    Math.max(this.topBound, this.bottomBound);
+                this.minValue =
+                    Math.min(this.topBound, this.bottomBound);
+                    
+                this.range = this.bottomBound - this.topBound;
+            ]]>
+            </body>
+        </method>
+        
+        <!--Get the current value represented
+            by the position of the slide-->
+        <method name="getValue">
+            <body><![CDATA[
+                return this.value;
+            ]]></body>
+        </method>
+        
+        
+        <!--Set the position of the slide to the
+            specified value. Value must be numeric.
+            Out of bounds values will be clipped to
+            their closest legal value.-->
+        <method name="setValue">
+            <parameter name="value" />
+            <body><![CDATA[
+                //Clip the value to a legal value
+                //before setting y
+                this.value =
+                    Math.min(
+                        this.maxValue,
+                        Math.max(
+                            this.minValue,
+                            value
+                        )
+                    );
+            ]]></body>
+        </method>
+        
+        <!--Private use
+            Update the value based on the current pixel
+            position of the slide-->
+        <method name="updateValue">
+            <body><![CDATA[
+                
+                /**
+                 * Translate screen coordinates into
+                 * logical coordinates
+                 */
+                
+                this.value =
+                    ((this.slideY / this.activeRegion.boxObject.height)
+                      * this.range
+                    )
+                    + this.topBound;
+            ]]>
+            </body>
+        </method>
+        
+        <!--Private use
+            Register a final change to the the values
+            based on the current pixel position of the
+            slide. This is for whan an actual selection
+            is made - not for transient values while
+            dragging around.-->
+        <method name="registerValue">
+            <body><![CDATA[
+            ]]>
+            </body>
+        </method>
+    </implementation>
+
+    <handlers>
+        <handler event="mousedown" button="0" modifiers="none"><![CDATA[
+            var element = this;
+            function drag(event) {
+                var newY = event.pageY - element.activeRegion.boxObject.y;
+                newY = Math.max(0, Math.min(newY, element.activeRegion.boxObject.height));
+                
+                element.slideY = newY;
+                
+                newY -=3;
+                
+                element.slide.setAttribute(
+                    "style",
+                    "top: "+newY+"px; left: -7px;"
+                );
+                
+                element.updateValue();
+            }
+            
+            element.activeRegion.addClass("noCursor");
+            
+            var originalDocumentOnmousemove = document.onmousemove;
+            var originalDocumentOnmouseup = document.onmouseup;
+            
+            document.onmousemove=drag;
+            document.onmouseup=function(){
+                element.registerValue();
+                element.activeRegion.removeClass("noCursor");
+                document.onmousemove=originalDocumentOnmousemove;
+                document.onmouseup=originalDocumentOnmouseup;
+            };
+            drag(event);
+            
+            event.stopPropagation();
+        ]]>
+        </handler>
+    </handlers>
+</binding>
+
+
+<binding id="huePicker"
+    extends="#verticalPicker">
+    <resources>
+        <stylesheet src="hue.css"/>
+    </resources>
+    
+    <implementation>
+        <constructor><![CDATA[
+            this.setTopBoundaryValue(360);
+            this.setBottomBoundaryValue(0);
+        ]]></constructor>
+        
+        <!--Get the current Hue-->
+        <method name="getHue">
+            <body><![CDATA[
+                return this.value % 360;
+            ]]></body>
+        </method>
+    </implementation>
+</binding>
+
+<binding id="twoDimensionalPicker">
+    <resources>
+        <stylesheet src="twoDimensionalPicker.css"/>
+    </resources>
+
+    <content>
+        <xul:vbox
+            flex="1"
+            anonid="container"
+            pack="center"
+            align="center">
+            <xul:box
+                anonid="holder">
+            <xul:box
+                anonid="activeRegion">
+                <xul:box
+                    id="picker"
+                    anonid="picker"
+                    style="TOP: -4px; LEFT: -4px;">
+                </xul:box>
+            </xul:box></xul:box>
+        </xul:vbox>
+    </content>
+
+    <implementation>
+        <constructor><![CDATA[
+            this.activeRegion = document.getAnonymousElementByAttribute(
+                    this,
+                    "anonid",
+                    "activeRegion"
+            );
+            
+            this.picker = document.getAnonymousElementByAttribute(
+                    this,
+                    "anonid",
+                    "picker"
+            );
+            
+            this.leftBound =
+                (this.originalLeftBoundaryValue)?
+                 this.originalLeftBoundaryValue :
+                 0;
+            
+            this.rightBound =
+                (this.originalRightBoundaryValue)?
+                 this.originalRightBoundaryValue :
+                 100;
+            
+            this.bottomBound =
+                (this.originalBottomBoundaryValue)?
+                 this.originalBottomBoundaryValue :
+                 0;
+            
+            this.topBound =
+                (this.originalTopBoundaryValue)?
+                 this.originalTopBoundaryValue :
+                 100;
+            
+            this.updateRanges();
+        ]]>
+        </constructor>
+        
+        <!--Set the numeric value represented when the
+            picker is all the way to the left-->
+        <method name="setLeftBoundaryValue">
+            <parameter name="leftBoundaryValue"/>
+            <body><![CDATA[
+                this.leftBound = leftBoundaryValue;
+                this.updateRanges();
+            ]]></body>
+        </method>
+        
+        <!--Set the numeric value represented when the
+            picker is all the way to the right-->
+        <method name="setRightBoundaryValue">
+            <parameter name="rightBoundaryValue"/>
+            <body><![CDATA[
+                this.rightBound = rightBoundaryValue;
+                this.updateRanges();
+            ]]></body>
+        </method> 
+        
+        <!--Set the numeric value represented when the
+            picker is all the way to the top-->
+        <method name="setTopBoundaryValue">
+            <parameter name="topBoundaryValue"/>
+            <body><![CDATA[
+                this.topBound = topBoundaryValue;
+                this.updateRanges();
+            ]]></body>
+        </method>
+        
+        <!--Set the numeric value represented when the
+            picker is all the way to the bottom-->
+        <method name="setBottomBoundaryValue">
+            <parameter name="bottomBoundaryValue"/>
+            <body><![CDATA[
+                this.bottomBound = bottomBoundaryValue;
+                this.updateRanges();
+            ]]></body>
+        </method>
+        
+        <!--Set the horizontalMinValue, horizontalMaxValue,
+            verticalMinValue and verticalMaxValue to reflect
+            the current state of leftBound, rightBound,
+            bottomBound, topBound.
+            The max and min values are used in order to save
+            comparisons throughout the rest of the code.-->
+        <method name="updateRanges">
+            <body><![CDATA[
+                this.horizontalMaxValue =
+                    Math.max(this.leftBound, this.rightBound);
+                this.horizontalMinValue =
+                    Math.min(this.leftBound, this.rightBound);
+                this.verticalMaxValue =
+                    Math.max(this.topBound, this.bottomBound);
+                this.verticalMinValue =
+                    Math.min(this.topBound, this.bottomBound);
+                    
+                this.verticalRange = this.bottomBound - this.topBound;
+                this.horizontalRange = this.rightBound - this.leftBound;
+            ]]>
+            </body>
+        </method>
+        
+        <!--Get the current horizontal value represented
+            by the position of the picker-->
+        <method name="getHorizontalValue">
+            <body><![CDATA[
+                return this.horizontalValue;
+            ]]></body>
+        </method>
+        
+        <!--Get the current vertical value represented
+            by the position of the picker-->
+        <method name="getVerticalValue">
+            <body><![CDATA[
+                return this.verticalValue;
+            ]]></body>
+        </method>
+        
+        
+        <!--Set the position of the picker to the
+            specified value. Value must be numeric
+            Out of bounds values will be clipped to
+            their closest legal value.-->
+        <method name="setHorizontalValue">
+            <parameter name="horizontalValue" />
+            <body><![CDATA[
+                //Clip the value to a legal value
+                //before setting x
+                this.horizontalValue =
+                    Math.min(
+                        this.horizontalMaxValue,
+                        Math.max(
+                            this.horizontalMinValue,
+                            horizontalValue
+                        )
+                    );
+            ]]></body>
+        </method>
+        
+        <!--Set the position of the picker to the
+            specified value. Value must be numeric.
+            Out of bounds values will be clipped to
+            their closest legal value.-->
+        <method name="setVerticalValue">
+            <parameter name="verticalValue" />
+            <body><![CDATA[
+                //Clip the value to a legal value
+                //before setting y
+                this.verticalValue =
+                    Math.min(
+                        this.verticalMaxValue,
+                        Math.max(
+                            this.verticalMinValue,
+                            verticalValue
+                        )
+                    );
+            ]]></body>
+        </method>
+        
+        <!--Private use
+            Update the vertical and horizontal values
+            based on the current XY pixel position of
+            the picker-->
+        <method name="updateValues">
+            <body><![CDATA[
+                
+                /**
+                 * Translate screen coordinates into
+                 * logical coordinates
+                 */
+                
+                this.horizontalValue =
+                    ((this.pickerX / this.activeRegion.boxObject.width)
+                      * this.horizontalRange
+                    )
+                    + this.leftBound;
+                
+                this.verticalValue =
+                    ((this.pickerY / this.activeRegion.boxObject.height)
+                      * this.verticalRange
+                    )
+                    + this.topBound;
+            ]]>
+            </body>
+        </method>
+        
+        <!--Private use
+            Register a final change to the the vertical and
+            horizontal values based on the current XY pixel
+            position of the picker. This is for whan an
+            actual selection is made - not for transient
+            values while dragging around.-->
+        <method name="registerValues">
+            <body><![CDATA[
+            ]]>
+            </body>
+        </method>
+            
+        
+        
+    </implementation>
+
+    <handlers>
+        <handler event="mousedown" button="0" modifiers="none"><![CDATA[
+            var element = this;
+            function drag(event) {
+                var newX = event.pageX - element.activeRegion.boxObject.x;
+                var newY = event.pageY - element.activeRegion.boxObject.y;
+                newY = Math.max(0, Math.min(newY, element.activeRegion.boxObject.height));
+                newX = Math.max(0, Math.min(newX, element.activeRegion.boxObject.width));
+                
+                element.pickerX = newX;
+                element.pickerY = newY;
+                
+                newX -=4;
+                newY -=4;
+                
+                element.picker.setAttribute(
+                    "style",
+                    "top: "+newY+"px; left: " + newX + "px;"
+                );
+                
+                element.updateValues();
+            }
+            
+            element.activeRegion.addClass("noCursor");
+            
+            var originalDocumentOnmousemove = document.onmousemove;
+            var originalDocumentOnmouseup = document.onmouseup;
+            
+            document.onmousemove=drag;
+            document.onmouseup=function(){
+                element.registerValues();
+                element.activeRegion.removeClass("noCursor");
+                document.onmousemove=originalDocumentOnmousemove;
+                document.onmouseup=originalDocumentOnmouseup;
+            };
+            drag(event);
+            
+            event.stopPropagation();
+        ]]>
+        </handler>
+    </handlers>
+</binding>
+
+<binding id="saturationValuePicker"
+    extends="#twoDimensionalPicker">
+    <resources>
+        <stylesheet src="saturationValue.css"/>
+    </resources>
+
+    <implementation>
+        <constructor><![CDATA[
+            this.setLeftBoundaryValue(0);
+            this.setRightBoundaryValue(100);
+            this.setTopBoundaryValue(0);
+            this.setBottomBoundaryValue(100);
+        ]]></constructor>
+        
+        <!--Get the current Saturation-->
+        <method name="getSaturation">
+            <body><![CDATA[
+                return this.horizontalValue;
+            ]]></body>
+        </method>
+        
+        <!--Get the current Value-->
+        <method name="getValue">
+            <body><![CDATA[
+                return this.verticalValue;
+            ]]></body>
+        </method>
+    </implementation>
+
+    <handlers>
+    </handlers>
+</binding>
+
+<binding id="colorPickerPlus">
+    <resources>
+        <stylesheet src="colorPickerPlus.css"/>
+    </resources>
+    
+    <content>
+        <xul:hbox
+            anonid="container">
+            <xul:saturationValuePicker/>
+            <xul:huePicker/>
+        </xul:hbox>
+    </content>
+
+    <implementation>
+        <constructor><![CDATA[
+        ]]></constructor>
+        
+        <!--Get the current Saturation-->
+        <method name="getSaturation">
+            <body><![CDATA[
+            ]]></body>
+        </method>
+        
+        <!--Get the current Value-->
+        <method name="getValue">
+            <body><![CDATA[
+            ]]></body>
+        </method>
+    </implementation>
+
+    <handlers>
+    </handlers>
+</binding>
+
+</bindings>
