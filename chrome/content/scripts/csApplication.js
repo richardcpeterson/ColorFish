@@ -5,11 +5,11 @@
 function CSApplication(){
     this.activePage = "blank";
     this.cssFilePane = document.getElementById("cssFilePane");
-    this.toolPane = document.getElementById("toolPane");
+    this.palettePane = document.getElementById("palettePane");
     var csLeftPane = document.getElementById("csLeftPane");
     
-    addHandlerToElement(csLeftPane, "keyup", toolPaneKeyUp);
-    addHandlerToElement(csLeftPane, "mousedown", toolPaneMouseDown);
+    addHandlerToElement(csLeftPane, "keyup", leftPaneKeyUp);
+    addHandlerToElement(csLeftPane, "mousedown", leftPaneMouseDown);
 
     this.appPanel = document.getElementById("appPanel");
 
@@ -19,7 +19,7 @@ function CSApplication(){
     this.setActivePage = function(page){
         this.activePage = page;
         this.updateCSSFilePane();
-        this.updateToolPane();
+        this.updatePalettePane();
     }
 
     /***
@@ -118,15 +118,15 @@ function CSApplication(){
         );
     };
 
-    this.updateToolPane = function(){
+    this.updatePalettePane = function(){
         //Remove all children
-        while ( this.toolPane.childNodes.length >= 1 )
+        while ( this.palettePane.childNodes.length >= 1 )
         {
-           this.toolPane.removeChild( this.toolPane.firstChild );
+           this.palettePane.removeChild( this.palettePane.firstChild );
         }
         var paletteControl = window.document.createElement("paletteControl");
         paletteControl.originalPalette = this.activePage.originalPalette;
-        this.toolPane.appendChild(paletteControl);
+        this.palettePane.appendChild(paletteControl);
     }
 
     /**

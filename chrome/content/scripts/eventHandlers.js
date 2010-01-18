@@ -76,13 +76,13 @@ function updateSwatchWithExplicitValue(e) {
     return true;
 };
 
-function toolPaneKeyUp(e){
+function leftPaneKeyUp(e){
     if(e.keyCode == 65 && e.ctrlKey) {
         csApp.activePage.originalPalette.selectAllSwatches();
     }
 };
 
-function toolPaneMouseDown(e){
+function leftPaneMouseDown(e){
     if(!e.ctrlKey && !e.shiftKey){
         csApp.activePage.originalPalette.deselectAllSwatches();
     }
