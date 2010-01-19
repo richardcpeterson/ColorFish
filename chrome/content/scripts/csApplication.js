@@ -212,9 +212,9 @@ function CSApplication(){
 
     /***
      * This is called by the File -> Save option from the main menu.
-     * It currently saves a test string to the output.
+     * It takes a string and saves it to the file with the given name.
      */
-    this.save = function(contents, fileName) {
+    this.save = function (contents, fileName) {
         var file = this.getSaveFile(fileName);
 
         if (file) {
@@ -228,7 +228,7 @@ function CSApplication(){
             outputStream.write(contents, contents.length);
             outputStream.close();
         }
-    }
+    };
 }
 
 var csApp;
