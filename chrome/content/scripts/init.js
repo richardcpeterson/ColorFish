@@ -142,8 +142,10 @@ function initApp(){
      * (if it isn't already in the string)
      */
     Element.prototype.addClass = function(classString) {
-        if (!this.hasClass(classString))
+        if (!this.hasClass(classString)){
             this.className += " "+classString;
+            this.className = this.className.replace(/\s+/g," ");
+        }
     }
 
     /**
@@ -153,7 +155,8 @@ function initApp(){
     Element.prototype.removeClass = function(classString) {
         if (this.hasClass(classString)) {
             var reg = new RegExp("\\b" + classString + "\\b");
-            this.className = this.className.replace(reg,' ');
+            this.className = this.className.replace(reg, " ");
+            this.className = this.className.replace(/\s+/g," ");
         }
     }
 
