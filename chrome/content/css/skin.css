@@ -52,8 +52,28 @@ swatchControl{
 }
 .swatchSelectionBox.selected{
     background-color: #999;
-    border: 1px solid #AAA;
+}
+.hover .swatchSelectionBox{
+    background-color: #444;
 }
 .swatchSelectionBox.selected .colorSwatch{
     background-image: url("chrome://CSSchemer/content/images/swatch_border_selected.png");
+}
+
+.selectedHover .swatchSelectionBox.selected{
+    background-color:#BBB;
+    border-color:#FFF;
+}
+
+.selectedHover3 .swatchSelectionBox.selected{
+    background-color:#AAA !important;
+}
+.selectedHover2 .swatchSelectionBox.selected{
+    background-color:#BBB !important;
+}
+.selectedHover1 .swatchSelectionBox.selected{
+    background-color:#CCC !important;
+}
+.selectedHover0 .swatchSelectionBox.selected{
+    background-color:#DDD !important;
 }

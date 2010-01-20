@@ -34,6 +34,11 @@
             //element in a way that doesn't depend
             //on traversing the DOM
             this.newColorBox.swatchControl = this;
+            
+            //Add any "passed in" observers to the initial arrays of
+            //mouse event observers
+            this.mouseOverObservers = [].concat(this.originalMouseOverObservers);
+            this.mouseOutObservers = [].concat(this.originalMouseOutObservers);
 
             this.setSwatch(this.originalSwatch);
         ]]></constructor>
@@ -165,6 +170,52 @@
                 if(this.swatch){
                     this.stopObserving(this.swatch);
                 }
+                this.mouseOverObservers = [];
+                this.mouseOutObservers = [];
+            ]]>
+            </body>
+        </method>
+        
+        <!--Register an observer to be notified when this
+            swatchControl has a mouseOver event.
+            The observer must implement the
+            notifySwatchMouseOver(swatchControl)
+            meothod.
+            -->
+        <method name="addMouseOverObserver">
+            <parameter name="observer" />
+            <body><![CDATA[
+                this.mouseOverObservers.push(observer);
+            ]]>
+            </body>
+        </method>
+        
+        <method name="removeMouseOverObserver">
+            <parameter name="observer" />
+            <body><![CDATA[
+                this.mouseOverObservers.remove(observer);
+            ]]>
+            </body>
+        </method>
+        
+        <!--Register an observer to be notified when this
+            swatchControl has a mouseOut event.
+            The observer must implement the
+            notifySwatchMouseOut(swatchControl)
+            meothod.
+            -->
+        <method name="addMouseOutObserver">
+            <parameter name="observer" />
+            <body><![CDATA[
+                this.mouseOutObservers.push(observer);
+            ]]>
+            </body>
+        </method>
+        
+        <method name="removeMouseOutObserver">
+            <parameter name="observer" />
+            <body><![CDATA[
+                this.mouseOutObservers.remove(observer);
             ]]>
             </body>
         </method>
@@ -191,6 +242,72 @@
                 swatch.reverseSelection();
             }
             event.stopPropagation();
+        ]]>
+        </handler>
+        
+        <handler event="mouseover"><![CDATA[
+            var control = this;
+            
+            //Figure out if we are mousing over this
+            //element _from_ one of this element's child
+            //nodes. event.relatedTarget tells us where
+            //the cursor is coming from, and we don't
+            //care about mouseover events in which the
+            //cursor was over a child node, and enters
+            //the main parent node. It creates all kinds
+            //of duplicate mouseover events without
+            //this.
+            var origin = event.relatedTarget;
+            while (origin) {
+                if (origin == this){
+                    break;
+                }
+                origin = origin.parentNode;
+            }
+
+            //If we are coming from somewhere else - AKA a "genuine"
+            //mouseover event...
+            if(origin != this){
+                this.mousedOver = true;
+                Array.forEach(this.mouseOverObservers, function(observer) {
+                    observer.notifySwatchMouseOver(control);
+                });
+                
+                //Class for each currently hovered swatch
+                this.addClass("hover");
+            }
+        ]]>
+        </handler>
+        
+        <handler event="mouseout"><![CDATA[
+            var control = this;
+            
+            //event.relatedTarget gives us the
+            //element that the cursor is going _to_.
+            //We only care if the cursor goes to
+            //something that is _not_ one of this
+            //element's child nodes (that is, leaves
+            //this node entirely). Thus we check to
+            //see if the cursor is leaving the part
+            //of the DOM heirarchy rooted at "this".
+            //Without this check, we'd be catching all
+            //kinds of mouseout events internal to this
+            //node.
+            var destination = event.relatedTarget;
+            while (destination) {
+                if (destination == this){
+                    break;
+                }
+                destination = destination.parentNode;
+            }
+            
+            //If we are really leaving this element
+            if(destination != this){
+                Array.forEach(this.mouseOutObservers, function(observer) {
+                    observer.notifySwatchMouseOut(control);
+                });
+                this.removeClass("hover");
+            }
         ]]>
         </handler>
     </handlers>
@@ -264,8 +381,10 @@
                     //call any methods defined in the binding,
                     //like "setSwatch()", here.
                     //Instead, we do the following kluge to pass
-                    //the swatch to the constructor.
+                    //things to the constructor.
                     swatchControl.originalSwatch = swatches[i];
+                    swatchControl.originalMouseOverObservers = [this];
+                    swatchControl.originalMouseOutObservers = [this];
                     this.swatchControls.push(swatchControl);
                 }
             ]]>
@@ -372,7 +491,8 @@
         
         <!--Update the layout of this paletteControl
             to reflect any changes to the palette or
-            other fields of this paletteControl-->
+            other fields of this paletteControl.
+            This is what sets up the swatches in a grid.-->
         <method name="doLayout">
             <body><![CDATA[
                 var swatchCount = this.swatchControls.length;
@@ -411,16 +531,122 @@
             ]]></body>
         </method>
         
+        <!--This is where we are notified by swatch
+            controls that they have had a mouseOver
+            event-->
+        <method name="notifySwatchMouseOver">
+            <parameter name="swatchControl" />
+            <body><![CDATA[
+                //So far we only care about mouseover
+                //events on selected items
+                if(swatchControl.isSelected()){
+                    //Keep a reference to "this"
+                    var paletteControl = this;
+                    
+                    //We _just_ got this event. We're not stopping
+                    //any animation yet.
+                    paletteControl.resetAnimation = false;
+                    
+                    //Recursive animate method that counts down
+                    //to zero, progressing through a numeric sequence
+                    //of class names that are applied at each animation
+                    //step. These classes are applied to the whole
+                    //paletteControl, and thus can affect child node
+                    //styling via CSS rules.
+                    function animate(iteration){
+                        //If the animation hasn't been halted elsewhere
+                        //and we'er not done
+                        if(!paletteControl.resetAnimation
+                           && iteration>0){
+                            //Swap out the element's classes
+                            var oldClass = "selectedHover"+iteration;
+                            var newClass = "selectedHover"+(iteration-1);
+                            paletteControl.removeClass(oldClass);
+                            paletteControl.addClass(newClass);
+                            
+                            //Call the next animation iteration
+                            //Adjust the delay in milliseconds to speed
+                            //up or slow down
+                            setTimeout(
+                                function(){animate(iteration-1);},
+                                32);
+                        }
+                        else{
+                            //The state of this paletteControl is
+                            //a finished animatino sequence.
+                            paletteControl.finishedAnimation = true;
+                        }
+                    }
+                    
+                    //If we haven't already finished an animation,
+                    //start the animation. We might have already finished
+                    //an animation from mousing over a different selected
+                    //swatch, and we don't want to replay the animation
+                    //when moving from selected swatch to selected swatch
+                    if(!paletteControl.finishedAnimation){
+                        animate(4);
+                    }
+                }
+            ]]>
+            </body>
+        </method>
+        
+        <!--This is where we are notified by swatch
+            controls that they have had a mouseOut
+            event-->
+        <method name="notifySwatchMouseOut">
+            <parameter name="swatchControl" />
+            <parameter name="event" />
+            <body><![CDATA[
+                var paletteControl = this;
+                paletteControl.resetAnimation = true;
+                
+                //The following resets the animation state.
+                //However, notifySwatchMouseOut (this method)gets
+                //called even when moving from selected swatch to
+                //selected swatch.
+                //When that is the case, we don't really want to
+                //reset the animation state. Instead, we want to allow
+                //an animation to finish, or let it stay in the finished
+                //state. Therefore, after a brief delay, we check to see
+                //if the paletteControl.resetAnimation is _still_ true,
+                //meaning the cursor has really left the selected swatches,
+                //and not entered another selected swatch.
+                //If that's the case, we'll reset all the classes, and
+                //set everything back how it was before all this animation
+                //business
+                setTimeout(
+                    function(){
+                        if(paletteControl.resetAnimation){
+                            paletteControl.removeClass("selectedHover0");
+                            paletteControl.removeClass("selectedHover1");
+                            paletteControl.removeClass("selectedHover2");
+                            paletteControl.removeClass("selectedHover3");
+                            paletteControl.removeClass("selectedHover4");
+                            paletteControl.removeClass("selectedHover");
+                            paletteControl.finishedAnimation = false;
+                        }
+                    },
+                    50
+                );
+            ]]>
+            </body>
+        </method>
+        
     </implementation>
 
     <handlers>
         <handler event="mousedown" button="0" modifiers="none"><![CDATA[
+            //Mouse down on a blank area of the palette control
+            //deselects everything
             this.palette.deselectAllSwatches();
             event.stopPropagation();
         ]]>
         </handler>
         
         <handler event="keypress"><![CDATA[
+            //Move a single-swatch selection around
+            //with the arrow keys
             if(this.palette.selectionSize() == 1){
                 switch(event.keyCode){
                     case 37:
