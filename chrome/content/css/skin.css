@@ -60,7 +60,8 @@ swatchControl{
     background-image: url("chrome://CSSchemer/content/images/swatch_border_selected.png");
 }
 
-.selectedHover .swatchSelectionBox.selected{
+.selectedHover .swatchSelectionBox.selected,
+.hover .swatchSelectionBox.selected{
     background-color:#BBB;
     border-color:#FFF;
 }
