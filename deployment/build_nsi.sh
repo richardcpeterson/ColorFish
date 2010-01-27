@@ -50,6 +50,11 @@ SCRIPT="$SCRIPT
 
 writeUninstaller \$INSTDIR\uninstaller.exe
 
+# Create shortcuts
+CreateDirectory \"\$SMPROGRAMS\\${APP_NAME}\"
+CreateShortCut \"\$SMPROGRAMS\\${APP_NAME}\\${APP_NAME}.lnk\" \"\$INSTDIR\csschemer.exe\"
+CreateShortCut \"\$SMPROGRAMS\\${APP_NAME}\\Uninstall.lnk\" \"\$INSTDIR\uninstaller.exe\"
+
 sectionEnd
 
 # Create a sectioin to define what the uninstaller does.
@@ -62,6 +67,9 @@ delete \$INSTDIR\uninstaller.exe
 
 delete \$INSTDIR\application.ini
 delete \$INSTDIR\csschemer.exe
+
+delete \"\$SMPROGRAMS\\${APP_NAME}\\${APP_NAME}.lnk\"
+delete \"\$SMPROGRAMS\\${APP_NAME}\\Uninstall.lnk\"
 
 "
 
@@ -87,6 +95,7 @@ cd "$CUR_DIR"
 SCRIPT="$SCRIPT
 
 RMDir \$INSTDIR
+RMDir \$SMPROGRAMS\\${APP_NAME}
 
 sectionEnd"
 
