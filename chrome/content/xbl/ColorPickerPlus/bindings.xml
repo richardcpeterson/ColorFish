@@ -4,8 +4,102 @@
   xmlns:xbl="http://www.mozilla.org/xbl"
      xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 >
+
+
+<!--A picker that can have selected or dragged
+    values, and can notify observers of changes to
+    these values.
     
-<binding id="verticalPicker">
+    A dragged value is a transient value set while
+    the user drags over the picker. A selected value
+    is the final value selected by the user, usually
+    by releasing the mouse button-->
+<binding id="observablePicker">
+    <implementation>
+        <constructor><![CDATA[
+            this.dragObservers = [];
+            this.selectObservers = [];
+            
+            //Register any original observers set before
+            //this constructor ran
+            if(this.originalDragObservers){
+                this.dragObservers = this.originalDragObservers;
+            }
+            if(this.originalSelectObservers){
+                this.selectObservers = this.originalSelectObservers;
+            }
+        ]]>
+        </constructor>
+        
+        <!--Add an observer that will be notified when
+            final selections are made on this picker
+            The observer must implement the method
+            updatePickerSelect(picker)-->
+        <method name="addSelectObserver">
+            <parameter name="observer" />
+            <body><![CDATA[
+                this.selectObservers.push(observer);
+            ]]>
+            </body>
+        </method>
+        
+        <!--Add an observer that will be notified of
+            transient values while this picker is being
+            dragged.
+            The observer must implement the method
+            updatePickerDrag(picker)-->
+        <method name="addDragObserver">
+            <parameter name="observer" />
+            <body><![CDATA[
+                this.dragObservers.push(observer);
+            ]]>
+            </body>
+        </method>
+        
+        <method name="removeSelectObserver">
+            <parameter name="observer" />
+            <body><![CDATA[
+                this.selectObservers.remove(observer);
+            ]]>
+            </body>
+        </method>
+        
+        <method name="removeDragObserver">
+            <parameter name="observer" />
+            <body><![CDATA[
+                this.dragObservers.remove(observer);
+            ]]>
+            </body>
+        </method>
+        
+        <!--Notify all select observers of a change
+            to this picker's selected value-->
+        <method name="notifySelectObservers">
+            <parameter name="observer" />
+            <body><![CDATA[
+                for(var i = 0; i < this.selectObservers.length; i++){
+                    this.selectObservers[i].updatePickerSelect(this);
+                }
+            ]]>
+            </body>
+        </method>
+        
+        <!--Notify all drag observers of a change to
+            the value being dragged over-->
+        <method name="notifyDragObservers">
+            <parameter name="observer" />
+            <body><![CDATA[
+                for(var i = 0; i < this.dragObservers.length; i++){
+                    this.dragObservers[i].updatePickerDrag(this);
+                }
+            ]]>
+            </body>
+        </method>
+    </implementation>
+</binding>
+
+<binding id="verticalPicker"
+    extends="#observablePicker">
     <resources>
         <stylesheet src="verticalPicker.css"/>
     </resources>
@@ -126,7 +220,7 @@
         <!--Private use
             Update the value based on the current pixel
             position of the slide-->
-        <method name="updateValue">
+        <method name="dragValue">
             <body><![CDATA[
                 
                 /**
@@ -139,21 +233,24 @@
                       * this.range
                     )
                     + this.topBound;
+                this.notifyDragObservers();
             ]]>
             </body>
         </method>
         
         <!--Private use
-            Register a final change to the the values
+            Select a final value
             based on the current pixel position of the
             slide. This is for whan an actual selection
             is made - not for transient values while
             dragging around.-->
-        <method name="registerValue">
+        <method name="selectValue">
             <body><![CDATA[
+                this.notifySelectObservers();
             ]]>
             </body>
         </method>
+        
     </implementation>
 
     <handlers>
@@ -172,7 +269,7 @@
                     "top: "+newY+"px; left: -7px;"
                 );
                 
-                element.updateValue();
+                element.dragValue();
             }
             
             element.activeRegion.addClass("noCursor");
@@ -182,7 +279,7 @@
             
             document.onmousemove=drag;
             document.onmouseup=function(){
-                element.registerValue();
+                element.selectValue();
                 element.activeRegion.removeClass("noCursor");
                 document.onmousemove=originalDocumentOnmousemove;
                 document.onmouseup=originalDocumentOnmouseup;
@@ -217,7 +314,8 @@
     </implementation>
 </binding>
 
-<binding id="twoDimensionalPicker">
+<binding id="twoDimensionalPicker"
+    extends="#observablePicker">
     <resources>
         <stylesheet src="twoDimensionalPicker.css"/>
     </resources>
@@ -243,6 +341,7 @@
 
     <implementation>
         <constructor><![CDATA[
+            
             this.activeRegion = document.getAnonymousElementByAttribute(
                     this,
                     "anonid",
@@ -403,7 +502,7 @@
             Update the vertical and horizontal values
             based on the current XY pixel position of
             the picker-->
-        <method name="updateValues">
+        <method name="dragValues">
             <body><![CDATA[
                 
                 /**
@@ -422,6 +521,7 @@
                       * this.verticalRange
                     )
                     + this.topBound;
+                this.notifyDragObservers();
             ]]>
             </body>
         </method>
@@ -432,8 +532,9 @@
             position of the picker. This is for whan an
             actual selection is made - not for transient
             values while dragging around.-->
-        <method name="registerValues">
+        <method name="selectValues">
             <body><![CDATA[
+                this.notifySelectObservers();
             ]]>
             </body>
         </method>
@@ -462,7 +563,7 @@
                     "top: "+newY+"px; left: " + newX + "px;"
                 );
                 
-                element.updateValues();
+                element.dragValues();
             }
             
             element.activeRegion.addClass("noCursor");
@@ -472,7 +573,7 @@
             
             document.onmousemove=drag;
             document.onmouseup=function(){
-                element.registerValues();
+                element.selectValues();
                 element.activeRegion.removeClass("noCursor");
                 document.onmousemove=originalDocumentOnmousemove;
                 document.onmouseup=originalDocumentOnmouseup;
@@ -494,9 +595,9 @@
     <implementation>
         <constructor><![CDATA[
             this.setLeftBoundaryValue(0);
-            this.setRightBoundaryValue(100);
-            this.setTopBoundaryValue(0);
-            this.setBottomBoundaryValue(100);
+            this.setRightBoundaryValue(1);
+            this.setTopBoundaryValue(1);
+            this.setBottomBoundaryValue(0);
         ]]></constructor>
         
         <!--Get the current Saturation-->
@@ -512,6 +613,78 @@
                 return this.verticalValue;
             ]]></body>
         </method>
+        
+        <!--Set the background hue of this picker-->
+        <method name="setHue">
+            <parameter name="hue" />
+            <body><![CDATA[
+                /**
+                 * This sets the hue of the background
+                 * element for this color picker. It
+                 * does not do full HSB to RGB conversion,
+                 * since the saturation and value will
+                 * always be full.
+                 *
+                 * This algorithm works by breaking the
+                 * spectrum into six sectors.
+                 * Sectors 1 and 2 are the G sectors.
+                 * Sectors 3 and 4 are the B sectors.
+                 * Sectors 5 and 6 are teh R sectors.
+                 *
+                 * When the hue is in a particular sector,
+                 * that sector's channel is at full strength.
+                 * Depending on the sector, a secondary
+                 * channel will be at partial strength.
+                 * The secondary channel is the "bChannel"
+                 * here.
+                 */
+            
+                var bChannel, sector;
+                var hex = "rgb(";
+                
+                //Break the hue into six sectors
+                hue /= 60;
+                sector = Math.floor(hue);
+                
+                //Calculate a secondary channel strength
+                //based on how far into the sector the
+                //particular hue is found
+                bChannel = hue - sector;
+                if (sector % 2 != 0){
+                    bChannel = 1 - bChannel;
+                }
+                
+                //convert to 0-255 scale
+                bChannel = Math.round(bChannel * 255);
+                
+                var rgb = [];
+                switch (sector) {
+                    case 6:
+                    case 0: rgb = [255, bChannel, 0];
+                        break;
+                    case 1: rgb = [bChannel, 255, 0];
+                        break;
+                    case 2: rgb = [0, 255, bChannel];
+                        break;
+                    case 3: rgb = [0, bChannel, 255];
+                        break;
+                    case 4: rgb = [bChannel, 0, 255];
+                        break;
+                    case 5: rgb = [255, 0, bChannel];
+                        break;
+                }
+                
+                //Make the final CSS "rgb(0,0,0)" string
+                hex += rgb.join(",") + ")";
+                
+                //Set the background color
+                this.activeRegion.setAttribute(
+                    "style",
+                    "background-color: " + hex
+                );
+            ]]>
+            </body>
+        </method>
     </implementation>
 
     <handlers>
@@ -526,13 +699,51 @@
     <content>
         <xul:hbox
             anonid="container">
-            <xul:saturationValuePicker/>
-            <xul:huePicker/>
+            <xul:saturationValuePicker
+                anonid="saturationValuePicker"/>
+            <xul:huePicker
+                anonid="huePicker"/>
         </xul:hbox>
     </content>
 
     <implementation>
         <constructor><![CDATA[
+            this.saturationValuePicker = document.getAnonymousElementByAttribute(
+                    this,
+                    "anonid",
+                    "saturationValuePicker"
+            );
+            
+            this.huePicker = document.getAnonymousElementByAttribute(
+                    this,
+                    "anonid",
+                    "huePicker"
+            );
+            
+            /**
+             * Register for updates from these pickers
+             */
+            if (!this.saturationValuePicker.originalDragObservers){
+                this.saturationValuePicker.originalDragObservers = [];
+            }
+            this.saturationValuePicker.originalDragObservers.push(this);
+            
+            if (!this.saturationValuePicker.originalSelectObservers){
+                this.saturationValuePicker.originalSelectObservers = [];
+            }
+            this.saturationValuePicker.originalSelectObservers.push(this);
+        
+        
+            if (!this.huePicker.originalDragObservers){
+                this.huePicker.originalDragObservers = [];
+            }
+            this.huePicker.originalDragObservers.push(this);
+            
+            if (!this.huePicker.originalSelectObservers){
+                this.huePicker.originalSelectObservers = [];
+            }
+            this.huePicker.originalSelectObservers.push(this);
+        
         ]]></constructor>
         
         <!--Get the current Saturation-->
@@ -545,6 +756,26 @@
         <method name="getValue">
             <body><![CDATA[
             ]]></body>
+        </method>
+        
+        <method name="updatePickerSelect">
+            <parameter name="picker" />
+            <body><![CDATA[
+                
+            ]]>
+            </body>
+        </method>
+        
+        
+        <method name="updatePickerDrag">
+            <parameter name="picker" />
+            <body><![CDATA[
+                if(picker == this.huePicker){
+                    var hue = picker.getHue();
+                    this.saturationValuePicker.setHue(hue);
+                }
+            ]]>
+            </body>
         </method>
     </implementation>
 
