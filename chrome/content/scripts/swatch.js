@@ -89,6 +89,8 @@ function Swatch(color, colorFormat, palette){
      * state.
      */
     this.setLiveEditColor = function(newColor){
+        if (typeof newColor == "string")
+            newColor = Color.from_css(newColor);
         this.liveEditColor = newColor;
         updateProperties(newColor);
         notifyLiveColorObservers();
