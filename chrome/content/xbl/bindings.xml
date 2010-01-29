@@ -446,15 +446,43 @@
     <content>
         <xul:hbox
             anonid="container">
-            <xul:colorPickerPlus/>
+            <xul:colorPickerPlus
+                anonid="colorPickerPlus"/>
         </xul:hbox>
     </content>
 
     <implementation>
         <constructor><![CDATA[
             //Parent element for the whole control
-            this.container = document.getAnonymousElementByAttribute(this, "anonid", "container");
+            this.container =
+                document.getAnonymousElementByAttribute(
+                    this,
+                    "anonid",
+                    "container"
+                );
+            this.colorPickerPlus =
+                document.getAnonymousElementByAttribute(
+                    this,
+                    "anonid",
+                    "colorPickerPlus"
+                );
+            
             this.setPalette(this.originalPalette);
+            
+            /**
+             * Register this tool pane to get updates
+             * from the color picker
+             */
+            if (!this.colorPickerPlus.originalDragObservers){
+                this.colorPickerPlus.originalDragObservers = [];
+            }
+            this.colorPickerPlus.originalDragObservers.push(this);
+            
+            if (!this.colorPickerPlus.originalSelectObservers){
+                this.colorPickerPlus.originalSelectObservers = [];
+            }
+            this.colorPickerPlus.originalSelectObservers.push(this);
+        
         ]]></constructor>
         
         <method name="setPalette">
@@ -463,6 +491,31 @@
                 this.palette = palette;
             ]]></body>
         </method>
+        
+        <method name="updatePickerDrag">
+            <parameter name="picker"/>
+            <body><![CDATA[
+                var newColor = "rgb(" + picker.getRGB().join(",") + ")";
+                var swatches = this.palette.getSelectedSwatches();
+                
+                Array.forEach(swatches, function(swatch) {
+                    swatch.setLiveEditColor(newColor);
+                });
+            ]]></body>
+        </method>
+        
+        <method name="updatePickerSelect">
+            <parameter name="picker"/>
+            <body><![CDATA[
+                var newColor = "rgb(" + picker.getRGB().join(",") + ")";
+                var swatches = this.palette.getSelectedSwatches();
+                
+                Array.forEach(swatches, function(swatch) {
+                    swatch.setColor(newColor);
+                });
+            ]]></body>
+        </method>
+        
     </implementation>
 
     <handlers>

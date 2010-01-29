@@ -691,7 +691,8 @@
     </handlers>
 </binding>
 
-<binding id="colorPickerPlus">
+<binding id="colorPickerPlus"
+    extends="#observablePicker">
     <resources>
         <stylesheet src="colorPickerPlus.css"/>
     </resources>
@@ -743,37 +744,112 @@
                 this.huePicker.originalSelectObservers = [];
             }
             this.huePicker.originalSelectObservers.push(this);
+            
+            this.hue = 0;
+            this.saturation = 0;
+            this.value = 0;
         
         ]]></constructor>
+        
+        <!--Get the current Hue-->
+        <method name="getHue">
+            <body><![CDATA[
+                return this.hue;
+            ]]></body>
+        </method>
         
         <!--Get the current Saturation-->
         <method name="getSaturation">
             <body><![CDATA[
+                return this.saturation;
             ]]></body>
         </method>
         
         <!--Get the current Value-->
         <method name="getValue">
             <body><![CDATA[
+                return this.value;
+            ]]></body>
+        </method>
+        
+        <method name="getRGB">
+            <body><![CDATA[
+                return this.rgb;
             ]]></body>
         </method>
         
         <method name="updatePickerSelect">
             <parameter name="picker" />
             <body><![CDATA[
-                
+                this.notifySelectObservers();
             ]]>
             </body>
         </method>
-        
         
         <method name="updatePickerDrag">
             <parameter name="picker" />
             <body><![CDATA[
                 if(picker == this.huePicker){
-                    var hue = picker.getHue();
-                    this.saturationValuePicker.setHue(hue);
+                    this.hue = picker.getHue();
+                    this.saturationValuePicker.setHue(this.hue);
                 }
+                else if(picker == this.saturationValuePicker){
+                    this.saturation = picker.getSaturation();
+                    this.value = picker.getValue();
+                }
+                this.rgb = this.HSVtoRGB(
+                                this.hue,
+                                this.saturation,
+                                this.value);
+                this.notifyDragObservers();
+            ]]>
+            </body>
+        </method>
+        
+        <!--Given Hue, Saturation and Value, return
+            an array of RGB integer values in the range
+            0 to 255-->
+        <method name="HSVtoRGB">
+            <parameter name="hue" />
+            <parameter name="saturation" />
+            <parameter name="value" />
+            <body><![CDATA[
+                hue /= 60;
+                var aChannel, bChannel, offset;
+                var sector;
+                var hex = "rgb(";
+                
+                sector = Math.floor(hue);
+                
+                offset = hue - sector;
+                if (sector % 2 == 0){
+                    offset = 1 - offset;
+                }
+                
+                aChannel = value * (1 - saturation);
+                bChannel = value * (1 - saturation * offset);
+                
+                value = Math.round(value * 255);
+                aChannel = Math.round(aChannel * 255);
+                bChannel = Math.round(bChannel * 255);
+                
+                var rgb = [];
+                switch (sector) {
+                    case 6:
+                    case 0: rgb = [value, bChannel, aChannel];
+                        break;
+                    case 1: rgb = [bChannel, value, aChannel];
+                        break;
+                    case 2: rgb = [aChannel, value, bChannel];
+                        break;
+                    case 3: rgb = [aChannel, bChannel, value];
+                        break;
+                    case 4: rgb = [bChannel, aChannel, value];
+                        break;
+                    case 5: rgb = [value, aChannel, bChannel];
+                        break;
+                }
+                return rgb;
             ]]>
             </body>
         </method>
