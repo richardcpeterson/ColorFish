@@ -469,6 +469,8 @@
             
             this.setPalette(this.originalPalette);
             
+            this.originalPalette.addSelectionObserver(this);
+            
             /**
              * Register this tool pane to get updates
              * from the color picker
@@ -513,6 +515,22 @@
                 Array.forEach(swatches, function(swatch) {
                     swatch.setColor(newColor);
                 });
+            ]]></body>
+        </method>
+        
+        <!--Get notified that the actual palette's selection
+            set has changed-->
+        <method name="updatePaletteSelection">
+            <parameter name="palette"/>
+            <body><![CDATA[
+                if(palette.selectionSize() > 0){
+                    var swatch = palette.mostRecentlySelectedSwatch;
+                    var HSV = swatch.color.getHSV();
+                    this.colorPickerPlus.setHSV(
+                        HSV[0],
+                        HSV[1],
+                        HSV[2]);
+                }
             ]]></body>
         </method>
         
