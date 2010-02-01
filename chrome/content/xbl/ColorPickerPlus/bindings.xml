@@ -75,7 +75,6 @@
         <!--Notify all select observers of a change
             to this picker's selected value-->
         <method name="notifySelectObservers">
-            <parameter name="observer" />
             <body><![CDATA[
                 for(var i = 0; i < this.selectObservers.length; i++){
                     this.selectObservers[i].updatePickerSelect(this);
@@ -148,6 +147,8 @@
                  this.originalTopBoundaryValue :
                  100;
             
+            this.slideY = 0;
+            
             this.updateRange();
         ]]>
         </constructor>
@@ -214,6 +215,14 @@
                             value
                         )
                     );
+                    
+                this.slideY =
+                    ((this.value - this.topBound) / this.range)
+                    * this.activeRegion.boxObject.height;
+                this.slide.setAttribute(
+                    "style",
+                    "top: "+(this.slideY-3)+"px; left: -7px;"
+                );
             ]]></body>
         </method>
         
@@ -311,6 +320,14 @@
                 return this.value % 360;
             ]]></body>
         </method>
+        
+        <!--Set the current Hue-->
+        <method name="setHue">
+            <parameter name="hue" />
+            <body><![CDATA[
+                this.setValue(hue);
+            ]]></body>
+        </method>
     </implementation>
 </binding>
 
@@ -353,6 +370,9 @@
                     "anonid",
                     "picker"
             );
+            
+            this.pickerX = 0;
+            this.pickerY = 0;
             
             this.leftBound =
                 (this.originalLeftBoundaryValue)?
@@ -475,6 +495,13 @@
                             horizontalValue
                         )
                     );
+                this.pickerX =
+                    ((this.horizontalValue - this.leftBound) / this.horizontalRange)
+                    * this.activeRegion.boxObject.width;  
+                this.picker.setAttribute(
+                    "style",
+                    "top: "+(this.pickerY-4)+"px; left: "+(this.pickerX-4)+"px;"
+                );
             ]]></body>
         </method>
         
@@ -495,6 +522,13 @@
                             verticalValue
                         )
                     );
+                this.pickerY =
+                    ((this.verticalValue - this.topBound) / this.verticalRange)
+                    * this.activeRegion.boxObject.height;
+                this.picker.setAttribute(
+                    "style",
+                    "top: "+(this.pickerY-4)+"px; left: "+(this.pickerX-4)+"px;"
+                );
             ]]></body>
         </method>
         
@@ -611,6 +645,22 @@
         <method name="getValue">
             <body><![CDATA[
                 return this.verticalValue;
+            ]]></body>
+        </method>
+        
+        <!--Set the current Saturation-->
+        <method name="setSaturation">
+            <parameter name="saturation" />
+            <body><![CDATA[
+                this.setHorizontalValue(saturation);
+            ]]></body>
+        </method>
+        
+        <!--Set the current Value-->
+        <method name="setValue">
+            <parameter name="value" />
+            <body><![CDATA[
+                this.setVerticalValue(value);
             ]]></body>
         </method>
         
@@ -775,6 +825,35 @@
         <method name="getRGB">
             <body><![CDATA[
                 return this.rgb;
+            ]]></body>
+        </method>
+        
+        <!--Set the Hue, Saturation and Value for
+            this picker directly.
+            
+            hue is a number from 0 to 360.
+            saturation is a number from 0 to 1
+            value is a number from 0 to 1
+            -->
+        <method name="setHSV">
+            <parameter name="hue" />
+            <parameter name="saturation" />
+            <parameter name="value" />
+            <body><![CDATA[
+                this.huePicker.setHue(hue);
+                this.saturationValuePicker.setHue(hue);
+                this.saturationValuePicker.setSaturation(saturation);
+                this.saturationValuePicker.setValue(value);
+                
+                this.hue = hue;
+                this.saturation = saturation;
+                this.value = value;
+                
+                this.rgb = this.HSVtoRGB(
+                                this.hue,
+                                this.saturation,
+                                this.value);
+                //this.notifyDragObservers();
             ]]></body>
         </method>
         
