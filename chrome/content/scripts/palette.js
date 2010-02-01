@@ -8,6 +8,8 @@ function Palette(){
     this.selectedSwatches = new Array();
     this.mostRecentlySelectedSwatch = null;
     
+    this.selectionObservers = [];
+    
     /**
      * Returns the number of swatches in
      * this palette
@@ -32,18 +34,22 @@ function Palette(){
     }
     
     this.selectAllSwatches = function(){
+        startSelectionNotificationBuffer();
         Array.forEach(this.swatches, function(swatch) {
             swatch.select();
         });
+        flushSelectionNotificationBuffer();
     }
     
     /**
      * Make no swatches selected
      */
     this.deselectAllSwatches = function(){
-        Array.forEach(this.swatches, function(swatch) {
+        startSelectionNotificationBuffer();
+        this.swatches.forEach(function(swatch) {
             swatch.deselect();
         });
+        flushSelectionNotificationBuffer();
     }
     
     /**
@@ -66,18 +72,22 @@ function Palette(){
      * Add a set of swatches to the selection
      */
     this.selectSwatches = function(swatchArray){
+        startSelectionNotificationBuffer();
         Array.forEach(swatchArray, function(swatch) {
             swatch.select();
         });
+        flushSelectionNotificationBuffer();
     }
     
     /**
      * Remove a set of swatches from the selection
      */
     this.deselectSwatches = function(swatchArray){
+        startSelectionNotificationBuffer();
         Array.forEach(swatchArray, function(swatch) {
             swatch.deselect();
         });
+        flushSelectionNotificationBuffer();
     }
     
     /**
@@ -95,10 +105,12 @@ function Palette(){
                 this.swatches.indexOf(swatchA),
                 this.swatches.indexOf(swatchB));
         
+        startSelectionNotificationBuffer();
         //Select all swatches in the range
         for(var i = startIndex; i <= endIndex; i++){
             this.swatches[i].select();
         }
+        flushSelectionNotificationBuffer();
     }
     
     /**
@@ -114,6 +126,7 @@ function Palette(){
         else{
             this.selectedSwatches.remove(swatch);
         }
+        this.notifySelectionObservers();
     }
     
     /**
@@ -179,6 +192,47 @@ function Palette(){
                 );
             }
         });
+    }
+    
+    /* Add an observer that will be notified when
+     * the selection on this palette changes
+     */
+    this.addSelectionObserver = function(observer){
+        this.selectionObservers.push(observer);
+    }
+    
+    this.removeSelectionObserver = function(observer){
+        this.selectionObservers.remove(observer);
+    }
+    
+    
+    /* Notify all selection observers of a change
+     * to this palette's selection set
+     */
+    this.notifySelectionObservers = function(){
+        if(!selectionNotificationsBuffered){
+            for(var i = 0; i < this.selectionObservers.length; i++){
+                this.selectionObservers[i].updatePaletteSelection(this);
+            }
+        }
+    }
+    
+    var thisPalette = this;
+    
+    /**
+     * When we change lots of swatch selections at once, we don't
+     * want to issue notifications individually. Thus we only notify
+     * at the end. We use this "buffering" to accomplish that.
+     * No, it's not actually buffering. Come up with a better name,
+     * why don't you.
+     */
+    var selectionNotificationsBuffered = false;
+    function startSelectionNotificationBuffer(){
+        selectionNotificationsBuffered = true;
+    }
+    function flushSelectionNotificationBuffer(){
+        selectionNotificationsBuffered = false;
+        thisPalette.notifySelectionObservers();
     }
 }
 
