@@ -181,37 +181,94 @@ function Color() {
 
         var max = Math.max(r, g, b);
         var min = Math.min(r, g, b);
-        var h;
-        var s;
-        var l = (max + min) / 2;
+        var hue;
+        var saturation;
+        var lightness = (max + min) / 2;
 
         if(max == min){ //grayscale
-            h = -1;
-            s = -1;
+            hue = -1;
+            saturation = -1;
         }
         else{
-            var d = max - min;
+            var delta = max - min;
 
             //Set saturation
-            s = ((l > 0.5) ? (d / (2 - max - min)) : (d / (max + min)));
+            saturation = ((lightness > 0.5) ? (delta / (2 - max - min)) : (delta / (max + min)));
 
             //Set hue depending on which of r,g,b is the maximum
             switch(max){
                 case r:
-                    h = (g - b) / d + (g < b ? 6 : 0);
+                    hue = (g - b) / delta + (g < b ? 6 : 0);
                     break;
                 case g:
-                    h = (b - r) / d + 2;
+                    hue = (b - r) / delta + 2;
                     break;
                 case b:
-                    h = (r - g) / d + 4;
+                    hue = (r - g) / delta + 4;
                     break;
             }
-            h /= 6;
+            hue /= 6;
         }
 
-        return [h, s, l];
+        return [hue, saturation, lightness];
     }
+    
+    
+    this.getHSV = function() {
+        //Convert to 0-1 scale
+        var r = this.red / 255;
+        var g = this.green / 255;
+        var b = this.blue / 255;
+        
+        //Get the minimum and maximum values and the
+        //interval between them
+        var min = Math.min(r, g, b);
+        var max = Math.max(r, g, b);
+        var delta = max - min;
+        
+        var hue, saturation, value;
+        
+        //Value is always the max value of RGB
+        value = max;
+        
+        if (delta == 0) {
+            //Greyscale
+            hue = 0;
+            saturation = 0;
+        } else{
+            saturation = delta / max;
+            
+            //Calculate the hue
+            var rDelta = (((max - r) / 6) + (delta / 2)) / delta;
+            var gDelta = (((max - g) / 6) + (delta / 2)) / delta;
+            var bDelta = (((max - b) / 6) + (delta / 2)) / delta;
+            
+            switch(max){
+                case r:
+                    hue = bDelta - gDelta;
+                    break;
+                case g:
+                    hue = (1 / 3) + rDelta - bDelta;
+                    break;
+                case b:
+                    hue = (2 / 3) + gDelta - rDelta;
+                    break;
+            }
+            
+            //Make sure hue is in the 0 to 1 range
+            if (hue < 0){
+                hue += 1;
+            }
+            if (hue > 1){
+                hue -= 1;
+            }
+        }
+        
+        //Scale back to degrees
+        hue *= 360;
+        
+        return [hue, saturation, value];
+    } 
 
     this.getHue = function(){
         return this.getHSL()[0];
