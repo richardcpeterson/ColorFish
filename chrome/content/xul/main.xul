@@ -41,7 +41,10 @@
     <command id="cmd_browseForward" oncommand="Browser.forward();"  disabled="true"/>
     <command id="cmd_browseReload" oncommand="Browser.reload();" />
     <command id="cmd_toggleAppPanel" oncommand="csApp.toggleAppPanel();" />
+    <command id="cmd_undo" oncommand="csApp.undo();" />
+    <command id="cmd_redo" oncommand="csApp.redo();" />
   </commandset>
+  
 
   <comandset id="menuCommandSet">
     <command id="cmd_menuFileSave" oncommand="csApp.save()"/>

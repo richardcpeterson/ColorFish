@@ -32,6 +32,39 @@ function CSApplication(){
             .getService(Components.interfaces.nsIAppStartup)
             .quit(Components.interfaces.nsIAppStartup.eAttemptQuit);
     };
+    
+    this.undo = function() {
+        
+    }
+    
+    this.redo = function() {
+        
+    }
+    
+    /**
+     * Enable or disable the undo and / or redo command
+     * based on the current availability of those actions
+     */
+    this.update_undo_redo_commands = function() {
+        var undoCommand = document.getElementById("cmd_undo");
+        var redoCommand = document.getElementById("cmd_redo");
+        undoCommand.setAttribute("disabled", !this.canUndo);
+        redoCommand.setAttribute("disabled", !this.canRedo);
+    }
+    
+    /**
+     * Is there an undo state available?
+     */
+    this.canUndo = function(){
+        return this.activePage.originalPalette.canUndo();
+    }
+    
+    /**
+     * Is there a redo state available?
+     */
+    this.canRedo = function(){
+        return this.activePage.originalPalette.canRedo();
+    }
 
 
     /***
