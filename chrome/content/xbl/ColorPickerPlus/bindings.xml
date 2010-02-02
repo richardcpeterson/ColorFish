@@ -754,6 +754,7 @@
                 anonid="saturationValuePicker"/>
             <xul:huePicker
                 anonid="huePicker"/>
+            <xul:spacer anonid="beforeText" flex="1" />
             <xul:vbox
                 anonid="textInputs">
                 <xul:vbox

@@ -18,6 +18,12 @@ verticalPicker {
     -moz-user-focus: normal;
 }
 
+[anonid="beforeText"]{
+    width:20px;
+    min-width:20px;
+    max-width:20px;
+}
+
 [anonid="textInputs"]{
     height: 210px;
     width: 85px;
@@ -26,5 +32,5 @@ verticalPicker {
 }
 
 .colorTextInput{
-    width: 50px;
+    width: 45px;
 }
