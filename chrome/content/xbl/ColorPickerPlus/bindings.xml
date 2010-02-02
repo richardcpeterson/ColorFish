@@ -754,6 +754,83 @@
                 anonid="saturationValuePicker"/>
             <xul:huePicker
                 anonid="huePicker"/>
+            <xul:vbox
+                anonid="textInputs">
+                <xul:vbox
+                    anonid="rgbInputs">
+                    <xul:hbox
+                        anonid="redInput">
+                        <xul:label
+                            value="R" control="redTextbox"/>
+                        <xul:spacer flex="1"/>
+                        <xul:textbox
+                            id="redTextbox"
+                            anonid="redTextbox"
+                            class="colorTextInput"
+                            type="number" min="0" max="255"/>
+                    </xul:hbox>
+                    <xul:hbox
+                        anonid="greenInput">
+                        <xul:label
+                            value="G" control="greenTextbox"/>
+                        <xul:spacer flex="1"/>
+                        <xul:textbox
+                            id="greenTextbox"
+                            anonid="greenTextbox"
+                            class="colorTextInput"
+                            type="number" min="0" max="255"/>
+                    </xul:hbox>
+                    <xul:hbox
+                        anonid="blueInput">
+                        <xul:label
+                            value="B" control="blueTextbox"/>
+                        <xul:spacer flex="1"/>
+                        <xul:textbox
+                            id="blueTextbox"
+                            anonid="blueTextbox"
+                            class="colorTextInput"
+                            type="number" min="0" max="255"/>
+                    </xul:hbox>
+                </xul:vbox>
+                <xul:spacer flex="1" />
+                <xul:vbox
+                    anonid="hsvInputs">
+                    <xul:hbox
+                        anonid="hueInput">
+                        <xul:label
+                            value="H" control="hueTextbox"/>
+                        <xul:spacer flex="1"/>
+                        <xul:textbox
+                            id="hueTextbox"
+                            anonid="hueTextbox"
+                            class="colorTextInput"
+                            wraparound="true"
+                            type="number" min="0" max="360"/>
+                    </xul:hbox>
+                    <xul:hbox
+                        anonid="saturationInput">
+                        <xul:label
+                            value="S" control="saturationTextbox"/>
+                        <xul:spacer flex="1"/>
+                        <xul:textbox
+                            id="saturationTextbox"
+                            anonid="saturationTextbox"
+                            class="colorTextInput"
+                            type="number" min="0" max="100"/>
+                    </xul:hbox>
+                    <xul:hbox
+                        anonid="valueInput">
+                        <xul:label
+                            value="V" control="valueTextbox"/>
+                        <xul:spacer flex="1"/>
+                        <xul:textbox
+                            id="valueTextbox"
+                            anonid="valueTextbox"
+                            class="colorTextInput"
+                            type="number" min="0" max="100"/>
+                    </xul:hbox>
+                </xul:vbox>
+            </xul:vbox>
         </xul:hbox>
     </content>
 
@@ -770,6 +847,67 @@
                     "anonid",
                     "huePicker"
             );
+            
+            
+            this.redTextbox = document.getAnonymousElementByAttribute(
+                    this,
+                    "anonid",
+                    "redTextbox"
+            );
+            this.greenTextbox = document.getAnonymousElementByAttribute(
+                    this,
+                    "anonid",
+                    "greenTextbox"
+            );
+            this.blueTextbox = document.getAnonymousElementByAttribute(
+                    this,
+                    "anonid",
+                    "blueTextbox"
+            );
+            
+            this.hueTextbox = document.getAnonymousElementByAttribute(
+                    this,
+                    "anonid",
+                    "hueTextbox"
+            );
+            this.saturationTextbox = document.getAnonymousElementByAttribute(
+                    this,
+                    "anonid",
+                    "saturationTextbox"
+            );
+            this.valueTextbox = document.getAnonymousElementByAttribute(
+                    this,
+                    "anonid",
+                    "valueTextbox"
+            );
+            
+            var colorPickerPlus = this;
+            
+            this.hueTextbox.onchange = function(){
+                colorPickerPlus.setHSV(
+                    this.value,
+                    colorPickerPlus.saturation,
+                    colorPickerPlus.value);
+                colorPickerPlus.notifySelectObservers();
+            }
+            
+            this.saturationTextbox.onchange = function(){
+                dump("saturation: " + this.value + "/100 = " + (this.value/100) + "\n");
+                colorPickerPlus.setHSV(
+                    colorPickerPlus.hue,
+                    this.value / 100,
+                    colorPickerPlus.value);
+                colorPickerPlus.notifySelectObservers();
+            }
+            
+            this.valueTextbox.onchange = function(){
+                colorPickerPlus.setHSV(
+                    colorPickerPlus.hue,
+                    colorPickerPlus.saturation,
+                    this.value / 100);
+                colorPickerPlus.notifySelectObservers();
+            }
+        
             
             /**
              * Register for updates from these pickers
@@ -853,6 +991,8 @@
                                 this.hue,
                                 this.saturation,
                                 this.value);
+                
+                this.updateTextInputs();
                 //this.notifyDragObservers();
             ]]></body>
         </method>
@@ -880,7 +1020,20 @@
                                 this.hue,
                                 this.saturation,
                                 this.value);
+                this.updateTextInputs();
                 this.notifyDragObservers();
+            ]]>
+            </body>
+        </method>
+        
+        <method name="updateTextInputs">
+            <body><![CDATA[
+                this.redTextbox.value = this.rgb[0];
+                this.greenTextbox.value = this.rgb[1];
+                this.blueTextbox.value = this.rgb[2];
+                this.hueTextbox.value = this.hue;
+                this.saturationTextbox.value = this.saturation * 100;
+                this.valueTextbox.value = this.value * 100;
             ]]>
             </body>
         </method>

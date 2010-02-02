@@ -17,3 +17,14 @@ verticalPicker {
     -moz-binding: url("bindings.xml#verticalPicker");
     -moz-user-focus: normal;
 }
+
+[anonid="textInputs"]{
+    height: 210px;
+    width: 85px;
+    max-width: 85px;
+    min-width: 85px;
+}
+
+.colorTextInput{
+    width: 50px;
+}
