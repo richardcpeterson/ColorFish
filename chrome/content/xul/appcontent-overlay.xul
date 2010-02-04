@@ -4,6 +4,7 @@
     <toolbar id="csAppPanelToolbar" align="left">
       <toolbarbutton label="Undo" command="cmd_undo"/>
       <toolbarbutton label="Redo" command="cmd_redo"/>
+      <spacer flex="1" />
       <toolbarbutton label="Minimize" command="cmd_toggleAppPanel"/>
     </toolbar>
     <hbox id="csContentBox" flex="1">
