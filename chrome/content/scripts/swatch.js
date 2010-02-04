@@ -129,7 +129,10 @@ function Swatch(color, colorFormat, palette){
             //Save the current state in the undo stack
             undoList.push(new Array(this.color, this.format));
             updateProperties(redoList.top()[0]);
+            
+            this.color = redoList.top()[0];
             this.format = redoList.top()[1];
+            
             redoList.pop();
             notifyHistoryObservers();
         }
