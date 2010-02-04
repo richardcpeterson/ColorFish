@@ -43,9 +43,13 @@ function Swatch(color, colorFormat, palette){
         //command
         redoList = new Array();
         
+        if (typeof newColor == "string")
+            newColor = Color.from_css(newColor);
+        
         //Update properties and color format if needed
         if (newColor){
             updateProperties(newColor);
+            thisSwatch.color = newColor;
         }
         if (colorFormat){
             this.format = colorFormat;
@@ -107,7 +111,10 @@ function Swatch(color, colorFormat, palette){
             //Save the current state in the redo stack
             redoList.push(new Array(this.color, this.format));
             updateProperties(undoList.top()[0]);
+            
+            this.color = undoList.top()[0];
             this.format = undoList.top()[1];
+            
             undoList.pop();
             notifyHistoryObservers();
         }
@@ -259,9 +266,8 @@ function Swatch(color, colorFormat, palette){
     function updateProperties(color){
         if (typeof color == "string")
             color = Color.from_css(color);
-        thisSwatch.color = color;
         for(var i = 0; i < properties.length; i++) {
-            properties[i].setColor(thisSwatch.color);
+            properties[i].setColor(color);
         }
     }
     
