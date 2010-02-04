@@ -120,6 +120,7 @@ function Palette(){
         if (this.canUndo()){
             undoList.top().undo();
             redoList.push(undoList.pop());
+            notifyHistoryObservers();
         }
     }
     
@@ -130,6 +131,7 @@ function Palette(){
         if (this.canRedo()){
             redoList.top().redo();
             undoList.push(redoList.pop());
+            notifyHistoryObservers();
         }
     }
     
@@ -169,6 +171,7 @@ function Palette(){
         //Clear the redo list - this wasn't an undone
         //command
         redoList = new Array();
+        notifyHistoryObservers();
     }
     
     /**
@@ -261,7 +264,43 @@ function Palette(){
         }
     }
     
+    /* Add an observer that will be notified when
+     * the palette's history is modified
+     */
+    this.addHistoryObserver = function (observer) {
+        historyObservers.push(observer);
+    }
+    
+    this.removeHistoryObserver = function(observer){
+        historyObservers.remove(observer);
+    }
+    
+    
+    /* Notify all selection observers of a change
+     * to this palette's selection set
+     */
+    this.notifySelectionObservers = function(){
+        if(!selectionNotificationsBuffered){
+            for(var i = 0; i < this.selectionObservers.length; i++){
+                this.selectionObservers[i].updatePaletteSelection(this);
+            }
+        }
+    }
+    
+    
     var thisPalette = this;
+    
+    /**
+     * Notify all registered observers that the palette's history
+     * has changed.
+     */
+    function notifyHistoryObservers(){
+        for(var i = 0; i < historyObservers.length; i++){
+            historyObservers[i].updatePaletteHistory(thisPalette);
+        }
+    }
+    
+    var historyObservers = [];
     
     var undoList = [];
     var redoList = [];
