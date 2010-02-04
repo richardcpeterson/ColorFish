@@ -39,6 +39,10 @@ function Swatch(color, colorFormat, palette){
         //Push the old state onto the undo stack
         undoList.push(new Array(this.color, this.format) );
         
+        //Clear the redo list - this wasn't an undone
+        //command
+        redoList = new Array();
+        
         //Update properties and color format if needed
         if (newColor){
             updateProperties(newColor);
@@ -47,10 +51,7 @@ function Swatch(color, colorFormat, palette){
             this.format = colorFormat;
         }
         
-        //Clear the redo list - this wasn't an undone
-        //command
-        redoList = new Array();
-        
+        notifySwatchSetColorObservers();
         notifyHistoryObservers();
     }
     
@@ -171,6 +172,19 @@ function Swatch(color, colorFormat, palette){
     
     /**
      * Add an observer that will be notified when this
+     * swatch's color is set.
+     * 
+     * In order to be notified, the observer must have the
+     * updateSwatchSetColor(Swatch)
+     * method, where "Swatch" will be a reference to this
+     * swatch.
+     */
+    this.addSetColorObserver = function (observer) {
+        setColorObservers.push(observer);
+    }
+    
+    /**
+     * Add an observer that will be notified when this
      * swatch's live color is changed. This occurs during
      * live editing, when a history state is not set.
      * 
@@ -200,6 +214,10 @@ function Swatch(color, colorFormat, palette){
         historyObservers.remove(observer);
     }
     
+    this.setLiveColorObserver = function(observer){
+        setColorObservers.remove(observer);
+    }
+    
     this.removeLiveColorObserver = function(observer){
         liveColorObservers.remove(observer);
     }
@@ -226,6 +244,7 @@ function Swatch(color, colorFormat, palette){
     //Lists of objects that observe this swatch's state
     var historyObservers = new Array();
     var liveColorObservers = new Array();
+    var setColorObservers = new Array();
     var selectionObservers = new Array();
 
     var selected = false;
@@ -253,6 +272,16 @@ function Swatch(color, colorFormat, palette){
     function notifyHistoryObservers(){
         for(var i = 0; i < historyObservers.length; i++){
             historyObservers[i].updateSwatchHistory(thisSwatch);
+        }
+    }
+    
+    /**
+     * Notify all registered observers that a new Color has
+     * been set.
+     */
+    function notifySwatchSetColorObservers(){
+        for(var i = 0; i < setColorObservers.length; i++){
+            setColorObservers[i].updateSwatchSetColor(thisSwatch);
         }
     }
     

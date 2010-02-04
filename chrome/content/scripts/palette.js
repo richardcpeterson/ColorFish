@@ -114,57 +114,14 @@ function Palette(){
     }
     
     /**
-     * Update this palette with a swatch's state
-     */
-    this.updateSelection = function(swatch){
-        if (swatch.isSelected()){
-            if(!this.selectedSwatches.contains(swatch)){
-                this.selectedSwatches.push(swatch);
-                this.mostRecentlySelectedSwatch = swatch;
-            }
+     * Undo the most recently done action on this palette that
+     * hasn't already been undone.*/
+    this.undo = function(){
+        if (this.canUndo()){
+            undoList.top().undo();
+            redoList.push(undoList.pop());
         }
-        else{
-            this.selectedSwatches.remove(swatch);
-        }
-        this.notifySelectionObservers();
     }
-    
-    this.updateSwatchHistory = function(swatch){
-        /** TODO
-         * I was in the middle of adding undo and redo to the swatches.
-         * I had just registered the palette to receive swatch history
-         * change notifications. Every swatch history change is going
-         * to be put in the undo or redo stack somehow, so that when
-         * an undo or redo action is performed on the palette as a whole,
-         * we'll be able to see what swatch is on the top of the stack,
-         * and perform the undo / redo action on that swatch.
-         */
-    }
-    
-    /**
-     * Undo the most recent action that hasn't
-     * already been undone. That is, go one step back in
-     * the palette's history
-     */
-    this.undo = function() {
-        if (undoList.top()) {
-            //Save the current state in the redo stack
-            redoList.push();
-            undoList.pop();
-        }
-    };
-    
-    /**
-     * Redo the most recently undone action.
-     * That is, go forward one step in the history.
-     */
-    this.redo = function() {
-        if (redoList.top()) {
-            //Save the current state in the undo stack
-            undoList.push();
-            redoList.pop();
-        }
-    };
     
     /**
      * Lets us know if this palette has any undo states.
@@ -180,6 +137,29 @@ function Palette(){
         return (redoList.length > 0);
     }
     
+    /**
+     * Update this palette with a swatch's state
+     */
+    this.updateSelection = function(swatch){
+        if (swatch.isSelected()){
+            if(!this.selectedSwatches.contains(swatch)){
+                this.selectedSwatches.push(swatch);
+                this.mostRecentlySelectedSwatch = swatch;
+            }
+        }
+        else{
+            this.selectedSwatches.remove(swatch);
+        }
+        this.notifySelectionObservers();
+    }
+    
+    this.updateSwatchSetColor = function(swatch){
+        undoList.push(swatch);
+        
+        //Clear the redo list - this wasn't an undone
+        //command
+        redoList = new Array();
+    }
     
     /**
      * Insert a color property into the pallete,
@@ -215,8 +195,8 @@ function Palette(){
             //We want to be notified of selection
             //changes to this swatch
             newSwatch.addSelectionObserver(this);
-            newSwatch.addHistoryObserver(this);
-            
+
+            newSwatch.addSetColorObserver(this);
             this.swatches.push(newSwatch);
         }
     }
@@ -273,6 +253,9 @@ function Palette(){
     
     var thisPalette = this;
     
+    var undoList = [];
+    var redoList = [];
+    
     /**
      * When we change lots of swatch selections at once, we don't
      * want to issue notifications individually. Thus we only notify
@@ -288,8 +271,5 @@ function Palette(){
         selectionNotificationsBuffered = false;
         thisPalette.notifySelectionObservers();
     }
-    
-    var undoList = [];
-    var redoList = [];
 }
 
