@@ -165,7 +165,6 @@ function CSApplication(){
     }
     
     this.updateToolPane = function (){
-        dump("updateToolPane...\n");
         //Remove all children
         while ( this.toolPane.childNodes.length >= 1 )
         {
@@ -173,7 +172,6 @@ function CSApplication(){
         }
         var toolBox = window.document.createElement("toolBox");
         toolBox.originalPalette = this.activePage.originalPalette;
-        dump(this.toolPane);
         this.toolPane.appendChild(toolBox);
     }
 
