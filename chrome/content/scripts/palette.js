@@ -124,6 +124,16 @@ function Palette(){
     }
     
     /**
+     * Redo the most recently undone action
+     **/
+    this.redo = function(){
+        if (this.canRedo()){
+            redoList.top().redo();
+            undoList.push(redoList.pop());
+        }
+    }
+    
+    /**
      * Lets us know if this palette has any undo states.
      */
     this.canUndo = function(){
