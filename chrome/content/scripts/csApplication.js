@@ -22,6 +22,12 @@ function CSApplication(){
         this.updateCSSFilePane();
         this.updatePalettePane();
         this.updateToolPane();
+        
+        //We want to be notified of changes to the palette.
+        //As of yet, palette history is the only history for
+        //which global undo/redo is supported.
+        this.activePage.originalPalette.addHistoryObserver(this);
+        this.update_undo_redo_commands();
     }
 
     /***
@@ -41,6 +47,10 @@ function CSApplication(){
         this.activePage.originalPalette.redo();
     }
     
+    this.updatePaletteHistory = function(palette){
+        this.update_undo_redo_commands();
+    }
+    
     /**
      * Enable or disable the undo and / or redo command
      * based on the current availability of those actions
@@ -48,8 +58,8 @@ function CSApplication(){
     this.update_undo_redo_commands = function() {
         var undoCommand = document.getElementById("cmd_undo");
         var redoCommand = document.getElementById("cmd_redo");
-        undoCommand.setAttribute("disabled", !this.canUndo);
-        redoCommand.setAttribute("disabled", !this.canRedo);
+        undoCommand.setAttribute("disabled", !this.canUndo());
+        redoCommand.setAttribute("disabled", !this.canRedo());
     }
     
     /**
