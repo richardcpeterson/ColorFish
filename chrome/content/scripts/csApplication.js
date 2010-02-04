@@ -34,11 +34,11 @@ function CSApplication(){
     };
     
     this.undo = function() {
-        
+        this.activePage.originalPalette.undo();
     }
     
     this.redo = function() {
-        
+        this.activePage.originalPalette.redo();
     }
     
     /**
