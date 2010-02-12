@@ -260,6 +260,141 @@ Color.prototype.getHSV = function ()  {
 
     return [hue, saturation, value];
 };
+    
+/**
+ * Gets the color in HCL color space as defined in the research report:
+ *
+ * HCL: a new Color Space for a more Effective Content-based Image Retrieval
+ * M. Sarifuddin <m.sarifuddin@uqo.ca> - Rokia Missaoui <rokia.missaoui@uqo.ca> Département d'informatique et d'ingénierie, Université du Québec en Outaouais C.P. 1250, Succ. B Gatineau Quéebec Canada, J8X 3X7
+ * http://w3.uqo.ca/missaoui/Publications/TRColorSpace.zip
+ *
+ * HCL offers tunable parameters. This function uses color tunings
+ * compatible with the CPAN module implementation:
+ * Color::Similarity::HCL
+ * http://search.cpan.org/~mbarbon/Color-Similarity-HCL-0.04/lib/Color/Similarity/HCL.pm#rgb2hcl
+ * 
+ * This color space is designed to allow more accurate comparison
+ * of the perceptual distance between two colors.
+ * 
+ * Returns an array in the form [Hue, Chroma, Luminance]
+ *
+ * Note: Hue, Chroma and Luminance have different definitions in
+ * HCL than in the HSV, HSL, L*u*v, L*a*b* or other color spaces.
+ * Values from HCL are not synonymous with values from other color
+ * spaces - even Hue values.
+ */
+Color.prototype.getHCL = function() {
+    //return saved HCL value if available and up to date
+    if (this.hclCache){
+        if (   this.hclCache.red == this.red
+               && this.hclCache.green == this.green
+               && this.hclCache.blue ==  this.blue){
+            return this.hclCache.hcl;
+        }
+    }
+    //Cache the current rgb values so we can save future HCL
+    //calculations
+    this.hclCache = {};
+    this.hclCache.red = this.red;
+    this.hclCache.green = this.green;
+    this.hclCache.blue = this.blue;
+    
+    //Shorthand for correlation to the published math formulas
+    var r = this.red;
+    var g = this.green;
+    var b = this.blue;
+    
+    var min = Math.min(r, g, b);
+    var max = Math.max(r, g, b);
+    
+    if (max == 0){
+        //Black - skip the calculations...
+        return [0,0,0];
+    }
+    
+    var Y0 = 100;
+    var gamma = 3;
+
+    var alpha = (min / max) / Y0;
+    var Q = Math.exp(alpha * gamma);
+
+    var rg = r-g;
+    var gb = g-b;
+    var br = b-r;
+    
+    var L = ((Q * max) + (1 - Q) * min) / 2;
+    var C = (Q * (Math.abs(rg) + Math.abs(gb) + Math.abs(br))) / 3;
+    var H = Math.atan2(gb, rg) * (180 / Math.PI);
+    
+    /**
+     * This alternate equation is proposed in the paper
+     *
+     * Equation 4 from the paper
+     * if (rg < 0 && gb >= 0){
+     *     H = 180 + H;
+     * }
+     * if (rg < 0 && gb < 0){
+     *     H = H - 180;
+     * }
+     */
+    if (rg >= 0 && gb >= 0){
+        H = (2 / 3) * H ;
+    }
+    if (rg >= 0 && gb < 0){
+        H = (4 / 3) * H;
+    }
+    if (rg < 0 && gb >= 0){
+        H = 180 + ((4 / 3) * H);
+    }
+    if (rg < 0 && gb < 0){
+        H = ((2 / 3) * H) - 180;
+    }
+    
+    this.hclCache.hcl = [H, C, L];
+
+    return [H, C, L];
+};
+    
+/**
+ * Returns the distance between this color and another color in
+ * HCL color space, as defined in the research report:
+ *
+ * HCL: a new Color Space for a more Effective Content-based Image Retrieval
+ * M. Sarifuddin <m.sarifuddin@uqo.ca> - Rokia Missaoui <rokia.missaoui@uqo.ca> Département d'informatique et d'ingénierie, Université du Québec en Outaouais C.P. 1250, Succ. B Gatineau Quéebec Canada, J8X 3X7
+ * http://w3.uqo.ca/missaoui/Publications/TRColorSpace.zip
+ *
+ * This uses the "D sub HCL" method, labeled
+ * 
+ * D
+ *  HCL
+ */
+Color.prototype.HCLDistanceFrom = function(hcl){
+    //Accept hcl array or Color object
+    if (hcl instanceof Color){
+        hcl = hcl.getHCL();
+    }
+    
+    var hcl2 = this.getHCL();
+    
+    var H1 = hcl[0];
+    var C1 = hcl[1];
+    var L1 = hcl[2];
+    
+    var H2 = hcl2[0];
+    var C2 = hcl2[1];
+    var L2 = hcl2[2];
+    
+    
+    var AL = 1.4456;
+    
+    var AH = Math.abs(H1 - H2) + 0.16;
+    var DL = Math.abs(L1 - L2);
+    var DH = Math.abs(H1 - H2);
+    return Math.sqrt(
+        (AL * DL)^2
+        + AH * (C1^2 + C2^2 - (2*C1*C2*Math.cos(DH * (Math.PI / 180))))
+    );
+};
 
 Color.prototype.getHue = function () {
     return this.getHSL()[0];

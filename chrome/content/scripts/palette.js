@@ -112,7 +112,35 @@ function Palette(){
         }
         flushSelectionNotificationBuffer();
     }
-
+    
+    this.selectSimilar = function(referenceSwatch){
+        startSelectionNotificationBuffer();
+        
+        var distances = [];
+        Array.forEach(this.swatches, function(swatch) {
+            swatch.deselect();
+            swatch.dumpProps();
+            distances.push(
+                [referenceSwatch.color.HCLDistanceFrom(swatch.color),
+                swatch]
+            );
+        });
+        
+        //Sort by distances
+        distances.sort(function(a, b){
+            return (a[0] - b[0])
+        });
+        
+        var count = this.swatches.length;
+        
+        var index = 0;
+        while (index <= count && index < 5){
+            distances[index][1].select();
+            index++;
+        }
+        flushSelectionNotificationBuffer();
+    }
+    
     /**
      * Undo the most recently done action on this palette that
      * hasn't already been undone.*/
