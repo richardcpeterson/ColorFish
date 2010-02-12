@@ -245,9 +245,9 @@
         ]]>
         </handler>
         
-        <handler event="dblclick" button="0" modifiers="shift"><![CDATA[
-            dump("dblclick");
+        <handler event="dblclick" button="0"><![CDATA[
             swatch.palette.selectSimilar(swatch);
+            
             event.stopPropagation();
         ]]>
         </handler>

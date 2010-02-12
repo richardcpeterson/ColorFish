@@ -309,6 +309,7 @@ Color.prototype.getHCL = function() {
     
     if (max == 0){
         //Black - skip the calculations...
+        this.hclCache.hcl = [0,0,0];
         return [0,0,0];
     }
     
@@ -322,21 +323,11 @@ Color.prototype.getHCL = function() {
     var gb = g-b;
     var br = b-r;
     
-    var L = ((Q * max) + (1 - Q) * min) / 2;
-    var C = (Q * (Math.abs(rg) + Math.abs(gb) + Math.abs(br))) / 3;
-    var H = Math.atan2(gb, rg) * (180 / Math.PI);
+    var L = ((Q * max) + (Q - 1) * min) / 2;
     
-    /**
-     * This alternate equation is proposed in the paper
-     *
-     * Equation 4 from the paper
-     * if (rg < 0 && gb >= 0){
-     *     H = 180 + H;
-     * }
-     * if (rg < 0 && gb < 0){
-     *     H = H - 180;
-     * }
-     */
+    var C = (Q * (Math.abs(rg) + Math.abs(gb) + Math.abs(br))) / 3;
+    var H = Math.atan(gb / rg) * (180 / Math.PI);
+    
     if (rg >= 0 && gb >= 0){
         H = (2 / 3) * H ;
     }
@@ -349,12 +340,15 @@ Color.prototype.getHCL = function() {
     if (rg < 0 && gb < 0){
         H = ((2 / 3) * H) - 180;
     }
+    if (isNaN(H)){
+        H = 0;
+    }
     
     this.hclCache.hcl = [H, C, L];
 
     return [H, C, L];
 };
-    
+
 /**
  * Returns the distance between this color and another color in
  * HCL color space, as defined in the research report:
@@ -387,12 +381,13 @@ Color.prototype.HCLDistanceFrom = function(hcl){
     
     var AL = 1.4456;
     
-    var AH = Math.abs(H1 - H2) + 0.16;
-    var DL = Math.abs(L1 - L2);
     var DH = Math.abs(H1 - H2);
+    var ACH = DH + 0.16;
+    var DL = Math.abs(L1 - L2);
+    
     return Math.sqrt(
-        (AL * DL)^2
-        + AH * (C1^2 + C2^2 - (2*C1*C2*Math.cos(DH * (Math.PI / 180))))
+        Math.pow((AL * DL),2)
+        + ACH * (C1*C1 + C2*C2 - (2*C1*C2*Math.cos(DH * (Math.PI / 180))))
     );
 };
 

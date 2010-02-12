@@ -119,7 +119,6 @@ function Palette(){
         var distances = [];
         Array.forEach(this.swatches, function(swatch) {
             swatch.deselect();
-            swatch.dumpProps();
             distances.push(
                 [referenceSwatch.color.HCLDistanceFrom(swatch.color),
                 swatch]
@@ -134,10 +133,16 @@ function Palette(){
         var count = this.swatches.length;
         
         var index = 0;
-        while (index <= count && index < 5){
+        while (index <= count && index < 10){
             distances[index][1].select();
             index++;
         }
+        /*Array.forEach(distances, function(entry){
+            if (isNaN(entry[0])){
+                entry[1].select();
+                entry[1].color.getHCL().dumpProps();
+            }
+        });*/
         flushSelectionNotificationBuffer();
     }
     
