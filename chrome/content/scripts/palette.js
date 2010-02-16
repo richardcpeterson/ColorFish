@@ -127,6 +127,20 @@ function Palette(){
     this.selectSimilar = function(referenceSwatch){
         startSelectionNotificationBuffer();
         
+        var clusterToSelect = null
+        var clusterNumber = 0;
+        while (clusterToSelect == null && clusterNumber < this.clusters.length){
+            if (this.clusters[clusterNumber].contains(referenceSwatch)) {
+                clusterToSelect = this.clusters[clusterNumber];
+            }
+            clusterNumber++;
+        }
+        if (clusterToSelect != null){
+            this.deselectAllSwatches();
+            this.selectSwatches(clusterToSelect);
+        }
+        
+        /*
         //Higher numbers cause less similar swatches to be included in
         //the selection. Lower numbers cause only very similar swatches
         //to be included in the selection.
@@ -153,20 +167,19 @@ function Palette(){
             distances[index][1].select();
             index++;
         }
-        dump("Max distance: " + distances[index-1][0] + "\n");
-        /*Array.forEach(distances, function(entry){
-            if (isNaN(entry[0])){
-                entry[1].select();
-                entry[1].color.getHCL().dumpProps();
-            }
-        });*/
+        */
         flushSelectionNotificationBuffer();
     }
     
     this.cluster = function (){
+        var start = new Date().getMilliseconds();
+        
+        //Distances above which we should not merge
         var distanceThreshold = 150;
         
         this.clusters = new Array(this.swatches.length);
+        
+        var thisPalette = this;
         
         //Initialize all clusters as one-swatch clusters
         for(var i = 0; i < this.swatches.length; i++){
@@ -189,33 +202,160 @@ function Palette(){
         for(var row = 0; row < this.swatches.length; row++) {
             distances[row] = new Array(row+1);
             //Fill the current row with distance measures.
-            for (var col = 0; col <= row; row++){
+            for (var col = 0; col <= row; col++){
                 if (row == col){
                     //Don't measure distance from a swatch to itself
                     distances[row][col] = null;
                 }
                 else {
                     distances[row][col] =
-                        swatches[row].color.HCLDistanceFrom(swatches[col].color);
+                        this.swatches[row].color.HCLDistanceFrom(this.swatches[col].color);
                 }
             }
         }
         
-        //Find minimum distance
-        minDistance = Infinity;
-        mergeRow = -1;
-        mergeCol = -1;
-        for(var row = 0; row < distances.length; row++) {
-            for (var col = 0; col < row; row++){
-                if (distances[row][col] < minDistance){
-                    minDistance = distances[row][col];
-                    mergeRow = row;
-                    mergeRow = col;
-                }
-            }
+        //Find the distance between clusterA and clusterB in the
+        //distances array
+        function distance(clusterA, clusterB){
+            return distances[Math.max(clusterA, clusterB)][Math.min(clusterA, clusterB)];
         }
         
-        //Merge the rows
+        //Figure out which value will "win" the merge - the distance
+        //between clusterA and referenceCluster, or the distance
+        //between clusterB and referenceCluster. Null will always
+        //win. In absense of a null, the greater distance will win.
+        //Return the winning value.
+        function winningValue(clusterA, clusterB, referenceCluster){
+            var aVal = distance(clusterA, referenceCluster);
+            var bVal = distance(clusterB, referenceCluster);
+            return ((aVal == null || bVal == null) ? null : Math.max(aVal,bVal));
+        }
+        
+        //Assign newValue as the new distance between clusterA and
+        //clusterB in the distances table
+        function assignDistance(clusterA, clusterB, newValue){
+            distances[Math.max(clusterA, clusterB)][Math.min(clusterA, clusterB)] = newValue;
+        }
+        
+        //Modify the distances array so that clusterA, refCluster
+        //and clusterB, refCluster both reflect the new merged value
+        function mergeValues(clusterA, clusterB, refCluster){
+            var newVal = winningValue(clusterA, clusterB, refCluster);
+            assignDistance(clusterA, refCluster, newVal);
+            assignDistance(clusterB, refCluster, newVal);
+        }
+        
+        //Return the pair of clusters that has the minimum distance
+        //in the distance array. Returns an array in the form
+        // [clusterA, clusterB, distance]
+        function getPairWithMinDistance(){
+            var minDistance = Infinity;
+            var mergeRow = -1;
+            var mergeCol = -1;
+            for(var row = 0; row < distances.length; row++) {
+                for (var col = 0; col < row; col++){
+                    if (distances[row][col] < minDistance){
+                        minDistance = distances[row][col];
+                        mergeRow = row;
+                        mergeCol = col;
+                    }
+                }
+            }
+            return [mergeRow, mergeCol, minDistance];
+        }
+        
+        // Remove a cluster from the distances table in both dimensions
+        // So removeFromDistances(3) would turn
+        //    [0][1][2][3][4]
+        // [0] N
+        // [1] 4  N
+        // [2] 3  6  N
+        // [3] 1  3  3  N
+        // [4] 5  6  4  1  N
+        //
+        // Into
+        //    [0][1][2][3]
+        // [0] N
+        // [1] 4  N
+        // [2] 3  6  N
+        // [3] 5  6  4  N
+        //
+        // Also removes the cluster from the clusters array.
+        function removeCluster(clusterNumber){
+            var newDistances = new Array(distances.length-1);
+            var newClusters = new Array(thisPalette.clusters.length-1);
+            
+            //Index map will be a map that skips the index
+            //we are removing. For instance, if clusterNumber is 2,
+            //we get 0->0, 1->1, 2->3, 3->4
+            var indexMap = new Array(distances.length-1);
+            for (var i = 0; i < indexMap.length; i++){
+                indexMap[i] = ((i < clusterNumber) ? (i) : (i + 1));
+                
+                //Build the new clusters array as we build the index
+                //map
+                newClusters[i] = thisPalette.clusters[indexMap[i]];
+            }
+            
+            //Build the new array, skipping clusterNumber
+            for (var row = 0; row < newDistances.length; row++){
+                newDistances[row] = new Array(row+1)
+                for(var col = 0; col <= row; col++){
+                    newDistances[row][col] =
+                        distances[indexMap[row]][indexMap[col]];
+                }
+            }
+            
+            distances = newDistances;
+            thisPalette.clusters = newClusters;
+        }
+        
+        //Find the initial potential merge, getting the pair and
+        //distance between them.
+        var potentialMergePair = getPairWithMinDistance();
+        var minDistance = potentialMergePair[2];
+        
+        while (minDistance <= distanceThreshold){
+            //Figure out which cluster is getting merged into (targetCLuster)
+            //and which is getting merged and removed (mergeCluster)
+            var targetCluster =
+                Math.min(potentialMergePair[0], potentialMergePair[1]);
+            var mergeCluster =
+                Math.max(potentialMergePair[0], potentialMergePair[1]);
+            
+            //Recalculate all the values in the distances array
+            //based on the new merged clusters
+            for (var refCluster = 0; refCluster < this.clusters.length; refCluster++){
+                mergeValues(mergeCluster, targetCluster, refCluster);
+            }
+            
+            //Concatenate the clusters
+            this.clusters[targetCluster] =
+                this.clusters[targetCluster].concat(this.clusters[mergeCluster]);
+            
+            removeCluster(mergeCluster);
+            
+            //Get the values for the next iteration
+            potentialMergePair = getPairWithMinDistance();
+            minDistance = potentialMergePair[2];
+        }
+        
+        var end = new Date().getMilliseconds();
+        
+        dump("CLUSTER took " + (end - start)/1000 + " seconds\n");
+    }
+    
+    this.sortByHueAndLightness = function(){
+        this.swatches.sort(Swatch.compareHueAndLightness);
+    }
+    
+    this.sortByClusters = function(){
+        this.cluster();
+        var sortedSwatches = [];
+        for (var i = 0; i < this.clusters.length; i++){
+            sortedSwatches = sortedSwatches.concat(this.clusters[i]);
+        }
+        this.swatches = sortedSwatches;
     }
     
     /**
@@ -276,6 +416,7 @@ function Palette(){
         //Clear the redo list - this wasn't an undone
         //command
         redoList = new Array();
+        this.sortByClusters();
         notifyHistoryObservers();
     }
 

@@ -51,7 +51,7 @@ function csDocument(sourceDocument) {
             });
         });
 
-        palette.swatches.sort(Swatch.compareHueAndLightness);
+        palette.sortByClusters();
 
         return palette;
     }

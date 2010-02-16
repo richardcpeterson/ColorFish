@@ -314,7 +314,7 @@ Color.prototype.getHCL = function() {
     }
     
     var Y0 = 100;
-    var gamma = 30;
+    var gamma = 20;
 
     var alpha = (min / max) / Y0;
     var Q = Math.exp(alpha * gamma);
