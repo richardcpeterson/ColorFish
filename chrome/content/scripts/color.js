@@ -314,7 +314,7 @@ Color.prototype.getHCL = function() {
     }
     
     var Y0 = 100;
-    var gamma = 3;
+    var gamma = 30;
 
     var alpha = (min / max) / Y0;
     var Q = Math.exp(alpha * gamma);
@@ -382,6 +382,9 @@ Color.prototype.HCLDistanceFrom = function(hcl){
     var AL = 1.4456;
     
     var DH = Math.abs(H1 - H2);
+    if ((C1 == 0 || C2 == 0) && !((C1 == 0 && C2 == 0))){
+        DH = 180;
+    }
     var ACH = DH + 0.16;
     var DL = Math.abs(L1 - L2);
     

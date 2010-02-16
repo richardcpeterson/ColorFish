@@ -6,8 +6,9 @@
 function Palette(){
     this.swatches = new Array();
     this.selectedSwatches = new Array();
-    this.mostRecentlySelectedSwatch = null;
-
+    
+    this.swatchClusters = [];
+    
     this.selectionObservers = [];
 
     /**
@@ -24,6 +25,13 @@ function Palette(){
      */
     this.selectionSize = function(){
         return this.selectedSwatches.length;
+    }
+    
+    /**
+     * Returns the number of clusters of swatches in this palette
+     */
+    this.clusterCount = function(){
+        return this.swatchClusters.length;
     }
 
     /**
@@ -113,8 +121,16 @@ function Palette(){
         flushSelectionNotificationBuffer();
     }
     
+    /**
+     * Select swatches similar in color to the given swatch.
+     */
     this.selectSimilar = function(referenceSwatch){
         startSelectionNotificationBuffer();
+        
+        //Higher numbers cause less similar swatches to be included in
+        //the selection. Lower numbers cause only very similar swatches
+        //to be included in the selection.
+        var similarityThreshold = 150;
         
         var distances = [];
         Array.forEach(this.swatches, function(swatch) {
@@ -133,10 +149,11 @@ function Palette(){
         var count = this.swatches.length;
         
         var index = 0;
-        while (index <= count && index < 10){
+        while (index <= count && distances[index][0] < similarityThreshold){
             distances[index][1].select();
             index++;
         }
+        dump("Max distance: " + distances[index-1][0] + "\n");
         /*Array.forEach(distances, function(entry){
             if (isNaN(entry[0])){
                 entry[1].select();
@@ -144,6 +161,61 @@ function Palette(){
             }
         });*/
         flushSelectionNotificationBuffer();
+    }
+    
+    this.cluster = function (){
+        var distanceThreshold = 150;
+        
+        this.clusters = new Array(this.swatches.length);
+        
+        //Initialize all clusters as one-swatch clusters
+        for(var i = 0; i < this.swatches.length; i++){
+            this.clusters[i] = new Array(this.swatches[i]);
+        }
+        
+        var distances = new Array(this.swatches.length);
+        
+        //Create a triangular array of all distance measurements between
+        //color swatches. This array will be like
+        //    [0][1][2][3][4]
+        // [0] N
+        // [1] 4  N
+        // [2] 3  6  N
+        // [3] 1  3  3  N
+        // [4] 5  6  4  1  N
+        //
+        // Where each intersection between a row and column gives the
+        // distance measurement between the two indexed swatches.
+        for(var row = 0; row < this.swatches.length; row++) {
+            distances[row] = new Array(row+1);
+            //Fill the current row with distance measures.
+            for (var col = 0; col <= row; row++){
+                if (row == col){
+                    //Don't measure distance from a swatch to itself
+                    distances[row][col] = null;
+                }
+                else {
+                    distances[row][col] =
+                        swatches[row].color.HCLDistanceFrom(swatches[col].color);
+                }
+            }
+        }
+        
+        //Find minimum distance
+        minDistance = Infinity;
+        mergeRow = -1;
+        mergeCol = -1;
+        for(var row = 0; row < distances.length; row++) {
+            for (var col = 0; col < row; row++){
+                if (distances[row][col] < minDistance){
+                    minDistance = distances[row][col];
+                    mergeRow = row;
+                    mergeRow = col;
+                }
+            }
+        }
+        
+        //Merge the rows
     }
     
     /**
