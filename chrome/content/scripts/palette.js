@@ -6,9 +6,9 @@
 function Palette(){
     this.swatches = new Array();
     this.selectedSwatches = new Array();
-    
+
     this.swatchClusters = [];
-    
+
     this.selectionObservers = [];
 
     /**
@@ -26,7 +26,7 @@ function Palette(){
     this.selectionSize = function(){
         return this.selectedSwatches.length;
     }
-    
+
     /**
      * Returns the number of clusters of swatches in this palette
      */
@@ -120,13 +120,13 @@ function Palette(){
         }
         flushSelectionNotificationBuffer();
     }
-    
+
     /**
      * Select swatches similar in color to the given swatch.
      */
     this.selectSimilar = function(referenceSwatch){
         startSelectionNotificationBuffer();
-        
+
         var clusterToSelect = null
         var clusterNumber = 0;
         while (clusterToSelect == null && clusterNumber < this.clusters.length){
@@ -139,13 +139,13 @@ function Palette(){
             this.deselectAllSwatches();
             this.selectSwatches(clusterToSelect);
         }
-        
+
         /*
         //Higher numbers cause less similar swatches to be included in
         //the selection. Lower numbers cause only very similar swatches
         //to be included in the selection.
         var similarityThreshold = 150;
-        
+
         var distances = [];
         Array.forEach(this.swatches, function(swatch) {
             swatch.deselect();
@@ -154,14 +154,14 @@ function Palette(){
                 swatch]
             );
         });
-        
+
         //Sort by distances
         distances.sort(function(a, b){
             return (a[0] - b[0])
         });
-        
+
         var count = this.swatches.length;
-        
+
         var index = 0;
         while (index <= count && distances[index][0] < similarityThreshold){
             distances[index][1].select();
@@ -170,24 +170,24 @@ function Palette(){
         */
         flushSelectionNotificationBuffer();
     }
-    
+
     this.cluster = function (){
         var start = new Date().getMilliseconds();
-        
+
         //Distances above which we should not merge
         var distanceThreshold = 150;
-        
+
         this.clusters = new Array(this.swatches.length);
-        
+
         var thisPalette = this;
-        
+
         //Initialize all clusters as one-swatch clusters
         for(var i = 0; i < this.swatches.length; i++){
             this.clusters[i] = new Array(this.swatches[i]);
         }
-        
+
         var distances = new Array(this.swatches.length);
-        
+
         //Create a triangular array of all distance measurements between
         //color swatches. This array will be like
         //    [0][1][2][3][4]
@@ -213,13 +213,13 @@ function Palette(){
                 }
             }
         }
-        
+
         //Find the distance between clusterA and clusterB in the
         //distances array
         function distance(clusterA, clusterB){
             return distances[Math.max(clusterA, clusterB)][Math.min(clusterA, clusterB)];
         }
-        
+
         //Figure out which value will "win" the merge - the distance
         //between clusterA and referenceCluster, or the distance
         //between clusterB and referenceCluster. Null will always
@@ -230,13 +230,13 @@ function Palette(){
             var bVal = distance(clusterB, referenceCluster);
             return ((aVal == null || bVal == null) ? null : Math.max(aVal,bVal));
         }
-        
+
         //Assign newValue as the new distance between clusterA and
         //clusterB in the distances table
         function assignDistance(clusterA, clusterB, newValue){
             distances[Math.max(clusterA, clusterB)][Math.min(clusterA, clusterB)] = newValue;
         }
-        
+
         //Modify the distances array so that clusterA, refCluster
         //and clusterB, refCluster both reflect the new merged value
         function mergeValues(clusterA, clusterB, refCluster){
@@ -244,7 +244,7 @@ function Palette(){
             assignDistance(clusterA, refCluster, newVal);
             assignDistance(clusterB, refCluster, newVal);
         }
-        
+
         //Return the pair of clusters that has the minimum distance
         //in the distance array. Returns an array in the form
         // [clusterA, clusterB, distance]
@@ -263,7 +263,7 @@ function Palette(){
             }
             return [mergeRow, mergeCol, minDistance];
         }
-        
+
         // Remove a cluster from the distances table in both dimensions
         // So removeFromDistances(3) would turn
         //    [0][1][2][3][4]
@@ -281,40 +281,20 @@ function Palette(){
         // [3] 5  6  4  N
         //
         // Also removes the cluster from the clusters array.
-        function removeCluster(clusterNumber){
-            var newDistances = new Array(distances.length-1);
-            var newClusters = new Array(thisPalette.clusters.length-1);
-            
-            //Index map will be a map that skips the index
-            //we are removing. For instance, if clusterNumber is 2,
-            //we get 0->0, 1->1, 2->3, 3->4
-            var indexMap = new Array(distances.length-1);
-            for (var i = 0; i < indexMap.length; i++){
-                indexMap[i] = ((i < clusterNumber) ? (i) : (i + 1));
-                
-                //Build the new clusters array as we build the index
-                //map
-                newClusters[i] = thisPalette.clusters[indexMap[i]];
+        function removeCluster(clusterNumber) {
+            distances.splice(clusterNumber,1);
+            for (var row = 0; row < distances.length; row++) {
+                distances[row].splice(clusterNumber,1);
             }
-            
-            //Build the new array, skipping clusterNumber
-            for (var row = 0; row < newDistances.length; row++){
-                newDistances[row] = new Array(row+1)
-                for(var col = 0; col <= row; col++){
-                    newDistances[row][col] =
-                        distances[indexMap[row]][indexMap[col]];
-                }
-            }
-            
-            distances = newDistances;
-            thisPalette.clusters = newClusters;
+
+            thisPalette.clusters.splice(clusterNumber,1);
         }
-        
+
         //Find the initial potential merge, getting the pair and
         //distance between them.
         var potentialMergePair = getPairWithMinDistance();
         var minDistance = potentialMergePair[2];
-        
+
         while (minDistance <= distanceThreshold){
             //Figure out which cluster is getting merged into (targetCLuster)
             //and which is getting merged and removed (mergeCluster)
@@ -322,33 +302,33 @@ function Palette(){
                 Math.min(potentialMergePair[0], potentialMergePair[1]);
             var mergeCluster =
                 Math.max(potentialMergePair[0], potentialMergePair[1]);
-            
+
             //Recalculate all the values in the distances array
             //based on the new merged clusters
             for (var refCluster = 0; refCluster < this.clusters.length; refCluster++){
                 mergeValues(mergeCluster, targetCluster, refCluster);
             }
-            
+
             //Concatenate the clusters
             this.clusters[targetCluster] =
                 this.clusters[targetCluster].concat(this.clusters[mergeCluster]);
-            
+
             removeCluster(mergeCluster);
-            
+
             //Get the values for the next iteration
             potentialMergePair = getPairWithMinDistance();
             minDistance = potentialMergePair[2];
         }
-        
+
         var end = new Date().getMilliseconds();
-        
+
         dump("CLUSTER took " + (end - start)/1000 + " seconds\n");
     }
-    
+
     this.sortByHueAndLightness = function(){
         this.swatches.sort(Swatch.compareHueAndLightness);
     }
-    
+
     this.sortByClusters = function(){
         this.cluster();
         var sortedSwatches = [];
@@ -357,7 +337,7 @@ function Palette(){
         }
         this.swatches = sortedSwatches;
     }
-    
+
     /**
      * Undo the most recently done action on this palette that
      * hasn't already been undone.*/
