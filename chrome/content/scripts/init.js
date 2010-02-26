@@ -59,7 +59,7 @@ function initApp(){
             this.className = this.className.replace(reg,' ');
         }
     }
-    
+
     /**
      * Add a "relatedObjects" object / array to
      * all Elements. This array can hold
@@ -93,4 +93,6 @@ function initApp(){
     document.getElementById("uri-input").focus();
 
     window.Browser.load_page("chrome://csschemer/content/help/index.html");
+
+    start_venkman();
 }
