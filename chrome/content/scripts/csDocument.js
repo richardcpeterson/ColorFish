@@ -51,6 +51,8 @@ function csDocument(sourceDocument) {
             });
         });
 
+        
+        palette.sortByHueAndLightness();
         palette.sortByClusters();
 
         return palette;
