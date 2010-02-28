@@ -32,15 +32,8 @@
     visibility: collapse;
 }
 
-#csLeftPane{
-    width:420px;
-}
-
-#csCenterPane{
-}
-
-#csRightPane {
-    width:400px;
+#csLeftPane, #csCenterPane, #csRightPane {
+    width: 33%;
 }
 
 #cssFilePane label {
