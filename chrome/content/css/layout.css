@@ -1,6 +1,6 @@
 /**
  * Main Application Layout
- * 
+ *
  * This CSS file is for main application layout.
  * Only style rules that affect that structure,
  * position and size of elements should be placed
@@ -39,8 +39,15 @@
 #csCenterPane{
 }
 
-#csRightPane{
+#csRightPane {
     width:400px;
+}
+
+#cssFilePane label {
+    max-width: 300px;
+}
+#cssFilePane {
+    overflow: hidden;
 }
 
 #csToolPane{
@@ -48,7 +55,7 @@
 }
 
 button {
-    min-width: 0.1em; 
+    min-width: 0.1em;
 }
 
 .undoButton,
