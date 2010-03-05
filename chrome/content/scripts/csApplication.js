@@ -141,6 +141,7 @@ function CSApplication(){
 
                 label.setAttribute("value", name);
                 label.setAttribute("tooltiptext", name);
+                label.setAttribute("crop", "center");
                 node.setAttribute("align", "center");
 
                 var button = window.document.createElement("button");
