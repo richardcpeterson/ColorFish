@@ -8,7 +8,7 @@ function CSApplication(){
     this.palettePane = document.getElementById("palettePane");
     this.toolPane = document.getElementById("toolPane");
     var csLeftPane = document.getElementById("csLeftPane");
-    
+
     addHandlerToElement(csLeftPane, "keyup", leftPaneKeyUp);
     addHandlerToElement(csLeftPane, "mousedown", leftPaneMouseDown);
 
@@ -22,7 +22,7 @@ function CSApplication(){
         this.updateCSSFilePane();
         this.updatePalettePane();
         this.updateToolPane();
-        
+
         //We want to be notified of changes to the palette.
         //As of yet, palette history is the only history for
         //which global undo/redo is supported.
@@ -38,19 +38,19 @@ function CSApplication(){
             .getService(Components.interfaces.nsIAppStartup)
             .quit(Components.interfaces.nsIAppStartup.eAttemptQuit);
     };
-    
+
     this.undo = function() {
         this.activePage.originalPalette.undo();
     }
-    
+
     this.redo = function() {
         this.activePage.originalPalette.redo();
     }
-    
+
     this.updatePaletteHistory = function(palette){
         this.update_undo_redo_commands();
     }
-    
+
     /**
      * Enable or disable the undo and / or redo command
      * based on the current availability of those actions
@@ -61,14 +61,14 @@ function CSApplication(){
         undoCommand.setAttribute("disabled", !this.canUndo());
         redoCommand.setAttribute("disabled", !this.canRedo());
     }
-    
+
     /**
      * Is there an undo state available?
      */
     this.canUndo = function(){
         return this.activePage.originalPalette.canUndo();
     }
-    
+
     /**
      * Is there a redo state available?
      */
@@ -173,7 +173,7 @@ function CSApplication(){
         paletteControl.originalPalette = this.activePage.originalPalette;
         this.palettePane.appendChild(paletteControl);
     }
-    
+
     this.updateToolPane = function (){
         //Remove all children
         while ( this.toolPane.childNodes.length >= 1 )
@@ -242,7 +242,7 @@ function CSApplication(){
             break;
         }
     }
-    
+
     /***
      * This is called by the File -> Save option from the main menu.
      * It takes a string and saves it to the file with the given name.
