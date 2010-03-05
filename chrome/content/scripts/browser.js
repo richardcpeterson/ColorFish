@@ -25,6 +25,13 @@ function Browser() {
     //Reference to the address bar input
     this.address_bar = document.getElementById("uri-input");
 
+    // If this is true then we just called forward() or back().  We
+    // use this boolean inside of our progress listener to determine
+    // whether or not we should reload the page.  We want to do that
+    // when the user clicks 'Forward' or 'Back' so that we do not load
+    // cached pages.
+    this.justWentForwardOrBack = false;
+
     /***
      * Takes a URL as a string and loads that page.
      */
@@ -53,19 +60,23 @@ function Browser() {
     }
 
     /**
-     * Go forward in browser history
+     * Go forward in browser history.
      */
-    this.forward = function() {
-        if(this.widget.canGoForward)
+    this.forward = function () {
+        if (this.widget.canGoForward) {
             this.widget.goForward();
-    }
+            this.justWentForwardOrBack = true;
+        }
+    };
 
     /**
      * Go back in browser history
      */
-    this.back = function() {
-        if (this.widget.canGoBack)
+    this.back = function () {
+        if (this.widget.canGoBack) {
             this.widget.goBack();
+            this.justWentForwardOrBack = true;
+        }
     }
 
     /***
@@ -131,6 +142,12 @@ function browserListener () {
     this.onStateChange = function(aWebProgress, aRequest, aStateFlags, aStatus) {
         if (aRequest == this.currentRequest
         && ((aStateFlags & this.STATE_DONE) == this.STATE_DONE)) {
+
+            if (Browser.justWentForwardOrBack) {
+                Browser.justWentForwardOrBack = false;
+                Browser.reload();
+            }
+
             Browser.update_active_page();
 
             document.title =
