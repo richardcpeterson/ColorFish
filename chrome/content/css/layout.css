@@ -39,8 +39,9 @@
 #csCenterPane{
 }
 
-#csRightPane {
-    width:400px;
+#csRightPane{
+    width: 20%;
+    max-width: 400px;
 }
 
 #cssFilePane label {
