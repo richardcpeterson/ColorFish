@@ -29,7 +29,11 @@ function Browser() {
      * Takes a URL as a string and loads that page.
      */
     this.load_page = function(url) {
-        this.widget.loadURI(url);
+        this.widget.loadURIWithFlags(
+            url,
+            Components.interfaces.nsIWebNavigation.LOAD_FLAGS_BYPASS_CACHE,
+            null
+        );
     }
 
     /***
