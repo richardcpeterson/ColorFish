@@ -4,36 +4,29 @@
  * Represents an individual rule from a stylesheet, but also keeps
  * track of its state, providing methods for changing and reverting
  * that state.  Objects are constructed from CSSStyleRule objects.
- *
- * [Public Interface]
- *
- * - property(foo)
- *
- *     Returns the property 'foo' from the style.
- *
- * - update(foo, color)
- *
- *     Sets the property 'foo' to the 'color' string.  The color
- *     should be a valid CSS color string.  Behavior is undefined if
- *     it is not.
- *
- * - redo()
- *
- *     Reverts the rule to its last state.
- *
  */
 function csRuleStyle(style) {
     this.style = style;
 }
 
+/***
+ *  Returns the property 'foo' from the style.
+ */
 csRuleStyle.prototype.property = function (property) {
     return this.style[property];
 };
 
+/***
+ * Sets the property 'foo' to the 'color' string.  The color should be
+ * a valid CSS color string.  Behavior is undefined if it is not.
+ */
 csRuleStyle.prototype.update = function (property, colorString) {
     this.style[property] = colorString;
 };
 
+/***
+ * Reverts the rule to its last state.
+ */
 csRuleStyle.prototype.redo = function () {
     if (this.redoList.top()) {
         this.undoList.push( this.undoList.top()[0], this.style[ this.redoList.top()[0] ] );
@@ -48,28 +41,6 @@ csRuleStyle.prototype.redo = function () {
  * which is the sole argument of the constructor.  Provides access to
  * the contents of a stylesheet, along with ways of ouptutting that
  * stylesheet in particular formats.
- *
- * [Public Interface]
- *
- * - addRule(rule)
- *
- *     Takes a CSSStyleRule and associates it with the stylesheet.
- *
- * - getPrettyPrintText()
- *
- *     Returns a string representing a pretty-printed version of the
- *     style sheet.  This string will be empty if the sheet has no
- *     associated rules.  Imported style sheets are not handled.
- *
- * - getOriginalText()
- *
- *     Returns a string containing the original, unmodified CSS text.
- *     There is a possibility that the function will throw an
- *     exception; it makes an XML HTTP request to fetch the
- *     stylesheet, and this can fail.  If the request is successful
- *     there is still a chance that we may not get back CSS.  In that
- *     case the function returns nothing.
- *
  */
 function csStyleSheet(sheet) {
     this.sheet = sheet;
@@ -104,10 +75,18 @@ function csStyleSheet(sheet) {
     );
 }
 
+/***
+ * Takes a CSSStyleRule and associates it with the stylesheet.
+ */
 csStyleSheet.prototype.addRule = function (rule) {
     this.rules.push(new csRuleStyle(rule.style));
 };
 
+/***
+ * Returns a string representing a pretty-printed version of the style
+ * sheet.  This string will be empty if the sheet has no associated
+ * rules.  Imported style sheets are not handled.
+ */
 csStyleSheet.prototype.getPrettyPrintText = function () {
     var output = "";
 
@@ -127,6 +106,13 @@ csStyleSheet.prototype.getPrettyPrintText = function () {
     return output.replace(/; /g, ";\n\t");
 };
 
+/***
+ * Returns a string containing the original, unmodified CSS text.
+ * There is a possibility that the function will throw an exception;
+ * it makes an XML HTTP request to fetch the stylesheet, and this can
+ * fail.  If the request is successful there is still a chance that we
+ * may not get back CSS.  In that case the function returns nothing.
+ */
 csStyleSheet.prototype.getOriginalText = function () {
 
     // If the sheet has an owner node and does not have an href or
