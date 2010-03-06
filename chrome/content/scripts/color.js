@@ -115,18 +115,16 @@ Color.prototype.getCSSRGB = function () {
 };
 
 /**
- * Return the color name for this color if it exists, otherwise return
- * long hex (#FFFFFF)
+ * Return the color name for this color if it exists, otherwise
+ * return undefined.
  */
 Color.prototype.getColorName = function () {
-    var thisName = false;
     var thisHex = this.getCSSHex().substr(1,6).toLowerCase();
-    for (let [name,hex] in Iterator(Color.colorNames)){
-        if(hex == thisHex){
-            thisName = name;
+    for (let [name, hex] in Iterator(Color.colorNames)) {
+        if (hex === thisHex) {
+            return name;
         }
     }
-    return thisName;
 };
 
 /**
