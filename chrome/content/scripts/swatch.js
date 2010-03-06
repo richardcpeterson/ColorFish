@@ -9,26 +9,26 @@ function Swatch(color, colorFormat, palette){
      ************************************************/
     //Currently set color
     this.color = color;
-    
+
     //Color used during live editing, before the color
     //has been set and added to the swatch history
     this.liveEditColor = color.clone();
-    
+
     //Use colorFormat if given, or default value
     this.format =
         (colorFormat?
          colorFormat:
          Enums.ColorFormats.longHex);
-    
+
     //Save an association to the parent palette
     this.palette = palette;
 
-    
+
     /**
      * Sets the color of the current swatch, setting
      * an undo-able Swatch state.
      * Both parameters are optional. If newColor
-     * is given, it will opdate all properties for
+     * is given, it will update all properties for
      * that color. If colorFormat is given, it will
      * use the new color format. If neither
      * parameter is given, the current values in
@@ -38,14 +38,14 @@ function Swatch(color, colorFormat, palette){
     this.setColor = function(newColor, colorFormat) {
         //Push the old state onto the undo stack
         undoList.push(new Array(this.color, this.format) );
-        
+
         //Clear the redo list - this wasn't an undone
         //command
         redoList = new Array();
-        
+
         if (typeof newColor == "string")
             newColor = Color.from_css(newColor);
-        
+
         //Update properties and color format if needed
         if (newColor){
             updateProperties(newColor);
@@ -54,15 +54,15 @@ function Swatch(color, colorFormat, palette){
         if (colorFormat){
             this.format = colorFormat;
         }
-        
+
         notifySwatchSetColorObservers();
         notifyHistoryObservers();
     }
-    
+
     this.isSelected = function(){
         return selected;
     }
-    
+
     /**
      * Select this swatch
      */
@@ -72,7 +72,7 @@ function Swatch(color, colorFormat, palette){
             notifySelectionObservers();
         }
     }
-    
+
     /**
      * Deselect this swatch
      */
@@ -82,12 +82,12 @@ function Swatch(color, colorFormat, palette){
             notifySelectionObservers();
         }
     }
-    
+
     this.reverseSelection = function(){
         selected = !selected;
         notifySelectionObservers();
     }
-    
+
     /**
      * Set the transient color used to display this swatch
      * during live editing. This does not set any history
@@ -111,15 +111,15 @@ function Swatch(color, colorFormat, palette){
             //Save the current state in the redo stack
             redoList.push(new Array(this.color, this.format));
             updateProperties(undoList.top()[0]);
-            
+
             this.color = undoList.top()[0];
             this.format = undoList.top()[1];
-            
+
             undoList.pop();
             notifyHistoryObservers();
         }
     };
-    
+
     /**
      * Redo the most recently undone setColor action.
      * That is, go forward one step in the history.
@@ -129,22 +129,22 @@ function Swatch(color, colorFormat, palette){
             //Save the current state in the undo stack
             undoList.push(new Array(this.color, this.format));
             updateProperties(redoList.top()[0]);
-            
+
             this.color = redoList.top()[0];
             this.format = redoList.top()[1];
-            
+
             redoList.pop();
             notifyHistoryObservers();
         }
     };
-    
+
     /**
      * Lets us know if this swatch has any undo states.
      */
     this.canUndo = function(){
        return (undoList.length > 0);
     }
-    
+
     /**
      * Lets us know if this swatch has any redo states
      */
@@ -165,7 +165,7 @@ function Swatch(color, colorFormat, palette){
     this.count = function(){
         return properties.length;
     }
-    
+
     /**
      * Add an observer that will be notified when this
      * swatch's color is SET - IE a history state is
@@ -179,11 +179,11 @@ function Swatch(color, colorFormat, palette){
     this.addHistoryObserver = function (observer) {
         historyObservers.push(observer);
     }
-    
+
     /**
      * Add an observer that will be notified when this
      * swatch's color is set.
-     * 
+     *
      * In order to be notified, the observer must have the
      * updateSwatchSetColor(Swatch)
      * method, where "Swatch" will be a reference to this
@@ -192,12 +192,12 @@ function Swatch(color, colorFormat, palette){
     this.addSetColorObserver = function (observer) {
         setColorObservers.push(observer);
     }
-    
+
     /**
      * Add an observer that will be notified when this
      * swatch's live color is changed. This occurs during
      * live editing, when a history state is not set.
-     * 
+     *
      * In order to be notified, the observer must have the
      * updateLiveColor(Swatch)
      * method, where "Swatch" will be a reference to this
@@ -206,11 +206,11 @@ function Swatch(color, colorFormat, palette){
     this.addLiveColorObserver = function (observer) {
         liveColorObservers.push(observer);
     }
-    
+
     /**
      * Add an observer that will be notified when this
      * swatch's selection state is changed.
-     * 
+     *
      * In order to be notified, the observer must have the
      * updateSelection(Swatch)
      * method, where "Swatch" will be a reference to this
@@ -219,24 +219,24 @@ function Swatch(color, colorFormat, palette){
     this.addSelectionObserver = function (observer) {
         selectionObservers.push(observer);
     }
-    
+
     this.removeHistoryObserver = function(observer){
         historyObservers.remove(observer);
     }
-    
+
     this.setLiveColorObserver = function(observer){
         setColorObservers.remove(observer);
     }
-    
+
     this.removeLiveColorObserver = function(observer){
         liveColorObservers.remove(observer);
     }
-    
+
     this.removeSelectionObserver = function(observer){
         selectionObservers.remove(observer);
     }
-    
-    
+
+
     /************************************************
      * Private members
      ***********************************************/
@@ -244,13 +244,13 @@ function Swatch(color, colorFormat, palette){
     //not necessarily refer to this swatch within
     //the non-member "private" functions below
     var thisSwatch = this;
-    
+
     var undoList = new Array();
     var redoList = new Array();
 
     //An array of color properties
     var properties = new Array();
-    
+
     //Lists of objects that observe this swatch's state
     var historyObservers = new Array();
     var liveColorObservers = new Array();
@@ -258,7 +258,7 @@ function Swatch(color, colorFormat, palette){
     var selectionObservers = new Array();
 
     var selected = false;
-    
+
     /**
      * Update all properties in this swatch to reflect
      * the value passed in color. This does not create
@@ -273,7 +273,7 @@ function Swatch(color, colorFormat, palette){
             properties[i].setColor(color);
         }
     }
-    
+
     /**
      * Notify all registered observers that the color
      * has changed in the history.
@@ -283,7 +283,7 @@ function Swatch(color, colorFormat, palette){
             historyObservers[i].updateSwatchHistory(thisSwatch);
         }
     }
-    
+
     /**
      * Notify all registered observers that a new Color has
      * been set.
@@ -293,7 +293,7 @@ function Swatch(color, colorFormat, palette){
             setColorObservers[i].updateSwatchSetColor(thisSwatch);
         }
     }
-    
+
     /**
      * Notify all registered observers that the live editing
      * color has changed
@@ -303,7 +303,7 @@ function Swatch(color, colorFormat, palette){
             liveColorObservers[i].updateLiveColor(thisSwatch);
         }
     }
-    
+
     /**
      * Notify all registered observers that this swatch's
      * selection state has changed
