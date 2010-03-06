@@ -29,8 +29,14 @@ csRuleStyle.prototype.update = function (property, colorString) {
  */
 csRuleStyle.prototype.redo = function () {
     if (this.redoList.top()) {
-        this.undoList.push( this.undoList.top()[0], this.style[ this.redoList.top()[0] ] );
-        this.style[ this.redoList.top()[0] ] = this.redoList.pop()[1];
+        var property = this.redoList.top()[0];
+
+        this.undoList.push(
+            this.undoList.top()[0],
+            this.style[ property ]
+        );
+
+        this.style[ property ] = this.redoList.pop()[1];
     }
 };
 
