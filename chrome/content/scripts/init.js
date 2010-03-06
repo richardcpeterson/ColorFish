@@ -2,7 +2,7 @@
  * Initializes the application
  */
 function initApp(){
-    
+
     /**
      * Teach all objects to recursively dump
      * their properties to the terminal. Use this
@@ -20,23 +20,23 @@ function initApp(){
         if(!maxDepth){
             maxDepth = 0;
         }
-        
+
         //Initial output heading
         if(!currentDepth){
             currentDepth = 0;
             dump("\n===Dumping Object===\n");
             dump(this + "\n");
         }
-        
+
         //Set the current indentation level
         var indent = "   ";
         indent = indent.repeat(currentDepth);
-        
+
         //Current output text
         var text = "";
         //Type of current property
         var type = null;
-        
+
         /**
          * Output all the properties of this object,
          * and recurse where the property is an
@@ -49,10 +49,10 @@ function initApp(){
             //if (prop == "dumpProps"){
             //    continue;
             //}
-            
+
             //Text always starts with an indent
             text = indent;
-            
+
             //Try to figure out the type of the current
             //property. Sometimes this doesn't work,
             //and we just leave it at that.
@@ -63,7 +63,7 @@ function initApp(){
             catch(error){
                 text += prop + ": This member does not support 'typeof'\n";
             }
-            
+
             //Don't print the body of functions
             if (type == "function"){
                 text +=  "function " + prop + " {...}\n";
@@ -73,7 +73,7 @@ function initApp(){
                 text += prop + " = " + this[prop] + "\n";
             }
             dump(text);
-            
+
             //Recursively dump child objects
             if (type == "object"
                 && this[prop] != null
@@ -105,7 +105,7 @@ function initApp(){
         }
         return found;
     }
-    
+
     /**
      * Teach arrays to remove individual items.
      *
@@ -120,14 +120,13 @@ function initApp(){
     }
 
     /**
-     * Returns the last/top item of an array.
-     * This is essentially the equivalent of pop
-     * except it doesn't remove the item
+     * Returns the last item of an array---the top when we treat it as
+     * a stack.  This is essentially the equivalent of pop() except it
+     * doesn't remove the item.
      */
-    Array.prototype.top = function() {
-        return (this[ this.length -1 ]) ? this[ this.length -1 ] : false;
-    }
-
+    Array.prototype.top = function () {
+        return this[ this.length - 1 ];
+    };
 
     /**
      * Check if the element has a particular class
