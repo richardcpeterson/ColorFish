@@ -18,7 +18,7 @@ function Browser() {
     //Listen to events occurring in the browser, so
     //we can update the GUI
     //Don't make the progress listener anonymous.
-    //It causes a the listener to get dropped.
+    //It causes the listener to get dropped.
     this.progressListener = new browserListener();
     this.widget.addProgressListener(this.progressListener,0xFFFFFFFF);
 
