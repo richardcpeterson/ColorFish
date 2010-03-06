@@ -7,6 +7,8 @@
  */
 function csRuleStyle(style) {
     this.style = style;
+    this.undoList = [];
+    this.redoList = [];
 }
 
 /***
