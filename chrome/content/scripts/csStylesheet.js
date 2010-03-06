@@ -1,3 +1,13 @@
+/*********************************************************************
+ *
+ * This file provides the functionality we use for representing and
+ * manipulating stylesheets.  The classes here server as our wrapper
+ * around the CSS interface provided by the Document Object Model.
+ * Any application-specific logic that needs to be implemented on top
+ * of stylesheet objects is found here.
+ *
+ ********************************************************************/
+
 /***
  * [Class]  csRuleStyle
  *
