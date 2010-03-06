@@ -24,22 +24,22 @@
  */
 function csRuleStyle(style) {
     this.style = style;
-
-    this.property = function (property) {
-        return this.style[property];
-    };
-
-    this.update = function (property, colorString) {
-        this.style[property] = colorString;
-    };
-
-    this.redo = function () {
-        if (this.redoList.top()) {
-            this.undoList.push( this.undoList.top()[0], this.style[ this.redoList.top()[0] ] );
-            this.style[ this.redoList.top()[0] ] = this.redoList.pop()[1];
-        }
-    };
 }
+
+csRuleStyle.prototype.property = function (property) {
+    return this.style[property];
+};
+
+csRuleStyle.prototype.update = function (property, colorString) {
+    this.style[property] = colorString;
+};
+
+csRuleStyle.prototype.redo = function () {
+    if (this.redoList.top()) {
+        this.undoList.push( this.undoList.top()[0], this.style[ this.redoList.top()[0] ] );
+        this.style[ this.redoList.top()[0] ] = this.redoList.pop()[1];
+    }
+};
 
 /***
  * [Class]  csStyleSheet
@@ -76,10 +76,6 @@ function csStyleSheet(sheet) {
     this.rules = [];
     this.importedSheets = [];
 
-    this.addRule = function (rule) {
-        this.rules.push(new csRuleStyle(rule.style));
-    };
-
     // This regular expression is used in the loop below for
     // extracting the value out of @import URLs.  If it matches then
     // the first captured group will be the path to the sheet being
@@ -106,70 +102,74 @@ function csStyleSheet(sheet) {
         },
         this
     );
+}
 
-    this.getPrettyPrintText = function () {
-        var output = "";
+csStyleSheet.prototype.addRule = function (rule) {
+    this.rules.push(new csRuleStyle(rule.style));
+};
 
-        if (!this.sheet.cssRules) {
-            return output;
-        }
+csStyleSheet.prototype.getPrettyPrintText = function () {
+    var output = "";
 
-        this.rules.forEach(
-            function (rule) {
-                if (rule.style.cssText) {
-                    output += rule.style.parentRule.selectorText + " {\n";
-                    output += "\t" + rule.style.cssText + "\n}\n\n";
-                }
+    if (!this.sheet.cssRules) {
+        return output;
+    }
+
+    this.rules.forEach(
+        function (rule) {
+            if (rule.style.cssText) {
+                output += rule.style.parentRule.selectorText + " {\n";
+                output += "\t" + rule.style.cssText + "\n}\n\n";
             }
-        );
+        }
+    );
 
-        return output.replace(/; /g, ";\n\t");
-    };
+    return output.replace(/; /g, ";\n\t");
+};
 
-    this.getOriginalText = function () {
+csStyleSheet.prototype.getOriginalText = function () {
 
-        // If the sheet has an owner node and does not have an href or
-        // src attribute then we are dealing with embedded <style>
-        // content.
-        if (    this.sheet.ownerNode
+    // If the sheet has an owner node and does not have an href or
+    // src attribute then we are dealing with embedded <style>
+    // content.
+    if (    this.sheet.ownerNode
             && !this.sheet.ownerNode.getAttribute("src")
             && !this.sheet.ownerNode.href ) {
-            return this.sheet.ownerNode.innerHTML;
-        }
+        return this.sheet.ownerNode.innerHTML;
+    }
 
-        // Check to see if exists directly in the href.
-        if (this.sheet.href.substr(0, 13) === "data:text/css") {
-            return unescape(this.sheet.href.slice(14));
-        }
+    // Check to see if exists directly in the href.
+    if (this.sheet.href.substr(0, 13) === "data:text/css") {
+        return unescape(this.sheet.href.slice(14));
+    }
 
-        // Otherwise we're going to fetch the file sychronously with
-        // Ajax (SJax)?
-        var request = new XMLHttpRequest();
-        request.open("GET", this.sheet.href, false);
-        request.overrideMimeType("text/plain");
-        request.send(null);
+    // Otherwise we're going to fetch the file sychronously with
+    // Ajax (SJax)?
+    var request = new XMLHttpRequest();
+    request.open("GET", this.sheet.href, false);
+    request.overrideMimeType("text/plain");
+    request.send(null);
 
-        switch (request.status) {
-        case 0:    // Local
-        case 304:  // Not Modified
+    switch (request.status) {
+    case 0:    // Local
+    case 304:  // Not Modified
+        return request.responseText;
+        break;
+
+        // Just because we have a status of 200 everything may not
+        // actually be OK.  Some websites will redirect to other
+        // pages instead of sending back a 404 when accessing a
+        // missing page.  If we try to load a stylesheet that
+        // isn't really there we can end up with
+        // request.responseText containing all the markup for some
+        // arbitrary web page.
+        //
+        // So we have to make sure our content is really CSS
+        // before handing it back.
+    case 200:
+        if (request.responseText.isValidStylesheet()) {
             return request.responseText;
-            break;
-
-            // Just because we have a status of 200 everything may not
-            // actually be OK.  Some websites will redirect to other
-            // pages instead of sending back a 404 when accessing a
-            // missing page.  If we try to load a stylesheet that
-            // isn't really there we can end up with
-            // request.responseText containing all the markup for some
-            // arbitrary web page.
-            //
-            // So we have to make sure our content is really CSS
-            // before handing it back.
-        case 200:
-            if (request.responseText.isValidStylesheet()) {
-                return request.responseText;
-            }
-            break;
         }
-    };
-}
+        break;
+    }
+};
