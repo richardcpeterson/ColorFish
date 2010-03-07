@@ -16,24 +16,17 @@ function Color() {
 }
 
 /**
- * Test for color equality
+ * Test for color equality.  If this color has a special string then
+ * that is all we compare.  Otherwise we compare RGB values.
  */
 Color.prototype.equals = function (otherColor) {
-    return (
-        //No special string, and color matches
-        (    !(this.specialString
-               || otherColor.specialString
-              )
-             && otherColor.red == this.red
-             && otherColor.green == this.green
-             && otherColor.blue == this.blue
-        )
-            ||
-            //Special string defined and equal
-            (this.specialString
-             &&(otherColor.specialString == this.specialString)
-            )
-    );
+    if (this.specialString) {
+        return (this.specialString === otherColor.specialString);
+    }
+
+    return (this.red   === otherColor.red &&
+            this.green === otherColor.green &&
+            this.blue  === otherColor.blue);
 };
 
 /**
