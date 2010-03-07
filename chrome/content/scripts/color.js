@@ -13,301 +13,293 @@ function Color() {
     this.blue  = 0;
 
     this.specialString = null;
+}
 
-    /**
-     * Test for color equality
-     */
-    this.equals = function(otherColor){
-        return (
-            //No special string, and color matches
-            (    !(this.specialString
-                     || otherColor.specialString
-                  )
-               && otherColor.red == this.red
-               && otherColor.green == this.green
-               && otherColor.blue == this.blue
-            )
+/**
+ * Test for color equality
+ */
+Color.prototype.equals = function (otherColor) {
+    return (
+        //No special string, and color matches
+        (    !(this.specialString
+               || otherColor.specialString
+              )
+             && otherColor.red == this.red
+             && otherColor.green == this.green
+             && otherColor.blue == this.blue
+        )
             ||
             //Special string defined and equal
             (this.specialString
-               &&(otherColor.specialString == this.specialString)
+             &&(otherColor.specialString == this.specialString)
             )
-        );
-    }
-    
-    /**
-     * Return a new Color with the same color value as
-     * this Color
-     */
-    this.clone = function(){
-        var cloned = new Color();
-        cloned.red = this.red;
-        cloned.green = this.green;
-        cloned.blue = this.blue;
-        cloned.specialString = this.specialString;
-        return cloned;
-    }
+    );
+};
 
-    /***
-     * Sets the component values by reading an 'rgb(...)' string.
-     */
-    this.read_rgb = function(rgb) {
-        var match   = Color.rgbPattern.exec(rgb);
-
-        if (match) {
-            this.red   = parseInt( match[1] );
-            this.green = parseInt( match[2] );
-            this.blue  = parseInt( match[3] );
-        }
-    }
-
-    /**
-     * Sets the value of this color by reading a hex
-     * color rule, like '#FFFFFF' or '#FFF'
-     */
-    this.read_hex = function(hex){
-        //Three digits, like #FFF
-        if (hex.match( Color.shortHexPattern )) {
-            this.red = parseInt(hex.charAt(1).repeat(2),16);
-            this.green = parseInt(hex.charAt(2).repeat(2),16);
-            this.blue = parseInt(hex.charAt(3).repeat(2),16);
-        }
-        //Six digits, like #FFFFFF
-        else if (hex.match( Color.longHexPattern )) {
-            this.red = parseInt(hex.substring(1,3),16);
-            this.green = parseInt(hex.substring(3,5),16);
-            this.blue = parseInt(hex.substring(5,7),16);
-        }
-    }
-
-    /**
-     * Return the number in the string format
-     * #FFFFFF
-     */
-    this.getCSSHex = function(){
-        var r = this.padHex(this.red.toString(16));
-        var g = this.padHex(this.green.toString(16));
-        var b = this.padHex(this.blue.toString(16));
-        return "#"+r+g+b;
-    }
-    
-    /**
-     * Return a string of the form
-     * #FFF if possible. If not, fall back to
-     * long hex - #ABCDEF
-     */
-    this.getCSSShortHex = function(){
-        var str = this.getCSSHex();
-        if (str.charAt(1)==str.charAt(2)
-            && str.charAt(3)==str.charAt(4)
-            && str.charAt(5)==str.charAt(6)){
-            str = "#"+str.charAt(1)+str.charAt(3)+str.charAt(5);
-        }
-        return str;
-    }
-
-    /**
-     * Return the number in the string format
-     * rgb(255,255,255)
-     */
-    this.getCSSRGB = function(){
-        return "rgb("
-            + this.red + ","
-            + this.green + ","
-            + this.blue + ")";
-    }
-
-    /**
-     * Return the color name for this color if it exists,
-     * otherwise return long hex (#FFFFFF)
-     */
-    this.getColorName = function(){
-        var thisName = false;
-        var thisHex = this.getCSSHex().substr(1,6).toLowerCase();
-        for (let [name,hex] in Iterator(Color.colorNames)){  
-            if(hex == thisHex){
-                thisName = name;
-            }
-        }
-        return thisName;
-    }
-
-    /**
-     * Return a string representation of this color,
-     * in a parsable format. Takes an optional color
-     * format from Enums.colorFormats.
-     */
-    this.toString = function(colorFormat){
-        var newString = "";
-        if (this.specialString){
-            newString = this.specialString;
-        }
-        else if (colorFormat){
-            switch (colorFormat){
-                case Enums.ColorFormats.unknown :
-                    newString = "unknown";
-                    break;
-                case Enums.ColorFormats.rgb :
-                    newString = this.getCSSRGB();
-                    break;
-                case Enums.ColorFormats.longHex : 
-                    newString = this.getCSSHex();
-                    break;
-                case Enums.ColorFormats.shortHex : 
-                    newString = this.getCSSShortHex();
-                    break;
-                case Enums.ColorFormats.colorName : 
-                    newString = this.getColorName();
-                    break;
-                case Enums.ColorFormats.specialString :
-                    newString = (this.specialString?this.specialString:"unknown");
-                    break;
-            }
-        }
-        else{ //Default
-            newString = this.getCSSHex();
-        }
-        return newString;
-    }
-
-    /**
-     * Return an array of Hue, Saturation and Lightness values
-     */
-    this.getHSL = function() {
-        //Convert to 0-1 scale
-        var r = this.red / 255;
-        var g = this.green / 255;
-        var b = this.blue / 255;
-
-        var max = Math.max(r, g, b);
-        var min = Math.min(r, g, b);
-        var hue;
-        var saturation;
-        var lightness = (max + min) / 2;
-
-        if(max == min){ //grayscale
-            hue = -1;
-            saturation = -1;
-        }
-        else{
-            var delta = max - min;
-
-            //Set saturation
-            saturation = ((lightness > 0.5) ? (delta / (2 - max - min)) : (delta / (max + min)));
-
-            //Set hue depending on which of r,g,b is the maximum
-            switch(max){
-                case r:
-                    hue = (g - b) / delta + (g < b ? 6 : 0);
-                    break;
-                case g:
-                    hue = (b - r) / delta + 2;
-                    break;
-                case b:
-                    hue = (r - g) / delta + 4;
-                    break;
-            }
-            hue /= 6;
-        }
-
-        return [hue, saturation, lightness];
-    }
-    
-    
-    this.getHSV = function() {
-        //Convert to 0-1 scale
-        var r = this.red / 255;
-        var g = this.green / 255;
-        var b = this.blue / 255;
-        
-        //Get the minimum and maximum values and the
-        //interval between them
-        var min = Math.min(r, g, b);
-        var max = Math.max(r, g, b);
-        var delta = max - min;
-        
-        var hue, saturation, value;
-        
-        //Value is always the max value of RGB
-        value = max;
-        
-        if (delta == 0) {
-            //Greyscale
-            hue = 0;
-            saturation = 0;
-        } else{
-            saturation = delta / max;
-            
-            //Calculate the hue
-            var rDelta = (((max - r) / 6) + (delta / 2)) / delta;
-            var gDelta = (((max - g) / 6) + (delta / 2)) / delta;
-            var bDelta = (((max - b) / 6) + (delta / 2)) / delta;
-            
-            switch(max){
-                case r:
-                    hue = bDelta - gDelta;
-                    break;
-                case g:
-                    hue = (1 / 3) + rDelta - bDelta;
-                    break;
-                case b:
-                    hue = (2 / 3) + gDelta - rDelta;
-                    break;
-            }
-            
-            //Make sure hue is in the 0 to 1 range
-            if (hue < 0){
-                hue += 1;
-            }
-            if (hue > 1){
-                hue -= 1;
-            }
-        }
-        
-        //Scale back to degrees
-        hue *= 360;
-        
-        return [hue, saturation, value];
-    } 
-
-    this.getHue = function(){
-        return this.getHSL()[0];
-    }
-
-    this.getSaturation = function(){
-        return this.getHSL()[1];
-    }
-
-    this.getLightness = function() {
-        return this.getHSL()[2];
-    }
-
-    /**
-     * Pad a hex value to make sure it is (at least)
-     * 2 digits
-     */
-    this.padHex = function(hex){
-        while (hex.length < 2) {
-            hex = "0" + hex;
-        }
-        return hex;
-    }
-
-    /***
-     * Dumps debugging output to the console.
-     */
-    this.dump = function() {
-        if(this.specialString)
-            dump(specialString);
-        else
-            dump([this.red, this.green, this.blue].join(','));
-    }
-
-}
+/**
+ * Return a new Color with the same color value as this Color
+ */
+Color.prototype.clone = function () {
+    var cloned = new Color();
+    cloned.red = this.red;
+    cloned.green = this.green;
+    cloned.blue = this.blue;
+    cloned.specialString = this.specialString;
+    return cloned;
+};
 
 /***
- * This function takes a CSS color string and
- * returns a new Color object representing that color.
+ * Sets the component values by reading an 'rgb(...)' string.
+ */
+Color.prototype.read_rgb = function (rgb) {
+    var match   = Color.rgbPattern.exec(rgb);
+
+    if (match) {
+        this.red   = parseInt( match[1] );
+        this.green = parseInt( match[2] );
+        this.blue  = parseInt( match[3] );
+    }
+};
+
+/**
+ * Sets the value of this color by reading a hex color rule, like
+ * '#FFFFFF' or '#FFF'
+ */
+Color.prototype.read_hex = function (hex) {
+    //Three digits, like #FFF
+    if (hex.match( Color.shortHexPattern )) {
+        this.red = parseInt(hex.charAt(1).repeat(2),16);
+        this.green = parseInt(hex.charAt(2).repeat(2),16);
+        this.blue = parseInt(hex.charAt(3).repeat(2),16);
+    }
+    //Six digits, like #FFFFFF
+    else if (hex.match( Color.longHexPattern )) {
+        this.red = parseInt(hex.substring(1,3),16);
+        this.green = parseInt(hex.substring(3,5),16);
+        this.blue = parseInt(hex.substring(5,7),16);
+    }
+};
+
+/**
+ * Return the number in the string format #FFFFFF
+ */
+Color.prototype.getCSSHex = function () {
+    var r = this.padHex(this.red.toString(16));
+    var g = this.padHex(this.green.toString(16));
+    var b = this.padHex(this.blue.toString(16));
+    return "#"+r+g+b;
+};
+
+/**
+ * Return a string of the form #FFF if possible. If not, fall back to
+ * long hex - #ABCDEF
+ */
+Color.prototype.getCSSShortHex = function () {
+    var str = this.getCSSHex();
+    if (str.charAt(1)==str.charAt(2)
+        && str.charAt(3)==str.charAt(4)
+        && str.charAt(5)==str.charAt(6)){
+        str = "#"+str.charAt(1)+str.charAt(3)+str.charAt(5);
+    }
+    return str;
+};
+
+/**
+ * Return the number in the string format rgb(255,255,255)
+ */
+Color.prototype.getCSSRGB = function () {
+    return "rgb("
+        + this.red + ","
+        + this.green + ","
+        + this.blue + ")";
+};
+
+/**
+ * Return the color name for this color if it exists, otherwise return
+ * long hex (#FFFFFF)
+ */
+Color.prototype.getColorName = function () {
+    var thisName = false;
+    var thisHex = this.getCSSHex().substr(1,6).toLowerCase();
+    for (let [name,hex] in Iterator(Color.colorNames)){
+        if(hex == thisHex){
+            thisName = name;
+        }
+    }
+    return thisName;
+};
+
+/**
+ * Return a string representation of this color, in a parsable
+ * format. Takes an optional color format from Enums.colorFormats.
+ */
+Color.prototype.toString = function (colorFormat) {
+    var newString = "";
+    if (this.specialString){
+        newString = this.specialString;
+    }
+    else if (colorFormat){
+        switch (colorFormat){
+        case Enums.ColorFormats.unknown :
+            newString = "unknown";
+            break;
+        case Enums.ColorFormats.rgb :
+            newString = this.getCSSRGB();
+            break;
+        case Enums.ColorFormats.longHex :
+            newString = this.getCSSHex();
+            break;
+        case Enums.ColorFormats.shortHex :
+            newString = this.getCSSShortHex();
+            break;
+        case Enums.ColorFormats.colorName :
+            newString = this.getColorName();
+            break;
+        case Enums.ColorFormats.specialString :
+            newString = (this.specialString?this.specialString:"unknown");
+            break;
+        }
+    }
+    else{ //Default
+        newString = this.getCSSHex();
+    }
+    return newString;
+};
+
+/**
+ * Return an array of Hue, Saturation and Lightness values
+ */
+Color.prototype.getHSL = function ()  {
+    //Convert to 0-1 scale
+    var r = this.red / 255;
+    var g = this.green / 255;
+    var b = this.blue / 255;
+
+    var max = Math.max(r, g, b);
+    var min = Math.min(r, g, b);
+    var hue;
+    var saturation;
+    var lightness = (max + min) / 2;
+
+    if(max == min){ //grayscale
+        hue = -1;
+        saturation = -1;
+    }
+    else{
+        var delta = max - min;
+
+        //Set saturation
+        saturation = ((lightness > 0.5) ? (delta / (2 - max - min)) : (delta / (max + min)));
+
+        //Set hue depending on which of r,g,b is the maximum
+        switch(max){
+        case r:
+            hue = (g - b) / delta + (g < b ? 6 : 0);
+            break;
+        case g:
+            hue = (b - r) / delta + 2;
+            break;
+        case b:
+            hue = (r - g) / delta + 4;
+            break;
+        }
+        hue /= 6;
+    }
+
+    return [hue, saturation, lightness];
+};
+
+Color.prototype.getHSV = function ()  {
+    //Convert to 0-1 scale
+    var r = this.red / 255;
+    var g = this.green / 255;
+    var b = this.blue / 255;
+
+    //Get the minimum and maximum values and the
+    //interval between them
+    var min = Math.min(r, g, b);
+    var max = Math.max(r, g, b);
+    var delta = max - min;
+
+    var hue, saturation, value;
+
+    //Value is always the max value of RGB
+    value = max;
+
+    if (delta == 0) {
+        //Greyscale
+        hue = 0;
+        saturation = 0;
+    } else{
+        saturation = delta / max;
+
+        //Calculate the hue
+        var rDelta = (((max - r) / 6) + (delta / 2)) / delta;
+        var gDelta = (((max - g) / 6) + (delta / 2)) / delta;
+        var bDelta = (((max - b) / 6) + (delta / 2)) / delta;
+
+        switch(max){
+        case r:
+            hue = bDelta - gDelta;
+            break;
+        case g:
+            hue = (1 / 3) + rDelta - bDelta;
+            break;
+        case b:
+            hue = (2 / 3) + gDelta - rDelta;
+            break;
+        }
+
+        //Make sure hue is in the 0 to 1 range
+        if (hue < 0){
+            hue += 1;
+        }
+        if (hue > 1){
+            hue -= 1;
+        }
+    }
+
+    //Scale back to degrees
+    hue *= 360;
+
+    return [hue, saturation, value];
+};
+
+Color.prototype.getHue = function () {
+    return this.getHSL()[0];
+};
+
+Color.prototype.getSaturation = function () {
+    return this.getHSL()[1];
+};
+
+Color.prototype.getLightness = function ()  {
+    return this.getHSL()[2];
+};
+
+/**
+ * Pad a hex value to make sure it is (at least) 2 digits
+ */
+Color.prototype.padHex = function (hex) {
+    while (hex.length < 2) {
+        hex = "0" + hex;
+    }
+    return hex;
+};
+
+/***
+ * Dumps debugging output to the console.
+ */
+Color.prototype.dump = function () {
+    if(this.specialString)
+        dump(specialString);
+    else
+        dump([this.red, this.green, this.blue].join(','));
+};
+
+/***
+ * This function takes a CSS color string and returns a new Color
+ * object representing that color.
  */
 Color.from_css = function(colorString) {
     colorString = colorString.toLowerCase();
