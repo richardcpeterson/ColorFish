@@ -44,7 +44,7 @@
     <command id="cmd_undo" oncommand="csApp.undo();" />
     <command id="cmd_redo" oncommand="csApp.redo();" />
   </commandset>
-  
+
 
   <comandset id="menuCommandSet">
     <command id="cmd_menuFileSave" oncommand="csApp.save()"/>
@@ -64,6 +64,7 @@
     <key id="back-key" modifiers="alt" key="B" command="cmd_browseBack"/>
     <key id="forward-key" modifiers="alt" key="F" command="cmd_browseForward"/>
     <key id="backspace-key" keycode="VK_BACK" command="cmd_browseBack"/>
+    <key id="reload-key" keycode="VK_F5" command="cmd_browseReload"/>
   </keyset>
 
   <menubar id="menubar">
