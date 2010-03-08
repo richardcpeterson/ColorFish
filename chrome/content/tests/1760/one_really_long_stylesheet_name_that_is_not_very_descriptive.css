@@ -6,3 +6,7 @@ body {
 p {
     font-size: 800%;
 }
+
+img {
+    border: 10px solid white;
+}
