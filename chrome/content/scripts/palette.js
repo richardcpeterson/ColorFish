@@ -7,9 +7,9 @@ function Palette(){
     this.swatches = new Array();
     this.selectedSwatches = new Array();
     this.mostRecentlySelectedSwatch = null;
-    
+
     this.selectionObservers = [];
-    
+
     /**
      * Returns the number of swatches in
      * this palette
@@ -17,7 +17,7 @@ function Palette(){
     this.size = function(){
         return this.swatches.length;
     }
-    
+
     /**
      * Returns the number of selected swatches
      * in this palette
@@ -32,7 +32,7 @@ function Palette(){
     this.getSelectedSwatches = function(){
         return this.selectedSwatches;
     }
-    
+
     this.selectAllSwatches = function(){
         startSelectionNotificationBuffer();
         Array.forEach(this.swatches, function(swatch) {
@@ -40,7 +40,7 @@ function Palette(){
         });
         flushSelectionNotificationBuffer();
     }
-    
+
     /**
      * Make no swatches selected
      */
@@ -51,7 +51,7 @@ function Palette(){
         });
         flushSelectionNotificationBuffer();
     }
-    
+
     /**
      * Add a swatch to the selection
      */
@@ -60,14 +60,14 @@ function Palette(){
             swatch.select();
         }
     }
-    
+
     /**
      * Remove a swatch from the selection
      */
     this.deselectSwatch = function(swatch){
         swatch.deselect();
     }
-    
+
     /**
      * Add a set of swatches to the selection
      */
@@ -78,7 +78,7 @@ function Palette(){
         });
         flushSelectionNotificationBuffer();
     }
-    
+
     /**
      * Remove a set of swatches from the selection
      */
@@ -89,7 +89,7 @@ function Palette(){
         });
         flushSelectionNotificationBuffer();
     }
-    
+
     /**
      * Select a range of swatches between swatchA and swatchB
      */
@@ -104,7 +104,7 @@ function Palette(){
         var endIndex = Math.max(
                 this.swatches.indexOf(swatchA),
                 this.swatches.indexOf(swatchB));
-        
+
         startSelectionNotificationBuffer();
         //Select all swatches in the range
         for(var i = startIndex; i <= endIndex; i++){
@@ -112,7 +112,7 @@ function Palette(){
         }
         flushSelectionNotificationBuffer();
     }
-    
+
     /**
      * Undo the most recently done action on this palette that
      * hasn't already been undone.*/
@@ -123,7 +123,7 @@ function Palette(){
             notifyHistoryObservers();
         }
     }
-    
+
     /**
      * Redo the most recently undone action
      **/
@@ -134,21 +134,21 @@ function Palette(){
             notifyHistoryObservers();
         }
     }
-    
+
     /**
      * Lets us know if this palette has any undo states.
      */
     this.canUndo = function(){
        return (undoList.length > 0);
     }
-    
+
     /**
      * Lets us know if this palette has any redo states
      */
     this.canRedo = function(){
         return (redoList.length > 0);
     }
-    
+
     /**
      * Update this palette with a swatch's state
      */
@@ -164,16 +164,16 @@ function Palette(){
         }
         this.notifySelectionObservers();
     }
-    
+
     this.updateSwatchSetColor = function(swatch){
         undoList.push(swatch);
-        
+
         //Clear the redo list - this wasn't an undone
         //command
         redoList = new Array();
         notifyHistoryObservers();
     }
-    
+
     /**
      * Insert a color property into the pallete,
      * inserting into an existing swatch if one
@@ -204,7 +204,7 @@ function Palette(){
         else {
             var newSwatch = new Swatch(color, null, this);
             newSwatch.addProperty(property);
-            
+
             //We want to be notified of selection
             //changes to this swatch
             newSwatch.addSelectionObserver(this);
@@ -240,19 +240,19 @@ function Palette(){
             }
         });
     }
-    
+
     /* Add an observer that will be notified when
      * the selection on this palette changes
      */
     this.addSelectionObserver = function(observer){
         this.selectionObservers.push(observer);
     }
-    
+
     this.removeSelectionObserver = function(observer){
         this.selectionObservers.remove(observer);
     }
-    
-    
+
+
     /* Notify all selection observers of a change
      * to this palette's selection set
      */
@@ -263,19 +263,19 @@ function Palette(){
             }
         }
     }
-    
+
     /* Add an observer that will be notified when
      * the palette's history is modified
      */
     this.addHistoryObserver = function (observer) {
         historyObservers.push(observer);
     }
-    
+
     this.removeHistoryObserver = function(observer){
         historyObservers.remove(observer);
     }
-    
-    
+
+
     /* Notify all selection observers of a change
      * to this palette's selection set
      */
@@ -286,10 +286,10 @@ function Palette(){
             }
         }
     }
-    
-    
+
+
     var thisPalette = this;
-    
+
     /**
      * Notify all registered observers that the palette's history
      * has changed.
@@ -299,12 +299,12 @@ function Palette(){
             historyObservers[i].updatePaletteHistory(thisPalette);
         }
     }
-    
+
     var historyObservers = [];
-    
+
     var undoList = [];
     var redoList = [];
-    
+
     /**
      * When we change lots of swatch selections at once, we don't
      * want to issue notifications individually. Thus we only notify
