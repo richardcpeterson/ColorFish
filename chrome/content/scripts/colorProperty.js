@@ -17,7 +17,6 @@
 function ColorProperty(style, propertyType) {
     this.style = style;
     this.propertyType = propertyType;
-    this.originalFormat = Color.getFormat(this.getColorString());
 }
 
 ColorProperty.prototype.setColor = function (colorString) {
