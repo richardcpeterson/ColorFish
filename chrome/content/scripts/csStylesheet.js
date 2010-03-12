@@ -9,50 +9,6 @@
  ********************************************************************/
 
 /***
- * [Class]  csRuleStyle
- *
- * Represents an individual rule from a stylesheet, but also keeps
- * track of its state, providing methods for changing and reverting
- * that state.  Objects are constructed from CSSStyleRule objects.
- */
-function csRuleStyle(style) {
-    this.style = style;
-    this.undoList = [];
-    this.redoList = [];
-}
-
-/***
- *  Returns the property 'foo' from the style.
- */
-csRuleStyle.prototype.property = function (property) {
-    return this.style[property];
-};
-
-/***
- * Sets the property 'foo' to the 'color' string.  The color should be
- * a valid CSS color string.  Behavior is undefined if it is not.
- */
-csRuleStyle.prototype.update = function (property, colorString) {
-    this.style[property] = colorString;
-};
-
-/***
- * Reverts the rule to its last state.
- */
-csRuleStyle.prototype.redo = function () {
-    if (this.redoList.top()) {
-        var property = this.redoList.top()[0];
-
-        this.undoList.push(
-            this.undoList.top()[0],
-            this.style[ property ]
-        );
-
-        this.style[ property ] = this.redoList.pop()[1];
-    }
-};
-
-/***
  * [Class]  csStyleSheet
  *
  * Encapsulates a stylesheet---particularly, a CSSStyleSheet object,
@@ -97,7 +53,7 @@ function csStyleSheet(sheet) {
  * Takes a CSSStyleRule and associates it with the stylesheet.
  */
 csStyleSheet.prototype.addRule = function (rule) {
-    this.rules.push(new csRuleStyle(rule.style));
+    this.rules.push(rule);
 };
 
 /***
