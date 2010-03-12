@@ -1,6 +1,9 @@
 /**
- * Swatch class.  A reference to a color and all
- * CSS color properties associated with that color.
+ * Swatch class.  A reference to a color and all CSS color properties
+ * associated with that color.
+ *
+ * The 'color' parameter is a Color object, as are similar variables
+ * in the class below: e.g. liveEditColor, newColor, so on.
  */
 
 function Swatch(color, colorFormat, palette){
