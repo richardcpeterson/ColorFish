@@ -235,9 +235,9 @@ function Palette(){
         ];
 
         properties.forEach( function(property) {
-            if (rule && rule.property(property)) {
+            if (rule && rule.style.getPropertyValue(property)) {
                 palette.insertProperty(
-                    new ColorProperty(rule, property)
+                    new ColorProperty(rule.style, property)
                 );
             }
         });

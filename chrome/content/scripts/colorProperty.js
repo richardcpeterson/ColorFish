@@ -20,11 +20,11 @@ function ColorProperty(style, propertyType) {
 }
 
 ColorProperty.prototype.setColor = function (colorString) {
-    this.style.update(this.propertyType, colorString);
+    this.style.setProperty(this.propertyType, colorString, "");
 };
 
 ColorProperty.prototype.getColorString = function () {
-    return this.style.property(this.propertyType);
+    return this.style.getPropertyValue(this.propertyType);
 };
 
 ColorProperty.prototype.undoColor = function (colorString) {
