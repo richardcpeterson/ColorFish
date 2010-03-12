@@ -215,13 +215,15 @@ function Palette(){
     }
 
     /**
-     * Insert all applicable properties from a style into the palette,
+     * Insert all applicable properties from a rule into the palette,
      * using existing swatches where the swatch matches the color of
      * the color property from the style being inserted. That is, the
-     * properties from the given style will be consolidated into this
+     * properties from the given rule will be consolidated into this
      * palette.
+     *
+     * The argument to this function is a CSSStyleRule.
      */
-    this.insertStyle = function(style) {
+    this.insertRule = function(rule) {
         var palette    = this;
         var properties = [
             'color',
@@ -233,9 +235,9 @@ function Palette(){
         ];
 
         properties.forEach( function(property) {
-            if (style && style.property(property)) {
+            if (rule && rule.property(property)) {
                 palette.insertProperty(
-                    new ColorProperty(style, property)
+                    new ColorProperty(rule, property)
                 );
             }
         });

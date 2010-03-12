@@ -47,7 +47,7 @@ function csDocument(sourceDocument) {
 
         this.styleSheets.forEach( function(sheet) {
             sheet.rules.forEach( function(rule) {
-                palette.insertStyle(rule);
+                palette.insertRule(rule);
             });
         });
 
