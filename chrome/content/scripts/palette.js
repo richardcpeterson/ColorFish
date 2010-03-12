@@ -227,11 +227,11 @@ function Palette(){
         var palette    = this;
         var properties = [
             'color',
-            'backgroundColor',
-            'borderTopColor',
-            'borderBottomColor',
-            'borderRightColor',
-            'borderLeftColor'
+            'background-color',
+            'border-top-color',
+            'border-bottom-color',
+            'border-right-color',
+            'border-left-color'
         ];
 
         properties.forEach( function(property) {
