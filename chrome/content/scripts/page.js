@@ -15,6 +15,19 @@ function Page(contentDocument) {
         this.document = new csDocument(contentDocument);
         this.styleSheets = this.document.styleSheets;
         this.originalPalette = this.document.Palette;
+
+        Array.forEach(
+            this.styleSheets,
+            function (sheet) {
+                Array.forEach(
+                    this.originalPalette.swatches,
+                    function (swatch) {
+                        swatch.addLiveColorObserver(sheet);
+                    }
+                );
+            },
+            this
+        );
     }
 }
 

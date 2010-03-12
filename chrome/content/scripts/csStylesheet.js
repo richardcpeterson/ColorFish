@@ -133,3 +133,45 @@ csStyleSheet.prototype.getOriginalText = function () {
         break;
     }
 };
+
+csStyleSheet.prototype.updateLiveColor = function (swatch) {
+    var filePane = document.getElementById("cssFilePane");
+
+    if (!filePane.hasChildNodes()) {
+        return;
+    }
+
+    var modifiedSheets = [];
+    var hrefRegex = /([^\/]+\.css)$/i;
+
+    swatch.getProperties().forEach(
+        function (property) {
+            modifiedSheets.push(property.style.parentRule.parentStyleSheet.href);
+        },
+        this
+    );
+
+    for (let i = 0; i < filePane.childNodes.length; i++) {
+
+        // See the code in CSApplication.updateCSSFilePane() for how
+        // these DOM elements are created.
+        //
+        //                <vbox>     <hbox>       <button>   <label>
+        //                  |          |             |          |
+        //                  V          V             V          V
+        let currentFile = filePane.childNodes[i].firstChild.nextSibling;
+
+        modifiedSheets.forEach(
+            function (sheet) {
+                var match = hrefRegex.exec(sheet);
+
+                if (match) {
+                    if (currentFile.getAttribute("tooltiptext") === match[0]) {
+                        currentFile.setAttribute("style", "background-color: yellow; color: black;");
+                    }
+                }
+            }
+        );
+    }
+};
+
