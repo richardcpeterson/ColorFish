@@ -2,7 +2,6 @@
  * Initializes the application
  */
 function initApp(){
-
     /**
      * Teach all objects to recursively dump
      * their properties to the terminal. Use this

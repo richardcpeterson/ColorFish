@@ -97,6 +97,188 @@
     </implementation>
 </binding>
 
+<binding id="integerPicker"
+    extends="#observablePicker">
+    <resources>
+        <stylesheet src="integerPicker.css"/>
+    </resources>
+
+    <content>
+        <xul:hbox
+            anonid="numberInput">
+            <xul:label
+                xbl:inherits="value=label"
+                control="valueTextbox"/>
+            <xul:spacer flex="1"/>
+            <xul:textbox
+                id="valueTextbox"
+                anonid="valueTextbox"
+                type="number"
+                xbl:inherits="min,max,wraparound"/>
+        </xul:hbox>
+    </content>
+
+    <implementation>
+        <constructor><![CDATA[
+            this.valueTextbox = document.getAnonymousElementByAttribute(
+                    this,
+                    "anonid",
+                    "valueTextbox"
+            );
+        ]]>
+        </constructor>
+        
+        <property name="value">
+            <getter><![CDATA[
+                return this.internalValue;
+                ]]>
+            </getter>
+            <setter><![CDATA[
+                this.setInternalValue(val);
+                return this.internalValue;
+                ]]>
+            </setter>
+        </property>
+        
+        <!-- "max" is the maximum integer allowed for this element. The
+             propety construction here keeps the "max" propery matched
+             to the "max" attribute of the bound tag.-->
+        <property name="max">
+            <getter><![CDATA[
+                return this.getAttribute("max");
+                ]]>
+            </getter>
+            <setter><![CDATA[
+                return this.setAttribute("max", val);
+                ]]>
+            </setter>
+        </property>
+        
+        <!-- "min" is the minimum integer allowed for this element. The
+             propety construction here keeps the "min" propery matched
+             to the "min" attribute of the bound tag.-->
+        <property name="min">
+            <getter><![CDATA[
+                return this.getAttribute("min");
+                ]]>
+            </getter>
+            <setter><![CDATA[
+                return this.setAttribute("min", val);
+                ]]>
+            </setter>
+        </property>
+
+        
+        <!--Get the current value represented
+            by the position of the slide-->
+        <method name="setInternalValue">
+            <body><![CDATA[
+                return this.value;
+            ]]></body>
+        </method>
+        
+        
+        <!--Set the position of the slide to the
+            specified value. Value must be numeric.
+            Out of bounds values will be clipped to
+            their closest legal value.-->
+        <method name="setValue">
+            <parameter name="value" />
+            <body><![CDATA[
+                //Clip the value to a legal value
+                //before setting y
+                this.value =
+                    Math.min(
+                        this.maxValue,
+                        Math.max(
+                            this.minValue,
+                            value
+                        )
+                    );
+                    
+                this.slideY =
+                    ((this.value - this.topBound) / this.range)
+                    * this.activeRegion.boxObject.height;
+                this.slide.setAttribute(
+                    "style",
+                    "top: "+(this.slideY-3)+"px; left: -7px;"
+                );
+            ]]></body>
+        </method>
+        
+        <!--Increment the value if possible. Wrap around if
+            wrapping is enabled.-->
+        <method name="increment">
+            <body><![CDATA[
+                //Clip the value to a legal value
+                //before setting y
+                var newValue = this.value + 1;
+                
+                //Clip or wrap if this passes the maxValue
+                if (newValue > this.maxValue){
+                    if (this.wraps){
+                        newValue = this.minValue;
+                    }
+                    else{
+                        newValue = this.maxValue;
+                    }
+                }
+                this.setValue(newValue);
+                this.notifyDragObservers();
+            ]]></body>
+        </method>
+        
+        <!--Decrement the value if possible. Wrap around if
+            wrapping is enabled.-->
+        <method name="decrement">
+            <body><![CDATA[
+                //Clip the value to a legal value
+                //before setting y
+                var newValue = this.value - 1;
+                
+                //Clip or wrap if this passes the maxValue
+                if (newValue < this.minValue){
+                    if (this.wraps){
+                        newValue = this.maxValue;
+                    }
+                    else{
+                        newValue = this.minValue;
+                    }
+                }
+                this.setValue(newValue);
+                this.notifyDragObservers();
+            ]]></body>
+        </method>
+        
+
+
+        
+        <!--finish any keyboard editing, setting a modified
+            value if applicable.-->
+        <method name="finishKeyboardEditing">
+            <body><![CDATA[
+                if(this.keyboardEditStartValue){
+                    if(this.keyboardEditStartValue != this.value){
+                        this.selectValue();
+                    }
+                    this.keyboardEditStartValue == null;
+                }
+            ]]>
+            </body>
+        </method>
+        
+    </implementation>
+
+    <handlers>
+        <handler event="blur"><![CDATA[
+            //Select a final value if we did a keyboard
+            //drag action
+            this.finishKeyboardEditing();
+        ]]>
+        </handler>
+    </handlers>
+</binding>
+
 <binding id="verticalPicker"
     extends="#observablePicker">
     <resources>
