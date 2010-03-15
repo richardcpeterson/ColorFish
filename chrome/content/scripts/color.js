@@ -20,10 +20,15 @@ function Color() {
  * that is all we compare.  Otherwise we compare RGB values.
  */
 Color.prototype.equals = function (otherColor) {
-    if (this.specialString) {
+    //If either color has a special string, then that color's rgb values
+    //can be considered meaningless. Therefore if either color has a
+    //special string, we compare based only on special string equality.
+    if (this.specialString || otherColor.specialString) {
         return (this.specialString === otherColor.specialString);
     }
 
+    //If neither color has a special string, they are both RGB colors.
+    //We compare them  based in RGB equality
     return (this.red   === otherColor.red &&
             this.green === otherColor.green &&
             this.blue  === otherColor.blue);
