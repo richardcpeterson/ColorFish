@@ -239,6 +239,9 @@ function Swatch(color, colorFormat, palette){
         selectionObservers.remove(observer);
     }
 
+    this.getProperties = function () {
+        return properties;
+    };
 
     /************************************************
      * Private members
