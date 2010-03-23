@@ -164,27 +164,19 @@ function CSApplication(){
         );
     };
 
-    this.updatePalettePane = function(){
-        //Remove all children
-        while ( this.palettePane.childNodes.length >= 1 )
-        {
-           this.palettePane.removeChild( this.palettePane.firstChild );
-        }
+    this.updatePalettePane = function () {
+        this.palettePane.removeAllChildren();
         var paletteControl = window.document.createElement("paletteControl");
         paletteControl.originalPalette = this.activePage.originalPalette;
         this.palettePane.appendChild(paletteControl);
-    }
+    };
 
-    this.updateToolPane = function (){
-        //Remove all children
-        while ( this.toolPane.childNodes.length >= 1 )
-        {
-           this.toolPane.removeChild( this.toolPane.firstChild );
-        }
+    this.updateToolPane = function () {
+        this.toolPane.removeAllChildren();
         var toolBox = window.document.createElement("toolBox");
         toolBox.originalPalette = this.activePage.originalPalette;
         this.toolPane.appendChild(toolBox);
-    }
+    };
 
     /**
      * Toggle the visibility of the main app content pane
