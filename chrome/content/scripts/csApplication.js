@@ -204,44 +204,70 @@ function CSApplication(){
         this.appPanel.removeClass("collapsed");
     }
 
-    /***
-     * Opens a dialog box for saving a file.  This will return either
-     * an nsILocalFile object representing the file to be saved to, or
-     * a null value if the user decides to cancel the save operation.
+    /**
+     * Pops up a dialog for selecting a file from the local computer.
+     * The arguments are:
      *
-     * By default the save dialog will appear with only the option to
-     * save CSS files, but the user can choose to save any file if he
-     * likes.
+     *     mode: Either Components.interfaces.nsIFilePicker.modeSave
+     *     or Components.interfaces.nsIFilePicker.modeOpen.
+     *     Determines whether we are using the file for saving or
+     *     opening.
+     *
+     *     caption: The title we display on the file dialog to explain
+     *     the purpose of the file, e.g. "File to Save".
+     *
+     *     filters: An array of strings indicating the types of files
+     *     which the dialog should accept.  Look at the properties of
+     *     filterDefinitions below for a list of valid values for this
+     *     array, e.g. ["html", "css"].
+     *
+     *     defaultFileName: The default filename to use.
+     *
+     * This function returns an nsILocalFile object representing the
+     * user's choice, or it will return nothing.
      */
-    this.getSaveFile = function(fileName) {
+    this.chooseLocalFile = function (mode, caption, filters, defaultFileName) {
         var nsIFilePicker = Components.interfaces.nsIFilePicker;
         var picker        = Components.classes["@mozilla.org/filepicker;1"].createInstance( nsIFilePicker );
 
-        picker.init(window, "Select a File", nsIFilePicker.modeSave);
-        picker.appendFilter("Cascading Style Sheets", "*.css");
-        picker.appendFilter("All Files", "*");
-        picker.defaultString = fileName;
+        var filterDefinitions = {
+            "all":  [ "All Files", "*"                  ],
+            "css":  [ "Cascading Style Sheets", "*.css" ],
+            "html": [ "HTML Documents", "*.html"        ]
+        };
+
+        picker.init(window, caption, mode);
+        picker.defaultString = defaultFileName;
+
+        filters.forEach( function (f) {
+            if (filterDefinitions[f]) {
+                picker.appendFilter( filterDefinitions[f][0], filterDefinitions[f][1] );
+            }
+        });
 
         var result = picker.show();
 
         switch (result) {
-            case nsIFilePicker.returnOK:
-            case nsIFilePicker.returnReplace:
+        case nsIFilePicker.returnOK:
+        case nsIFilePicker.returnReplace:
             return picker.file;
-            break;
 
-            case nsIFilePicker.returnCancel:
-            return null;
-            break;
+        default:
+            return;
         }
-    }
+    };
 
     /***
      * This is called by the File -> Save option from the main menu.
      * It takes a string and saves it to the file with the given name.
      */
     this.save = function (contents, fileName) {
-        var file = this.getSaveFile(fileName);
+        var file = this.chooseLocalFile(
+            Components.interfaces.nsIFilePicker.modeSave,
+            "Select A File",
+            ["css", "all"],
+            fileName
+        );
 
         if (file) {
             var outputStream = Components.classes["@mozilla.org/network/file-output-stream;1"]

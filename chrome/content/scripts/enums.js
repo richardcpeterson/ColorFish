@@ -28,3 +28,12 @@ Enums.ColorFormats = {
     colorName : 4,
     specialString : 5
 }
+
+/**
+ * These two values are used as the first argument to the
+ * CSApplication.chooseLocalFile() method.
+ */
+Enums.FilePicker = {
+    Open: Components.interfaces.nsIFilePicker.modeOpen,
+    Save: Components.interfaces.nsIFilePicker.modeSave
+};
