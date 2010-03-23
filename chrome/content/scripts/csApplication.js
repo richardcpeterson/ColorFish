@@ -247,7 +247,7 @@ function CSApplication(){
         var filterDefinitions = {
             "all":  [ "All Files", "*"                  ],
             "css":  [ "Cascading Style Sheets", "*.css" ],
-            "html": [ "HTML Documents", "*.html"        ]
+            "html": [ "HTML Documents", "*.htm; *.html" ]
         };
 
         picker.init(window, caption, mode);
