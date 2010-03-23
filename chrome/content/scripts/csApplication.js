@@ -1,6 +1,20 @@
-/**
- * CSApplication class
- */
+/*********************************************************************
+ *
+ * CSApplication
+ *
+ * This class implements the overall user-interface functionality of
+ * CSSchemer.  For instance, it is responsible for updating many of
+ * the panes, and for providing general functionality like opening
+ * file dialogs.  However, note that the specific contents of the
+ * application panes are handled elsewhere; e.g. while this class
+ * takes care of clearing out and refreshing the palette pane, it is
+ * not responsible for the actual implementation of that palette.
+ *
+ * Included in this file is a global variable called 'csApp', which is
+ * the global instance of CSApplication that we use throughout the
+ * program.
+ *
+ *********************************************************************/
 
 function CSApplication(){
     this.activePage = "blank";
