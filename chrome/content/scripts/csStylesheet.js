@@ -134,7 +134,7 @@ csStyleSheet.prototype.getOriginalText = function () {
     }
 };
 
-csStyleSheet.prototype.updateLiveColor = function (swatch) {
+csStyleSheet.prototype.updateSwatchSetColor = function (swatch) {
     var filePane = document.getElementById("cssFilePane");
 
     if (!filePane.hasChildNodes()) {

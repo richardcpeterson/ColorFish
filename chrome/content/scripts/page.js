@@ -22,7 +22,7 @@ function Page(contentDocument) {
                 Array.forEach(
                     this.originalPalette.swatches,
                     function (swatch) {
-                        swatch.addLiveColorObserver(sheet);
+                        swatch.addSetColorObserver(sheet);
                     }
                 );
             },
