@@ -365,3 +365,12 @@ Swatch.compareHueAndLightness = function(s1, s2) {
         s2.color.getLightness()
     );
 }
+
+/**
+ * Puts the hex code for the color of this swatch on the clipboard.
+ */
+Swatch.prototype.copyColorToClipboard = function () {
+    Components.classes["@mozilla.org/widget/clipboardhelper;1"]
+        .getService( Components.interfaces.nsIClipboardHelper )
+        .copyString( this.color.getCSSHex() );
+};
