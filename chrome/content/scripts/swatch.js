@@ -227,7 +227,7 @@ function Swatch(color, colorFormat, palette){
         historyObservers.remove(observer);
     }
 
-    this.setLiveColorObserver = function(observer){
+    this.removeSetColorObserver = function(observer){
         setColorObservers.remove(observer);
     }
 
