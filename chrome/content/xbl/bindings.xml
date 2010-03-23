@@ -4,7 +4,7 @@
   xmlns:xbl="http://www.mozilla.org/xbl"
      xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 >
-  
+
 
 <binding id="swatchControl">
     <content>
@@ -29,12 +29,12 @@
             //Parent element for the whole control
             this.newColorBox = document.getAnonymousElementByAttribute(this, "anonid", "newColor");
             this.selectionBox = document.getAnonymousElementByAttribute(this, "anonid", "selectionBox");
-            
+
             //Relate the parent swatch control to each
             //element in a way that doesn't depend
             //on traversing the DOM
             this.newColorBox.swatchControl = this;
-            
+
             //Add any "passed in" observers to the initial arrays of
             //mouse event observers
             this.mouseOverObservers = [].concat(this.originalMouseOverObservers);
@@ -49,22 +49,22 @@
                 if(this.swatch){
                     this.stopObserving(this.swatch)
                 }
-                
+
                 this.swatch = swatch;
-                
+
                 //Register with the new swatch
                 this.observe(this.swatch);
-                
+
                 var toolTip = "Found in " + swatch.count() + " style rule"
                         + (swatch.count()==1?"":"s");
                 this.setAttribute("tooltiptext", toolTip);
-                
-                
+
+
                 //Set up the modified swatch color box
                 this.newColorBox.setAttribute(
                     "style",
                     "background-color: " + swatch.color.getCSSHex());
-                
+
                 //Set up the input box
                 this.updateControl();
             ]]></body>
@@ -75,12 +75,12 @@
                 if (!this.swatch || !this.swatch.color){
                     return null;
                 }
-                
+
                 this.updateColor(this.swatch.color)
             ]]>
             </body>
         </method>
-        
+
         <method name="updateText">
             <body><![CDATA[
                 if (!this.swatch || !this.swatch.color){
@@ -89,7 +89,7 @@
             ]]>
             </body>
         </method>
-        
+
         <method name="updateColor">
             <parameter name="color"/>
             <body><![CDATA[
@@ -98,26 +98,26 @@
                 this.newColorBox.setAttribute(
                     "style",
                     "background-color: " + color.getCSSHex());
-            
+
             ]]>
             </body>
         </method>
-        
+
         <method name="isSelected">
             <body><![CDATA[
                 return this.swatch.isSelected();
             ]]>
             </body>
         </method>
-        
+
         <method name="getSwatch">
             <body><![CDATA[
                 return this.swatch;
             ]]>
             </body>
         </method>
-            
-        
+
+
         <method name="updateLiveColor">
             <parameter name="swatch"/>
             <body><![CDATA[
@@ -125,7 +125,7 @@
             ]]>
             </body>
         </method>
-        
+
         <method name="updateSwatchHistory">
             <parameter name="swatch"/>
             <body><![CDATA[
@@ -175,7 +175,7 @@
             ]]>
             </body>
         </method>
-        
+
         <!--Register an observer to be notified when this
             swatchControl has a mouseOver event.
             The observer must implement the
@@ -189,7 +189,7 @@
             ]]>
             </body>
         </method>
-        
+
         <method name="removeMouseOverObserver">
             <parameter name="observer" />
             <body><![CDATA[
@@ -197,7 +197,7 @@
             ]]>
             </body>
         </method>
-        
+
         <!--Register an observer to be notified when this
             swatchControl has a mouseOut event.
             The observer must implement the
@@ -211,7 +211,7 @@
             ]]>
             </body>
         </method>
-        
+
         <method name="removeMouseOutObserver">
             <parameter name="observer" />
             <body><![CDATA[
@@ -244,10 +244,10 @@
             event.stopPropagation();
         ]]>
         </handler>
-        
+
         <handler event="mouseover"><![CDATA[
             var control = this;
-            
+
             //Figure out if we are mousing over this
             //element _from_ one of this element's child
             //nodes. event.relatedTarget tells us where
@@ -272,16 +272,16 @@
                 Array.forEach(this.mouseOverObservers, function(observer) {
                     observer.notifySwatchMouseOver(control);
                 });
-                
+
                 //Class for each currently hovered swatch
                 this.addClass("hover");
             }
         ]]>
         </handler>
-        
+
         <handler event="mouseout"><![CDATA[
             var control = this;
-            
+
             //event.relatedTarget gives us the
             //element that the cursor is going _to_.
             //We only care if the cursor goes to
@@ -300,7 +300,7 @@
                 }
                 destination = destination.parentNode;
             }
-            
+
             //If we are really leaving this element
             if(destination != this){
                 Array.forEach(this.mouseOutObservers, function(observer) {
@@ -334,11 +334,11 @@
             this.container = document.getAnonymousElementByAttribute(this, "anonid", "container");
             this.columnsTag = document.getAnonymousElementByAttribute(this, "anonid", "columnsTag");
             this.rowsTag = document.getAnonymousElementByAttribute(this, "anonid", "rowsTag");
-            
+
             this.columnCount = 16;
             this.setPalette(this.originalPalette);
         ]]></constructor>
-        
+
         <method name="setPalette">
             <parameter name="palette"/>
             <body><![CDATA[
@@ -349,7 +349,7 @@
                 this.doLayout();
             ]]></body>
         </method>
-        
+
         <!--Remove and destroy all swatch controls
             currently in this paletteControl-->
         <method name="removeSwatchControls">
@@ -363,7 +363,7 @@
             ]]>
             </body>
         </method>
-        
+
         <!--Generate all the swatchControls for the
             given set of swatches, and save them in
             this.swatchControls.-->
@@ -373,7 +373,7 @@
                 this.swatchControls = [];
                 for (var i=0; i < swatches.length; i++){
                     var swatchControl = window.document.createElement("swatchControl");
-        
+
                     //The constructor for the swatch element has
                     //not yet been called. It only
                     //gets called when the stylesheet is read and
@@ -390,7 +390,7 @@
             ]]>
             </body>
         </method>
-        
+
         <!--Set the number of columns that should
             be used to lay out this paletteControl.
             Update the GUI to reflect this change-->
@@ -402,7 +402,7 @@
             ]]>
             </body>
         </method>
-        
+
         <!--Return the row index that a given swatch's
             swatch control is in-->
         <method name="getRowOf">
@@ -414,7 +414,7 @@
             ]]>
             </body>
         </method>
-        
+
         <!--Return the column index that a given swatch's
             swatch control is in-->
         <method name="getColumnOf">
@@ -425,7 +425,7 @@
             ]]>
             </body>
         </method>
-        
+
         <!--Return the index into this.swatchControls
             that a partilar swatch's swatchControl is
             located at-->
@@ -443,7 +443,7 @@
             ]]>
             </body>
         </method>
-        
+
         <!--Move a single selected swatch by the given
             vector, or not at all, if the vector produces
             an out of bounds result-->
@@ -454,13 +454,13 @@
                 var selectedSwatch = this.palette.getSelectedSwatches()[0];
                 var row = this.getRowOf(selectedSwatch);
                 var col = this.getColumnOf(selectedSwatch);
-                
+
                 //Move the indexes by the amount in the vectors
                 row += rowVector;
                 col += colVector;
-                
+
                 //Wrap around - kluge version
-                
+
                 if(col >= this.columnCount){
                     row++;
                 }
@@ -471,16 +471,16 @@
                 if (col < 0 && row >= 0){
                     col += this.columnCount;
                 }
-                
+
                 //Make sure we don't have a bad index
                 row = Math.min(Math.max(row,0),this.rowCount-1);
                 col = Math.min(Math.max(col,0),this.columnCount-1);
-                
-                
+
+
                 //Only move if there is a swatch to move to.
                 //the last row is not always full.
                 var index = ((row * this.columnCount) + col);
-                
+
                 if(index < this.swatchControls.length && index >= 0){
                     this.palette.deselectAllSwatches();
                     this.grid[row][col].getSwatch().select();
@@ -488,7 +488,7 @@
             ]]>
             </body>
         </method>
-        
+
         <!--Update the layout of this paletteControl
             to reflect any changes to the palette or
             other fields of this paletteControl.
@@ -497,22 +497,22 @@
             <body><![CDATA[
                 var swatchCount = this.swatchControls.length;
                 this.rowCount = Math.ceil(swatchCount/this.columnCount);
-                
+
                 this.columnsTag.removeAllChildren();
                 this.rowsTag.removeAllChildren();
-                
+
                 //Add all the header column tags
                 for(var i=0; i<this.columnsCount; i++){
                     this.columnsTag.appendChild(window.document.createElement("column"));
                 }
-                
-                //Add all the row tags 
+
+                //Add all the row tags
                 var rowElements = new Array(this.rowCount);
                 for(var i=0; i<this.rowCount; i++){
                     rowElements[i] = window.document.createElement("row")
                     this.rowsTag.appendChild(rowElements[i]);
                 }
-                
+
                 //Build the grid to contain the swatchControls
                 //Model the grid in this.grid for easy
                 //access to swatchControls by grid position
@@ -520,7 +520,7 @@
                 for(var i=0; i<this.grid.length; i++){
                     this.grid[i] = new Array();
                 }
-                
+
                 for(var i=0; i<swatchCount; i++){
                     var row = Math.floor(i/this.columnCount);
                     var col = i%this.columnCount;
@@ -530,7 +530,7 @@
                 }
             ]]></body>
         </method>
-        
+
         <!--This is where we are notified by swatch
             controls that they have had a mouseOver
             event-->
@@ -542,11 +542,11 @@
                 if(swatchControl.isSelected()){
                     //Keep a reference to "this"
                     var paletteControl = this;
-                    
+
                     //We _just_ got this event. We're not stopping
                     //any animation yet.
                     paletteControl.resetAnimation = false;
-                    
+
                     //Recursive animate method that counts down
                     //to zero, progressing through a numeric sequence
                     //of class names that are applied at each animation
@@ -563,7 +563,7 @@
                             var newClass = "selectedHover"+(iteration-1);
                             paletteControl.removeClass(oldClass);
                             paletteControl.addClass(newClass);
-                            
+
                             //Call the next animation iteration
                             //Adjust the delay in milliseconds to speed
                             //up or slow down
@@ -577,7 +577,7 @@
                             paletteControl.finishedAnimation = true;
                         }
                     }
-                    
+
                     //If we haven't already finished an animation,
                     //start the animation. We might have already finished
                     //an animation from mousing over a different selected
@@ -590,7 +590,7 @@
             ]]>
             </body>
         </method>
-        
+
         <!--This is where we are notified by swatch
             controls that they have had a mouseOut
             event-->
@@ -600,7 +600,7 @@
             <body><![CDATA[
                 var paletteControl = this;
                 paletteControl.resetAnimation = true;
-                
+
                 //The following resets the animation state.
                 //However, notifySwatchMouseOut (this method)gets
                 //called even when moving from selected swatch to
@@ -632,7 +632,7 @@
             ]]>
             </body>
         </method>
-        
+
     </implementation>
 
     <handlers>
@@ -643,7 +643,21 @@
             event.stopPropagation();
         ]]>
         </handler>
-        
+
+        <!-- When a swatch has focus and the user presses Ctrl-C, we
+             copy the color value of the swatch onto the system
+             clipboard.  We implement this behavior in the palette
+             instead of directly on swatches so that we have access to
+             the most recently selected swatch, since if the user has
+             selected multiple swatches we do not want to copy them
+             all.  (Or do we?  ☃ wants to know.)
+        -->
+        <handler event="keypress" key="c" modifiers="control">
+          <![CDATA[
+                   this.palette.mostRecentlySelectedSwatch.copyColorToClipboard();
+          ]]>
+        </handler>
+
         <handler event="keypress"><![CDATA[
             //Move a single-swatch selection around
             //with the arrow keys
@@ -692,11 +706,11 @@
                     "anonid",
                     "colorPickerPlus"
                 );
-            
+
             this.setPalette(this.originalPalette);
-            
+
             this.originalPalette.addSelectionObserver(this);
-            
+
             /**
              * Register this tool pane to get updates
              * from the color picker
@@ -705,45 +719,45 @@
                 this.colorPickerPlus.originalDragObservers = [];
             }
             this.colorPickerPlus.originalDragObservers.push(this);
-            
+
             if (!this.colorPickerPlus.originalSelectObservers){
                 this.colorPickerPlus.originalSelectObservers = [];
             }
             this.colorPickerPlus.originalSelectObservers.push(this);
-        
+
         ]]></constructor>
-        
+
         <method name="setPalette">
             <parameter name="palette"/>
             <body><![CDATA[
                 this.palette = palette;
             ]]></body>
         </method>
-        
+
         <method name="updatePickerDrag">
             <parameter name="picker"/>
             <body><![CDATA[
                 var newColor = "rgb(" + picker.getRGB().join(",") + ")";
                 var swatches = this.palette.getSelectedSwatches();
-                
+
                 Array.forEach(swatches, function(swatch) {
                     swatch.setLiveEditColor(newColor);
                 });
             ]]></body>
         </method>
-        
+
         <method name="updatePickerSelect">
             <parameter name="picker"/>
             <body><![CDATA[
                 var newColor = "rgb(" + picker.getRGB().join(",") + ")";
                 var swatches = this.palette.getSelectedSwatches();
-                
+
                 Array.forEach(swatches, function(swatch) {
                     swatch.setColor(newColor);
                 });
             ]]></body>
         </method>
-        
+
         <!--Get notified that the actual palette's selection
             set has changed-->
         <method name="updatePaletteSelection">
@@ -759,7 +773,7 @@
                 }
             ]]></body>
         </method>
-        
+
     </implementation>
 
     <handlers>
