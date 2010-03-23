@@ -140,7 +140,7 @@ function CSApplication(){
                 var label = window.document.createElement("label");
 
                 label.setAttribute("value", name);
-                label.setAttribute("tooltiptext", name);
+                label.setAttribute("tooltiptext", saveName);
                 label.setAttribute("crop", "center");
                 node.setAttribute("align", "center");
 
