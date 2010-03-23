@@ -47,6 +47,7 @@
 
 
   <comandset id="menuCommandSet">
+    <command id="cmd_menuFileOpen" oncommand="csApp.open()"/>
     <command id="cmd_menuFileSave" oncommand="csApp.save()"/>
     <command id="cmd_menuFileQuit" oncommand="csApp.quit()"/>
   </comandset>
@@ -57,6 +58,7 @@
   </broadcasterset>
 
   <keyset>
+    <key id="open-key" modifiers="control" key="O" command="cmd_menuFileOpen"/>
     <key id="save-key" modifiers="control" key="S" command="cmd_menuFileSave"/>
     <key id="quit-key" modifiers="control" key="Q" command="cmd_menuFileQuit"/>
     <key id="back-key" modifiers="alt" keycode="VK_LEFT" command="cmd_browseBack"/>
@@ -72,6 +74,7 @@
   <menubar id="menubar">
     <menu id="file-menu" label="File">
       <menupopup id="file-popup">
+        <menuitem label="Open" command="cmd_menuFileOpen" accesskey="o" key="open-key"/>
         <menuitem label="Save" command="cmd_menuFileSave" accesskey="s" key="save-key"/>
         <menuseparator/>
         <menuitem label="Quit" command="cmd_menuFileQuit" accesskey="q" key="quit-key"/>

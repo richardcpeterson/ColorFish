@@ -281,6 +281,24 @@ function CSApplication(){
             outputStream.close();
         }
     };
+
+    /**
+     * Opens a file dialog that allows the user to select a local HTML
+     * file to manipulate with CSSchemer.  Once selected, that file is
+     * loaded in the browser.  If they cancel the operation then we
+     * just quietly exit without doing anything.
+     */
+    this.open = function () {
+        var file = this.chooseLocalFile(
+            Components.interfaces.nsIFilePicker.modeOpen,
+            "Select A File",
+            ["html"]
+        );
+
+        if (file) {
+            Browser.load_page(file.path);
+        }
+    };
 }
 
 var csApp;
