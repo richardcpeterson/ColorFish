@@ -658,6 +658,12 @@
           ]]>
         </handler>
 
+        <handler event="keypress" key="v" modifiers="control">
+          <![CDATA[
+                   this.palette.mostRecentlySelectedSwatch.pasteColorFromClipboard();
+          ]]>
+        </handler>
+
         <handler event="keypress"><![CDATA[
             //Move a single-swatch selection around
             //with the arrow keys

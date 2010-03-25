@@ -374,3 +374,42 @@ Swatch.prototype.copyColorToClipboard = function () {
         .getService( Components.interfaces.nsIClipboardHelper )
         .copyString( this.color.getCSSHex() );
 };
+
+/**
+ * Pastes the current color from the clipboard and sets it as the
+ * color for this swatch.
+ */
+Swatch.prototype.pasteColorFromClipboard = function () {
+    var clipboard = Components.classes["@mozilla.org/widget/clipboard;1"]
+        .getService( Components.interfaces.nsIClipboard );
+
+    var transfer = Components.classes["@mozilla.org/widget/transferable;1"]
+        .createInstance( Components.interfaces.nsITransferable );
+    transfer.addDataFlavor("text/unicode");
+
+    // We are expecting to get a string from the clipboard.  But we
+    // have no way of knowing if that will be the case.  This is why
+    // our colorString is a generic Object instead of a String---it
+    // could end up being anything.
+
+    var colorString = {};
+    var colorStringLength = {};
+
+    try {
+        clipboard.getData(transfer, clipboard.kGlobalClipboard);
+        transfer.getTransferData("text/unicode", colorString, colorStringLength);
+
+        if (colorString) {
+            colorString = colorString.value.QueryInterface(Components.interfaces.nsISupportsString);
+            colorString = colorString.data.substring(0, colorStringLength.value / 2);
+        }
+    }
+    // It's possible for the code above to throw an exception if the
+    // user does not have anything on the clipboard.  In that case, we
+    // silently return without changing the swatch color.
+    catch (exception) {
+        return;
+    }
+
+    this.setColor(colorString);
+};
