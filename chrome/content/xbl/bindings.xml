@@ -658,9 +658,18 @@
           ]]>
         </handler>
 
+        <!-- When one or more swatches have focus and the user presses
+             Ctrl-V, we try to copy a color from the clipboard and
+             paste it into all of the selected swatches, which is to
+             say we set those swatches to use that color.
+        -->
         <handler event="keypress" key="v" modifiers="control">
           <![CDATA[
-                   this.palette.mostRecentlySelectedSwatch.pasteColorFromClipboard();
+                   this.palette.selectedSwatches.forEach(
+                       function (swatch) {
+                           swatch.pasteColorFromClipboard();
+                       }
+                   );
           ]]>
         </handler>
 
