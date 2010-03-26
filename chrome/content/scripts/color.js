@@ -298,6 +298,7 @@ Color.prototype.dump = function () {
  * object representing that color.
  */
 Color.from_css = function(colorString) {
+    colorString = colorString.trim();
     colorString = colorString.toLowerCase();
     var color  = new Color();
     var format = Color.getFormat(colorString);
