@@ -87,6 +87,28 @@ function initApp(){
         }
     }
 
+    /**
+     * The String.trim() method is only available to use in version
+     * 1.8.1 or higher of Mozilla's Javascript platform.  So we
+     * implement it here if needed.
+     *
+     * The function creates a new string and modifies that one,
+     * returning the trimmed version.  The original string is left
+     * unmodified.  Therefore to replace a string with its trimmed
+     * version one has to write
+     *
+     *     someString = someString.trim();
+     *
+     */
+    if (String.prototype.trim === undefined) {
+        String.prototype.trim = function () {
+            var trimmed = this;
+            trimmed = trimmed.replace(/^\s+/g, "");
+            trimmed = trimmed.replace(/\s+$/g, "");
+            return trimmed;
+        };
+    }
+
     //Add repeat functionality to string
     String.prototype.repeat = function(count){
         return new Array(count + 1).join(this);
