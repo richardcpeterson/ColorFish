@@ -6,16 +6,20 @@
 /**
  * Instantiate a colorProperty.
  * Params:
- * style    a CSSStyleDeclaration object
- *          https://developer.mozilla.org/en/DOM/cssRule.style
+ * rule     a cssRule object
+ *          https://developer.mozilla.org/en/DOM/cssRule
  *
  * propertyType
  *     A string naming the property being represented by this
  *     object, e.g. 'backgroundColor' or 'borderBottomColor'.
  *
  */
-function ColorProperty(style, propertyType) {
-    this.style = style;
+function ColorProperty(rule, propertyType) {
+    //We only really need the CSSStyleDeclaration
+    //(https://developer.mozilla.org/en/DOM/CSSStyleDeclaration)
+    //for access to the properties.
+    //rule.style is a CSSStyleDeclaration.
+    this.style = rule.style;
     this.propertyType = propertyType;
 }
 
@@ -25,10 +29,6 @@ ColorProperty.prototype.setColor = function (colorString) {
 
 ColorProperty.prototype.getColorString = function () {
     return this.style.getPropertyValue(this.propertyType);
-};
-
-ColorProperty.prototype.undoColor = function (colorString) {
-    return this.style.undo();
 };
 
 /**

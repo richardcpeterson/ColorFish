@@ -221,9 +221,14 @@ function Palette(){
      * properties from the given rule will be consolidated into this
      * palette.
      *
-     * The argument to this function is a CSSStyleRule.
+     * The argument to this function is a DOM cssRule.
      */
     this.insertRule = function(rule) {
+        //Don't process a null rule
+        if(!rule){
+            return;
+        }
+        
         var palette    = this;
         var properties = [
             'color',
@@ -234,10 +239,20 @@ function Palette(){
             'border-left-color'
         ];
 
+        //A particular rule may have 0 to 6 color properties defined
+        //in it (the properties listed above). We want to be able to
+        //access each of these separately. Thus we create a new
+        //"ColorProperty" object for each of the above properties that
+        //is set in "rule". EG if this particular rule sets "color"
+        //and "background-color", we want to insert a new ColorProperty
+        //object for each of those.
+        
+        //Loop through, seeing if each property needs to be created
         properties.forEach( function(property) {
-            if (rule && rule.style.getPropertyValue(property)) {
+            //If the property is set
+            if (rule.style.getPropertyValue(property)) {
                 palette.insertProperty(
-                    new ColorProperty(rule.style, property)
+                    new ColorProperty(rule, property)
                 );
             }
         });
