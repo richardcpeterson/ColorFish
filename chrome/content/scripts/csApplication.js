@@ -163,7 +163,7 @@ function CSApplication(){
                 button.setAttribute("label", "Save");
                 button.setAttribute(
                     "oncommand",
-                    "csApp.save(this.styleSheet.getPrettyPrintText(), \"" + saveName + "\");"
+                    "this.styleSheet.save(\"" + saveName + "\");"
                 );
 
                 // This cannot be 'item.sheet', or saving will fail.

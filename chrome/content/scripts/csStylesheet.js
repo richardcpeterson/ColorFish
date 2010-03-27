@@ -133,3 +133,10 @@ csStyleSheet.prototype.getOriginalText = function () {
         break;
     }
 };
+
+/**
+ * Saves this stylesheet to the given filename.
+ */
+csStyleSheet.prototype.save = function (filename) {
+    csApp.save(this.getPrettyPrintText(), filename);
+};
