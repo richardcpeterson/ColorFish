@@ -58,17 +58,17 @@
   </broadcasterset>
 
   <keyset>
-    <key id="open-key" modifiers="control" key="O" command="cmd_menuFileOpen"/>
-    <key id="save-key" modifiers="control" key="S" command="cmd_menuFileSave"/>
-    <key id="quit-key" modifiers="control" key="Q" command="cmd_menuFileQuit"/>
+    <key id="open-key" modifiers="accel" key="O" command="cmd_menuFileOpen"/>
+    <key id="save-key" modifiers="accel" key="S" command="cmd_menuFileSave"/>
+    <key id="quit-key" modifiers="accel" key="Q" command="cmd_menuFileQuit"/>
     <key id="back-key" modifiers="alt" keycode="VK_LEFT" command="cmd_browseBack"/>
     <key id="forward-key" modifiers="alt" keycode="VK_RIGHT" command="cmd_browseForward"/>
     <key id="back-key" modifiers="alt" key="B" command="cmd_browseBack"/>
     <key id="forward-key" modifiers="alt" key="F" command="cmd_browseForward"/>
     <key id="backspace-key" keycode="VK_BACK" command="cmd_browseBack"/>
     <key id="reload-key" keycode="VK_F5" command="cmd_browseReload"/>
-    <key id="undo-key" modifiers="control" key="Z" command="cmd_undo"/>
-    <key id="redo-key" modifiers="control" key="Y" command="cmd_redo"/>
+    <key id="undo-key" modifiers="accel" key="Z" command="cmd_undo"/>
+    <key id="redo-key" modifiers="accel" key="Y" command="cmd_redo"/>
   </keyset>
 
   <menubar id="menubar">
