@@ -11,7 +11,7 @@
  *
  * propertyType
  *     A string naming the property being represented by this
- *     object, e.g. 'backgroundColor' or 'borderBottomColor'.
+ *     object, e.g. 'background-color' or 'border-bottom-color'.
  *
  */
 function ColorProperty(rule, propertyType) {
