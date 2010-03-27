@@ -156,14 +156,14 @@ function Swatch(color, colorFormat, palette){
     }
 
     /**
-     * Add a color property to this swatch
+     * Add a ColorProperty object to this swatch.
      */
     this.addProperty = function(newProperty){
         properties.push(newProperty);
     }
 
     /**
-     * Return number of references in this swatch
+     * Return number of properties associated with this swatch.
      */
     this.count = function(){
         return properties.length;
@@ -254,7 +254,8 @@ function Swatch(color, colorFormat, palette){
     var undoList = new Array();
     var redoList = new Array();
 
-    //An array of color properties
+    // The color properties associated with this swatch, stored as an
+    // array of ColorProperty objects.
     var properties = new Array();
 
     //Lists of objects that observe this swatch's state
@@ -266,7 +267,7 @@ function Swatch(color, colorFormat, palette){
     var selected = false;
 
     /**
-     * Update all properties in this swatch to reflect
+     * Update all color properties in this swatch to reflect
      * the value passed in color. This does not create
      * a new Swatch state to modify the undo stack.
      * color may be a valid CSS color string or a
