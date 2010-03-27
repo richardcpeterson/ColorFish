@@ -274,6 +274,8 @@ function CSApplication(){
     /***
      * This is called by the File -> Save option from the main menu.
      * It takes a string and saves it to the file with the given name.
+     * Returns the name of the saved file, or an undefined value if
+     * the file was not saved.
      */
     this.save = function (contents, fileName) {
         var file = this.chooseLocalFile(
@@ -293,6 +295,8 @@ function CSApplication(){
 
             outputStream.write(contents, contents.length);
             outputStream.close();
+
+            return file.leafName;
         }
     };
 
