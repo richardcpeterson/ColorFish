@@ -18,6 +18,7 @@
  */
 function csStyleSheet(sheet) {
     this.sheet = sheet;
+    this.href = sheet.href;
     this.rules = [];
     this.importedSheets = [];
 
