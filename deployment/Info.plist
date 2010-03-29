@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleIdentifier</key>
+	<string>org.mozilla.xulrunner</string>
+	<key>CFBundleExecutable</key>
+	<string>csschemer-bin</string>
+	<key>CFBundleName</key>
+	<string>Mozilla XULRunner</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.9.2</string>
+	<key>IFMajorVersion</key>
+	<integer>1</integer>
+	<key>IFMinorVersion</key>
+	<integer>0</integer>
+	<key>IFPkgFlagAllowBackRev</key>
+	<false/>
+	<key>IFPkgFlagAuthorizationAction</key>
+	<string>RootAuthorization</string>
+	<key>IFPkgFlagDefaultLocation</key>
+	<string>/Library/Frameworks</string>
+	<key>IFPkgFlagFollowLinks</key>
+	<true/>
+	<key>IFPkgFlagInstallFat</key>
+	<false/>
+	<key>IFPkgFlagInstalledSize</key>
+	<integer>50476</integer>
+	<key>IFPkgFlagIsRequired</key>
+	<false/>
+	<key>IFPkgFlagOverwritePermissions</key>
+	<false/>
+	<key>IFPkgFlagRelocatable</key>
+	<false/>
+	<key>IFPkgFlagRestartAction</key>
+	<string>None</string>
+	<key>IFPkgFlagRootVolumeOnly</key>
+	<false/>
+	<key>IFPkgFlagUpdateInstalledLanguages</key>
+	<false/>
+	<key>IFPkgFormatVersion</key>
+	<real>0.10000000149011612</real>
+	<key>IFPkgPathMappings</key>
+	<dict>
+		<key>./XUL.framework/Versions/1.9.2/crashreporter.app</key>
+		<string>{pkmk-token-2}</string>
+		<key>./XUL.framework/Versions/1.9.2/updater.app</key>
+		<string>{pkmk-token-14}</string>
+		<key>./XUL.framework/Versions/Current/crashreporter.app</key>
+		<string>{pkmk-token-18}</string>
+		<key>./XUL.framework/Versions/Current/updater.app</key>
+		<string>{pkmk-token-30}</string>
+	</dict>
+</dict>
+</plist>

@@ -25,9 +25,11 @@ WINDOWS_NSIS_SCRIPT = $(APPNAME)-$(APPVER).nsi
 WINDOWS_XUL_FILE = xulrunner-$(XULVER).en-US.win32.zip
 
 MAC_DIR = mac/
-MAC_FINAL_DIR = $(DISTRO_DIR)$(MAC_DIR)$(APPNAME)/
-MAC_FINAL_FILE = temp
-MAC_XUL_FILE = xulrunner-$(XULVER).en-US.mac-pkg.dmg
+MAC_FINAL_DIR = $(DISTRO_DIR)$(MAC_DIR)$(APPNAME).app/
+MAC_FINAL_FILE = $(APPNAME)-$(APPVER).zip
+MAC_ROOT_FILE = xulrunner-$(XULVER).en-US.mac-pkg
+MAC_XUL_FILE = $(MAC_ROOT_FILE).dmg
+MAC_IMG_FILE = $(MAC_ROOT_FILE).img
 
 XUL_FILES = $(XUL_SOURCE_DIR)$(LINUX_XUL_FILE) $(XUL_SOURCE_DIR)$(WINDOWS_XUL_FILE) $(XUL_SOURCE_DIR)$(MAC_XUL_FILE)
 XUL_SOURCE_DIRS = $(XUL_SOURCE_DIR)$(LINUX_DIR) $(XUL_SOURCE_DIR)$(WINDOWS_DIR) $(XUL_SOURCE_DIR)$(MAC_DIR)
@@ -36,11 +38,11 @@ DMG2IMG_VER = 1.6.2
 DMG2IMG_SOURCE_SITE = http://vu1tur.eu.org/tools/download.pl?dmg2img-$(DMG2IMG_VER).tar.gz
 DMG2IMG_SOURCE_DIR = dmg2img/
 
-all : $(XUL_SOURCE_DIR) $(XUL_SOURCE_DIRS) $(BUILDS)
+all : $(XUL_SOURCE_DIR) $(XUL_SOURCE_DIRS) $(DISTRO_DIR) $(BUILDS)
 
 nsis : $(NSISDIR)$(NSIS)/makensis
 
-$(DMG2IMG_SOURCE_DIR)dmg2img : $(DMG2IMG_SOURCE_DIR) $(DMG2IMG_SOURCE_DIR)dmg2img-$(DMG2IMG_VER)
+$(DMG2IMG_SOURCE_DIR)dmg2img-$(DMG2IMG_VER)/dmg2img : $(DMG2IMG_SOURCE_DIR) $(DMG2IMG_SOURCE_DIR)dmg2img-$(DMG2IMG_VER)
 	cd $(DMG2IMG_SOURCE_DIR) ;\
 	cd dmg2img-$(DMG2IMG_VER) ;\
 	make all
@@ -101,7 +103,11 @@ css-windows : $(WINDOWS_FINAL_DIR)$(WINDOWS_FINAL_FILE)
 	rm $(WINDOWS_FINAL_DIR) -rf
 	rm $(XUL_SOURCE_DIR)$(WINDOWS_DIR) -rf
 
-css-mac :
+css-mac : $(MAC_FINAL_DIR)$(MAC_FINAL_FILE)
+	rm $(MAC_FINAL_DIR) -rf
+	sudo umount $(XUL_SOURCE_DIR)$(MAC_DIR)
+	rm $(XUL_SOURCE_DIR)$(MAC_DIR) -rf
+	rm $(XUL_SOURCE_DIR)XUL.framework -rf
 
 $(LINUX_FINAL_DIR)$(LINUX_FINAL_FILE) : $(LINUX_FINAL_DIR)
 	cp ../application.ini $(LINUX_FINAL_DIR)
@@ -121,6 +127,23 @@ $(WINDOWS_FINAL_DIR)$(WINDOWS_FINAL_FILE) : $(WINDOWS_FINAL_DIR) nsis $(NSISDIR)
 	cp $(NSISDIR)$(NSIS)/$(WINDOWS_FINAL_FILE) $(DISTRO_DIR)$(WINDOWS_DIR)$(WINDOWS_FINAL_FILE)
 	rm $(NSISDIR)$(NSIS)/$(WINDOWS_FINAL_FILE)
 	rm $(NSISDIR)$(NSIS)/$(WINDOWS_NSIS_SCRIPT)
+
+$(MAC_FINAL_DIR)$(MAC_FINAL_FILE) : $(MAC_FINAL_DIR)
+	mkdir $(MAC_FINAL_DIR)Contents/
+	cp Info.plist $(MAC_FINAL_DIR)Contents/
+	mkdir $(MAC_FINAL_DIR)Contents/Frameworks/
+	mkdir $(MAC_FINAL_DIR)Contents/Frameworks/XUL.framework/
+	cp $(XUL_SOURCE_DIR)XUL.framework/Versions/Current/* $(MAC_FINAL_DIR)Contents/Frameworks/XUL.framework/ -rl
+	mkdir $(MAC_FINAL_DIR)Contents/Resources/
+	cp ../application.ini $(MAC_FINAL_DIR)Contents/Resources/
+	for directory in $(APP_DIRECTORIES); do \
+		cp ../$$directory $(MAC_FINAL_DIR)Contents/Resources/. -rf ;\
+	done
+	mkdir $(MAC_FINAL_DIR)Contents/MacOS/
+	cp $(XUL_SOURCE_DIR)XUL.framework/Versions/Current/xulrunner $(MAC_FINAL_DIR)Contents/MacOS/
+	mv $(MAC_FINAL_DIR)Contents/MacOS/xulrunner $(MAC_FINAL_DIR)Contents/MacOS/csschemer-bin
+	cd $(DISTRO_DIR)$(MAC_DIR) ;\
+	zip -r $(MAC_FINAL_FILE) $(APPNAME).app
 
 $(NSISDIR)$(NSIS)/$(WINDOWS_NSIS_SCRIPT) : build-nsis-script build_scripts/
 	cp $(WINDOWS_NSIS_SCRIPT) $(NSISDIR)$(NSIS)/$(WINDOWS_NSIS_SCRIPT)
@@ -148,14 +171,20 @@ $(LINUX_FINAL_DIR) : $(DISTRO_DIR)$(LINUX_DIR)
 $(WINDOWS_FINAL_DIR) : $(DISTRO_DIR)$(WINDOWS_DIR)
 	mkdir $(WINDOWS_FINAL_DIR)
 
+$(MAC_FINAL_DIR) : $(DISTRO_DIR)$(MAC_DIR)
+	mkdir $(MAC_FINAL_DIR)
+
 $(DISTRO_DIR) :
 	mkdir $(DISTRO_DIR)
 
-$(DISTRO_DIR)$(LINUX_DIR) : $(DISTRO_DIR)
+$(DISTRO_DIR)$(LINUX_DIR) :
 	mkdir $(DISTRO_DIR)$(LINUX_DIR)
 
-$(DISTRO_DIR)$(WINDOWS_DIR) : $(DISTRO_DIR)
+$(DISTRO_DIR)$(WINDOWS_DIR) :
 	mkdir $(DISTRO_DIR)$(WINDOWS_DIR)
+
+$(DISTRO_DIR)$(MAC_DIR) :
+	mkdir $(DISTRO_DIR)$(MAC_DIR)
 
 $(XUL_SOURCE_DIR) :
 	mkdir $(XUL_SOURCE_DIR)
@@ -170,7 +199,18 @@ $(XUL_SOURCE_DIR)$(WINDOWS_DIR) : $(XUL_SOURCE_DIR)$(WINDOWS_XUL_FILE)
 	unzip $(WINDOWS_XUL_FILE) ;\
 	mv xulrunner $(WINDOWS_DIR)
 
-$(XUL_SOURCE_DIR)$(MAC_DIR) : $(XUL_SOURCE_DIR)$(MAC_XUL_FILE)
+$(XUL_SOURCE_DIR)$(MAC_DIR) : $(XUL_SOURCE_DIR)$(MAC_IMG_FILE)
+	cd $(XUL_SOURCE_DIR) ;\
+	mkdir $(MAC_DIR) ;\
+	sudo mount -o loop -t hfsplus $(MAC_IMG_FILE) $(MAC_DIR) ;\
+	cp $(MAC_DIR)xulrunner-$(XULVER).en-US.mac.pkg/Contents/Archive.pax.gz . ;\
+	gunzip Archive.pax.gz ;\
+	pax -r -f Archive.pax ;\
+	rm Archive.pax
+
+$(XUL_SOURCE_DIR)$(MAC_IMG_FILE) : $(XUL_SOURCE_DIR)$(MAC_XUL_FILE) $(DMG2IMG_SOURCE_DIR)dmg2img-$(DMG2IMG_VER)/dmg2img
+	cd $(XUL_SOURCE_DIR) ;\
+	./../$(DMG2IMG_SOURCE_DIR)dmg2img-$(DMG2IMG_VER)/dmg2img $(MAC_XUL_FILE)
 
 $(XUL_SOURCE_DIR)$(LINUX_XUL_FILE) :
 	wget $(XUL_SOURCE_SITE)$(LINUX_XUL_FILE) \
