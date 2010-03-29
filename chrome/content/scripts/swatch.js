@@ -277,7 +277,15 @@ function Swatch(color, colorFormat, palette){
         if (typeof color == "string")
             color = Color.from_css(color);
         for(var i = 0; i < properties.length; i++) {
-            properties[i].setColor(color);
+
+            // Do not modify the colors of properties that are part of
+            // locked stylesheets.
+            if (properties[i].style
+                .parentRule
+                .parentStyleSheet
+                .colorFishSheet.locked === false) {
+                properties[i].setColor(color);
+            }
         }
     }
 
