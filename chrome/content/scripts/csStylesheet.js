@@ -151,3 +151,10 @@ csStyleSheet.prototype.getOriginalText = function () {
         break;
     }
 };
+
+/**
+ * Toggles the lock status on the stylesheet.
+ */
+csStyleSheet.prototype.toggleLock = function () {
+    this.locked = !this.locked;
+};

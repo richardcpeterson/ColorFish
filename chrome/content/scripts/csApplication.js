@@ -169,8 +169,14 @@ function CSApplication(){
                 // This cannot be 'item.sheet', or saving will fail.
                 button.styleSheet = item;
 
+                var lock = window.document.createElement("checkbox");
+                lock.setAttribute("label", "Locked");
+                lock.setAttribute("oncommand", "this.styleSheet.toggleLock();");
+                lock.styleSheet = item;
+
                 node.appendChild(button);
                 node.appendChild(label);
+                node.appendChild(lock);
 
                 this.cssFilePane.appendChild(node);
             },
