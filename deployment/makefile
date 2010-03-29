@@ -55,10 +55,19 @@ $(DMG2IMG_SOURCE_DIR)dmg2img-$(DMG2IMG_VER).tar.gz :
 $(DMG2IMG_SOURCE_DIR) :
 	mkdir $(DMG2IMG_SOURCE_DIR)
 
-clean :
-	rm $(DISTRO_DIR) -rf
+clean : clean-distros clean-nsis clean-xul clean-dmg2img
+
+clean-dmg2img :
+	rm $(DMG2IMG_SOURCE_DIR) -rf
+
+clean-nsis :
 	rm $(NSISDIR) -rf
+
+clean-xul :
 	rm $(XUL_SOURCE_DIR) -rf
+
+clean-distros :
+	rm $(DISTRO_DIR) -rf
 
 $(NSISDIR)$(NSIS)-src.tar.bz2 :
 	wget http://sourceforge.net/projects/nsis/files/NSIS%202/$(NSISVER)/$(NSIS)-src.tar.bz2/download --directory-prefix=$(NSISDIR)
