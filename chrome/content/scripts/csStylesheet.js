@@ -22,6 +22,15 @@ function csStyleSheet(sheet) {
     this.rules = [];
     this.importedSheets = [];
 
+    /**
+     * We modify the DOM CSSStyleSheet object by adding a link back to
+     * our own csStyleSheet object.  This makes it possible to take
+     * the DOM CSS objects we use and trace a path back to the
+     * csStyleSheet object which represents, for instance, the origin
+     * of a color property or of a style rule.
+     */
+    sheet.colorFishSheet = this;
+
     // This regular expression is used in the loop below for
     // extracting the value out of @import URLs.  If it matches then
     // the first captured group will be the path to the sheet being
