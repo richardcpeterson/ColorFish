@@ -23,6 +23,14 @@ function csStyleSheet(sheet) {
     this.importedSheets = [];
 
     /**
+     * When true, the stylesheet is locked and we should not modify
+     * any related color properties.  The burden is on other parts of
+     * the application to honor this property, since we do not modify
+     * properties by going through this class.
+     */
+    this.locked = false;
+
+    /**
      * We modify the DOM CSSStyleSheet object by adding a link back to
      * our own csStyleSheet object.  This makes it possible to take
      * the DOM CSS objects we use and trace a path back to the
