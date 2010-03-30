@@ -18,6 +18,11 @@ verticalPicker {
     -moz-user-focus: normal;
 }
 
+integerPicker {
+    -moz-binding: url("bindings.xml#integerPicker");
+    -moz-user-focus: normal;
+}
+
 [anonid="beforeText"]{
     width:20px;
     min-width:20px;

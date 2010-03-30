@@ -1030,6 +1030,11 @@
                 anonid="textInputs">
                 <xul:vbox
                     anonid="rgbInputs">
+                    <xul:integerPicker
+                        anonid="blargag"
+                        min="0"
+                        max="111"
+                        wraparound="true"/>
                     <xul:hbox
                         anonid="redInput">
                         <xul:label
