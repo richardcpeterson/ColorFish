@@ -6,50 +6,6 @@
  */
 
 function Browser() {
-    
-    //Closure method
-    function Foo(){
-        this.test = function(){
-            dump("Foo this.yadda: " + this.yadda + "\n");
-        }
-    };
-    
-    //Prototype method
-    function Bar(){
-        this.yadda = "yadda"
-    }
-    Bar.prototype.test = function(){
-        dump(this.yadda);
-    }
-    
-    //Anonymous object method
-    function Baz() {
-        return {
-            test: function(){
-                dump("Baz test\n");
-            }
-        };
-    }
-
-    var myFoo = new Foo();
-    var myBar1 = new Bar();
-    var myBar2 = new Bar();
-    var myBar3 = new Bar();
-    var myBaz = new Baz();
-    
-    myBar1.test = function(){dump("overridden\n");};
-    
-    myBar1.test();
-    myBar2.test();
-    myBar3.test();
-    
-    Bar.prototype.test = function(){dump("Changed the Bar function\n");};
-    
-    
-    myBar1.test();
-    myBar2.test();
-    myBar3.test();
-    
 
     /***
      * The <browser> element inside our XUL document.  Because we go
