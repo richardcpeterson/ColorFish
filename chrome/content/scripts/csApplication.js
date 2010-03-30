@@ -48,6 +48,13 @@ function CSApplication(){
      * Quits the application.
      */
     this.quit = function() {
+        this.activePage.styleSheets.forEach(
+            function (sheet) {
+                if (sheet.hasUnsavedChanges) {
+                    dump("Unsaved stuff\n");
+                }
+            }
+        );
         Components.classes['@mozilla.org/toolkit/app-startup;1']
             .getService(Components.interfaces.nsIAppStartup)
             .quit(Components.interfaces.nsIAppStartup.eAttemptQuit);
