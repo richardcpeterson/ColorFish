@@ -155,4 +155,5 @@ csStyleSheet.prototype.getOriginalText = function () {
  */
 csStyleSheet.prototype.save = function (filename) {
     csApp.save(this.getPrettyPrintText(), filename);
+    this.hasUnsavedChanges = false;
 };
