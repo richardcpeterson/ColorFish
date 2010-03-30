@@ -23,6 +23,12 @@ function csStyleSheet(sheet) {
     this.importedSheets = [];
 
     /**
+     * If true, properties of this sheet have been modified since we
+     * last saved it to file.
+     */
+    this.hasUnsavedChanges = false;
+
+    /**
      * We modify the DOM CSSStyleSheet object by adding a link back to
      * our own csStyleSheet object.  This makes it possible to take
      * the DOM CSS objects we use and trace a path back to the
