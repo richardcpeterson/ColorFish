@@ -652,7 +652,7 @@
              selected multiple swatches we do not want to copy them
              all.  (Or do we?  ☃ wants to know.)
         -->
-        <handler event="keypress" key="c" modifiers="control">
+        <handler event="keypress" key="c" modifiers="accel">
           <![CDATA[
                    this.palette.mostRecentlySelectedSwatch.copyColorToClipboard();
           ]]>
@@ -663,7 +663,7 @@
              paste it into all of the selected swatches, which is to
              say we set those swatches to use that color.
         -->
-        <handler event="keypress" key="v" modifiers="control">
+        <handler event="keypress" key="v" modifiers="accel">
           <![CDATA[
                    this.palette.selectedSwatches.forEach(
                        function (swatch) {
