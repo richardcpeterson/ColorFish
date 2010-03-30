@@ -331,6 +331,7 @@ Color.from_css = function(colorString) {
  * that we can deal with?
  */
 Color.isParsableString = function(colorString){
+    colorString = colorString.trim();
     colorString = colorString.toLowerCase();
     //Use the (?:) in order to
     //return "true" or "false", not just "undefined"
@@ -348,6 +349,7 @@ Color.isParsableString = function(colorString){
  * Return the Enum.ColorFormat of the given string
  */
 Color.getFormat = function(colorString){
+    colorString = colorString.trim();
     colorString = colorString.toLowerCase();
     if(colorString.match(Color.rgbPattern)){
         return Enums.ColorFormats.rgb;
@@ -384,6 +386,7 @@ Color.formatColor = function(colorString, colorFormat){
  * either the hex format #fff or #ffffff;
  */
 Color.isHexFormat = function(c) {
+    c = c.trim();
     return c.match( Color.shortHexPattern )
         || c.match( Color.longHexPattern );
 }
