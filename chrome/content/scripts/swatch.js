@@ -278,6 +278,16 @@ function Swatch(color, colorFormat, palette){
             color = Color.from_css(color);
         for(var i = 0; i < properties.length; i++) {
             properties[i].setColor(color);
+
+            // Once we have changed a property we want to flag the
+            // sheet from which it comes, that way we can let the user
+            // know he has unsaved changes before doing something that
+            // will destroy that stylesheet object.
+            properties[i].style
+                .parentRule
+                .parentStyleSheet
+                .colorFishSheet
+                .hasUnsavedChanges = true;
         }
     }
 
