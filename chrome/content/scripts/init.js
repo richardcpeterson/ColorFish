@@ -236,20 +236,21 @@ function initApp(){
      */
     let quitObserver = {
         observer: function (subject, topic, data) {
+            dump("Quitting\n");
         },
         register: function () {
             Components.classes["@mozilla.org/observer-service;1"]
-                .getServer( Components.interfaces.nsIObserverService )
+                .getService( Components.interfaces.nsIObserverService )
                 .addObserver(this, "quit-application-requested", false);
         },
         unregister: function () {
             Components.classes["@mozilla.org/observer-service;1"]
-                .getServer( Components.interfaces.nsIObserverService )
+                .getService( Components.interfaces.nsIObserverService )
                 .removeObserver(this, "quit-application-requested");
         }
     };
 
-    window.addEventListener("load", function () { quitObserver.register(); }, false);
+    quitObserver.register();
     window.addEventListener("unload", function () { quitObserver.unregister(); }, false);
 
     addHandlerToElement("uri-input", "keypress", loadPageOnEnterKey);
