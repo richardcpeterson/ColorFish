@@ -249,6 +249,9 @@ function initApp(){
         }
     };
 
+    window.addEventListener("load", function () { quitObserver.register(); }, false);
+    window.addEventListener("unload", function () { quitObserver.unregister(); }, false);
+
     addHandlerToElement("uri-input", "keypress", loadPageOnEnterKey);
     document.getElementById("uri-input").focus();
 
