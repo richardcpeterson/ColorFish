@@ -229,6 +229,26 @@ function initApp(){
     window.Browser = new Browser();
     window.csApp = new CSApplication();
 
+    /**
+     * To catch all of the ways the application may shut down, we need
+     * to create and register an observer that will listen for
+     * 'quit-application-requested' notifications.
+     */
+    let quitObserver = {
+        observer: function (subject, topic, data) {
+        },
+        register: function () {
+            Components.classes["@mozilla.org/observer-service;1"]
+                .getServer( Components.interfaces.nsIObserverService )
+                .addObserver(this, "quit-application-requested", false);
+        },
+        unregister: function () {
+            Components.classes["@mozilla.org/observer-service;1"]
+                .getServer( Components.interfaces.nsIObserverService )
+                .removeObserver(this, "quit-application-requested");
+        }
+    };
+
     addHandlerToElement("uri-input", "keypress", loadPageOnEnterKey);
     document.getElementById("uri-input").focus();
 
