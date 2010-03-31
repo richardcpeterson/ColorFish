@@ -134,7 +134,7 @@ function browserListener () {
             Browser.update_active_page();
 
             document.title =
-                "CSSchemer - " +
+                "ColorFish - " +
                 document.getElementById("browser").contentTitle;
         }
     },

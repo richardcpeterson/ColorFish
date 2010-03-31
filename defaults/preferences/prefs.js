@@ -2,7 +2,7 @@
  * GENERAL SETTINGS
  ************************************/
 // The location of our primary UI, loaded when the application starts.
-pref("toolkit.defaultChromeURI", "chrome://CSSchemer/content/xul/main.xul");
+pref("toolkit.defaultChromeURI", "chrome://ColorFish/content/xul/main.xul");
 
 
 

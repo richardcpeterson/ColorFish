@@ -1,8 +1,8 @@
-Important Concepts in CSSchemer
+Important Concepts in ColorFish
 ===============================
 
 This document explains the core concepts at work in the code behind
-CSSchemer.  The intent is to help developers who are new to the
+ColorFish.  The intent is to help developers who are new to the
 project gain an understanding of how the system is pieced together, so
 that they can quickly and easily determine where to begin working.
 
@@ -10,7 +10,7 @@ Prerequisite References
 -----------------------
 
 Quick access to these references is invaluable for working on
-CSSchemer.
+ColorFish.
 
     . https://developer.mozilla.org/en/XUL[Mozilla XUL Reference]
 
@@ -53,7 +53,7 @@ which is a method available on all objects.  See the definition in
 Initialization
 --------------
 
-The entry point to CSSchemer is the function +initApp()+, defined in
+The entry point to ColorFish is the function +initApp()+, defined in
 the +chrome/scripts/init.js+ file.  This file is the first code loaded
 on start up, and that function in particular is executed when the
 program starts; specifically, it is the +onload+ attribute of the XUL
@@ -77,7 +77,7 @@ The +initApp()+ function serves a few purposes.
 
 
 
-How CSSchemer Loads Stylesheets
+How ColorFish Loads Stylesheets
 -------------------------------
 
 ----------------------------------------------------------------------

@@ -232,5 +232,5 @@ function initApp(){
     addHandlerToElement("uri-input", "keypress", loadPageOnEnterKey);
     document.getElementById("uri-input").focus();
 
-    window.Browser.load_page("chrome://csschemer/content/help/index.html");
+    window.Browser.load_page("chrome://ColorFish/content/help/index.html");
 }

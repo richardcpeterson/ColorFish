@@ -1,39 +1,39 @@
 <?xml version="1.0"?>
-<?xul-overlay href="chrome://CSSchemer/content/xul/appcontent-overlay.xul"?>
+<?xul-overlay href="chrome://ColorFish/content/xul/appcontent-overlay.xul"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-<?xml-stylesheet href="chrome://CSSchemer/content/css/layout.css" type="text/css"?>
-<?xml-stylesheet href="chrome://CSSchemer/content/css/skin.css" type="text/css"?>
+<?xml-stylesheet href="chrome://ColorFish/content/css/layout.css" type="text/css"?>
+<?xml-stylesheet href="chrome://ColorFish/content/css/skin.css" type="text/css"?>
 
-<window id="main" title="CSSchemer"
+<window id="main" title="ColorFish"
         width="800" height="600"
         onload="initApp();"
         persist="screenX screenY width height"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <script type="application/x-javascript"
-          src="chrome://CSSchemer/content/scripts/init.js"/>
+          src="chrome://ColorFish/content/scripts/init.js"/>
   <script type="application/x-javascript"
-          src="chrome://CSSchemer/content/scripts/browser.js"/>
+          src="chrome://ColorFish/content/scripts/browser.js"/>
   <script type="application/x-javascript"
-          src="chrome://CSSchemer/content/scripts/color.js"/>
+          src="chrome://ColorFish/content/scripts/color.js"/>
   <script type="application/x-javascript"
-          src="chrome://CSSchemer/content/scripts/swatch.js"/>
+          src="chrome://ColorFish/content/scripts/swatch.js"/>
   <script type="application/x-javascript"
-          src="chrome://CSSchemer/content/scripts/palette.js"/>
+          src="chrome://ColorFish/content/scripts/palette.js"/>
   <script type="application/x-javascript"
-          src="chrome://CSSchemer/content/scripts/page.js"/>
+          src="chrome://ColorFish/content/scripts/page.js"/>
   <script type="application/x-javascript"
-          src="chrome://CSSchemer/content/scripts/eventHandlers.js"/>
+          src="chrome://ColorFish/content/scripts/eventHandlers.js"/>
   <script type="application/x-javascript"
-          src="chrome://CSSchemer/content/scripts/csApplication.js"/>
+          src="chrome://ColorFish/content/scripts/csApplication.js"/>
   <script type="application/x-javascript"
-          src="chrome://CSSchemer/content/scripts/enums.js"/>
+          src="chrome://ColorFish/content/scripts/enums.js"/>
   <script type="application/x-javascript"
-          src="chrome://CSSchemer/content/scripts/colorProperty.js"/>
+          src="chrome://ColorFish/content/scripts/colorProperty.js"/>
   <script type="application/x-javascript"
-          src="chrome://CSSchemer/content/scripts/csDocument.js"/>
+          src="chrome://ColorFish/content/scripts/csDocument.js"/>
   <script type="application/x-javascript"
-          src="chrome://CSSchemer/content/scripts/csStylesheet.js"/>
+          src="chrome://ColorFish/content/scripts/csStylesheet.js"/>
 
   <commandset id="mainCommandSet">
     <command id="cmd_browseURI" oncommand="Browser.load_from_address_bar();"/>
@@ -96,7 +96,7 @@
     <vbox id="bottombox">
         <statusbar id="status-bar" align="right">
             <statusbarpanel id="csAppStatusBar">
-                <image id="csAppStatusIcon" tooltiptext="CSSchemer" onclick="csApp.toggleAppPanel();"/>
+                <image id="csAppStatusIcon" tooltiptext="ColorFish" onclick="csApp.toggleAppPanel();"/>
                 <label value="CSSchemet Tool Panel" id="csAppStatusText" onclick="csApp.toggleAppPanel();"/>
             </statusbarpanel>
         </statusbar>

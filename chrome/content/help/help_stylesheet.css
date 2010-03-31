@@ -56,7 +56,7 @@ div#center{
     margin: 0 auto auto;
     width: 956px;
     min-height: 100%;
-    background-image:url("chrome://csschemer/content/help/images/gradient_full.png");
+    background-image:url("chrome://ColorFish/content/help/images/gradient_full.png");
     background-repeat: repeat-y;
     background-position:center center;
 }

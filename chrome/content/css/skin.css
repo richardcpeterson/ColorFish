@@ -17,7 +17,7 @@ box, hbox, vbox, browser{
 
 /* Main content panel at bottom of screen */
 #csContentBox{
-    background-image: url("chrome://CSSchemer/content/images/appcontent_bg.png");
+    background-image: url("chrome://ColorFish/content/images/appcontent_bg.png");
     background-repeat: repeat-x;
     background-color: #dadada;
     border-top: 2px solid #aaa;
@@ -48,7 +48,7 @@ box, hbox, vbox, browser{
 swatchControl{
 }
 .colorSwatch{
-    background-image: url("chrome://CSSchemer/content/images/swatch_border.png");
+    background-image: url("chrome://ColorFish/content/images/swatch_border.png");
 }
 .swatchSelectionBox.selected{
     background-color: #999;
@@ -57,7 +57,7 @@ swatchControl{
     background-color: #444;
 }
 .swatchSelectionBox.selected .colorSwatch{
-    background-image: url("chrome://CSSchemer/content/images/swatch_border_selected.png");
+    background-image: url("chrome://ColorFish/content/images/swatch_border_selected.png");
 }
 
 .selectedHover .swatchSelectionBox.selected,

@@ -3,7 +3,7 @@
  * CSApplication
  *
  * This class implements the overall user-interface functionality of
- * CSSchemer.  For instance, it is responsible for updating many of
+ * ColorFish.  For instance, it is responsible for updating many of
  * the panes, and for providing general functionality like opening
  * file dialogs.  However, note that the specific contents of the
  * application panes are handled elsewhere; e.g. while this class
@@ -298,7 +298,7 @@ function CSApplication(){
 
     /**
      * Opens a file dialog that allows the user to select a local HTML
-     * file to manipulate with CSSchemer.  Once selected, that file is
+     * file to manipulate with ColorFish.  Once selected, that file is
      * loaded in the browser.  If they cancel the operation then we
      * just quietly exit without doing anything.
      */
