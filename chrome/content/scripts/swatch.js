@@ -207,7 +207,14 @@ function Swatch(color, colorFormat, palette){
      * swatch.
      */
     this.addLiveColorObserver = function (observer) {
-        liveColorObservers.push(observer);
+        dump("Adding live color observer\n");
+        Components.classes["@mozilla.org/observer-service;1"]
+            .getService( Components.interfaces.nsIObserverService )
+            .addObserver(
+                observer,
+                "colorfish-swatch-live-color",
+                false
+            );
     }
 
     /**
@@ -304,10 +311,11 @@ function Swatch(color, colorFormat, palette){
      * Notify all registered observers that the live editing
      * color has changed
      */
-    function notifyLiveColorObservers(){
-        for(var i = 0; i < liveColorObservers.length; i++){
-            liveColorObservers[i].updateLiveColor(thisSwatch);
-        }
+    function notifyLiveColorObservers() {
+        dump("Notifying observers\n");
+        Components.classes["@mozilla.org/observer-service;1"]
+            .getService( Components.interfaces.nsIObserverService )
+            .notifyObservers(thisSwatch, "colorfish-swatch-live-color", thisSwatch.liveEditColor);
     }
 
     /**

@@ -53,7 +53,7 @@
                 this.swatch = swatch;
 
                 //Register with the new swatch
-                this.observe(this.swatch);
+                this.registerObservers(this.swatch);
 
                 var toolTip = "Found in " + swatch.count() + " style rule"
                         + (swatch.count()==1?"":"s");
@@ -118,9 +118,12 @@
         </method>
 
 
-        <method name="updateLiveColor">
+        <method name="observe">
             <parameter name="swatch"/>
+            <parameter name="topic"/>
+            <parameter name="data"/>
             <body><![CDATA[
+            dump("Observing\n");
                 this.updateColor(swatch.liveEditColor);
             ]]>
             </body>
@@ -145,11 +148,19 @@
             ]]>
             </body>
         </method>
-        <method name="observe">
+        <method name="registerObservers">
             <parameter name="swatch"/>
             <body><![CDATA[
                 //Register with the new swatch
-                swatch.addLiveColorObserver(this);
+                var control = this;
+                let test = {
+                    observe: function (s, t, d) {
+                        s.QueryInterface(Components.interfaces.nsISupports);
+                        s.dumpProps();
+                        control.updateColor(d);
+                    }
+                };
+                swatch.addLiveColorObserver(test);
                 swatch.addHistoryObserver(this);
                 swatch.addSelectionObserver(this);
             ]]>
