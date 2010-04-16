@@ -741,6 +741,87 @@
     </handlers>
 </binding>
 
+<binding id="eyedropper"
+    extends="#observablePicker">
+    <content>
+        <xul:label>Eyedropper</xul:label>
+    </content>
+    <implementation>
+        <!--Private use-->
+        <method name="selectValue">
+            <body><![CDATA[
+                this.notifySelectObservers();
+            ]]>
+            </body>
+        </method>
+    </implementation>
+    <handlers>
+        <handler event="click" button="0" modifiers="none"><![CDATA[
+            var element = this;
+            
+            function drag(event) {
+                
+                //Get the parent window
+                var window = event.target.ownerDocument.defaultView;
+            
+                //Find the actual cursor position
+                var pageX = event.clientX + window.scrollX;
+                var pageY = event.clientY + window.scrollY;
+            
+                //Make a 1px canvas document upon which to draw the pixel from
+                //the underlying window
+                var canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
+                canvas.width = 1;
+                canvas.height = 1;
+                var context = canvas.getContext("2d");
+            
+                //draws the contents of the DOM at pageX, pageY into the 1px canvas
+                //on a white background
+                //(See MDC documentation for canvas.drawWindow())
+                context.drawWindow(window, pageX, pageY, 1, 1, "white");
+            
+                //Get the data from the canvas
+                var data = context.getImageData(0, 0, 1, 1).data;
+                
+                element.rgb = data;
+                element.notifyDragObservers();
+            }
+            
+            /* TODO:
+                what goes here? We want to be able to set an
+               eyedropper cursor for the whole app.
+            
+            
+            //This doesn't work because it only sets the crosshairs for
+            //window XUL elements, NOT the website we're browsing.
+            window.document.documentElement.setAttribute(
+                "style",
+                "cursor: crosshair"
+            );
+            */
+            
+            
+            var originalDocumentOnmousemove = document.onmousemove;
+            var originalDocumentOnclick = document.onclick;
+            
+            document.onmousemove=drag;
+            document.onclick=function(){
+                element.selectValue();
+                window.document.documentElement.setAttribute("style","");
+                
+                /* TODO: Undo setting the eyedropper cursor here */
+                
+                document.onmousemove=originalDocumentOnmousemove;
+                document.onclick=originalDocumentOnclick;
+            };
+            drag(event);
+            
+            event.stopPropagation();
+        ]]>
+        </handler>
+    </handlers>
+</binding>
+
 <binding id="colorPickerPlus"
     extends="#observablePicker">
     <resources>
@@ -757,7 +838,12 @@
                 anonid="huePicker"/>
             <xul:spacer anonid="beforeText" flex="1" />
             <xul:vbox pack="start">
-                <xul:box anonid="colorPreview"></xul:box>
+                <xul:hbox>
+                    <xul:box anonid="colorPreview">
+                    </xul:box>
+                    <xul:eyedropper anonid="eyedropper">
+                    </xul:eyedropper>
+                </xul:hbox>
                 <xul:hbox
                     anonid="textInputs">
                     <xul:vbox
@@ -890,6 +976,11 @@
                     "anonid",
                     "colorPreview"
             );
+            this.eyedropper = document.getAnonymousElementByAttribute(
+                    this,
+                    "anonid",
+                    "eyedropper"
+            );
             
             
             var colorPickerPlus = this;
@@ -966,6 +1057,17 @@
                 this.huePicker.originalSelectObservers = [];
             }
             this.huePicker.originalSelectObservers.push(this);
+            
+            if (!this.eyedropper.originalDragObservers){
+                this.eyedropper.originalDragObservers = [];
+            }
+            this.eyedropper.originalDragObservers.push(this);
+            
+            if (!this.eyedropper.originalSelectObservers){
+                this.eyedropper.originalSelectObservers = [];
+            }
+            this.eyedropper.originalSelectObservers.push(this);
+            
             
             this.hue = 0;
             this.saturation = 0;
@@ -1061,6 +1163,9 @@
         <method name="updatePickerSelect">
             <parameter name="picker" />
             <body><![CDATA[
+                if(picker == this.eyedropper){
+                    this.setRGB(picker.rgb[0],picker.rgb[1],picker.rgb[2]);
+                }
                 this.notifySelectObservers();
             ]]>
             </body>
@@ -1069,6 +1174,15 @@
         <method name="updatePickerDrag">
             <parameter name="picker" />
             <body><![CDATA[
+                if(picker == this.eyedropper){
+                    this.updateColorPreview(
+                        picker.rgb[0],
+                        picker.rgb[1],
+                        picker.rgb[2]
+                    );
+                    return;
+                }
+                
                 if(picker == this.huePicker){
                     this.hue = picker.getHue();
                     this.saturationValuePicker.setHue(this.hue);

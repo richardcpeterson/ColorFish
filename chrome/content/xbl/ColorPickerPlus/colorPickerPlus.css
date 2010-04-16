@@ -18,6 +18,12 @@ verticalPicker {
     -moz-user-focus: normal;
 }
 
+eyedropper {
+    -moz-binding: url("bindings.xml#eyedropper");
+    -moz-user-focus: normal;
+    color:white;
+}
+
 [anonid="beforeText"]{
     width:20px;
     min-width:20px;
