@@ -335,7 +335,7 @@
             this.columnsTag = document.getAnonymousElementByAttribute(this, "anonid", "columnsTag");
             this.rowsTag = document.getAnonymousElementByAttribute(this, "anonid", "rowsTag");
 
-            this.columnCount = 16;
+            this.columnCount = 12;
             this.setPalette(this.originalPalette);
         ]]></constructor>
 
