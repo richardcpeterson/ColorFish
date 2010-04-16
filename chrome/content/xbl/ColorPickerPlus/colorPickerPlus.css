@@ -31,6 +31,17 @@ verticalPicker {
     min-width: 85px;
 }
 
+[anonid="colorPreview"]{
+    height: 40px;
+    width: 40px;
+    min-height: 40px;
+    min-width: 40px;
+    max-height: 40px;
+    max-width: 40px;
+    border: 1px solid #777;
+    background-color: #000;
+}
+
 .colorTextInput{
     width: 45px;
 }
