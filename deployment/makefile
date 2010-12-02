@@ -34,18 +34,21 @@ XUL_SOURCE_DIRS = $(XUL_SOURCE_DIR)$(LINUX_DIR) $(XUL_SOURCE_DIR)$(WINDOWS_DIR) 
 
 all : $(XUL_SOURCE_DIR) $(XUL_SOURCE_DIRS) $(BUILDS)
 
-nsis : $(NSISDIR)$(NSIS)/makensis
+css-nsis : $(NSISDIR)$(NSIS)/makensis
 
 clean :
 	rm $(DISTRO_DIR) -rf
 	rm $(NSISDIR) -rf
 	rm $(XUL_SOURCE_DIR) -rf
 
-$(NSISDIR)$(NSIS)-src.tar.bz2 :
-	wget http://sourceforge.net/projects/nsis/files/NSIS%202/$(NSISVER)/$(NSIS)-src.tar.bz2/download --directory-prefix=$(NSISDIR)
+$(NSISDIR) :
+	mkdir $(NSISDIR)
 
-$(NSISDIR)$(NSIS).zip :
-	wget http://sourceforge.net/projects/nsis/files/NSIS%202/$(NSISVER)/$(NSIS).zip/download --directory-prefix=$(NSISDIR)
+$(NSISDIR)$(NSIS)-src.tar.bz2 : $(NSISDIR)
+	wget http://sourceforge.net/projects/nsis/files/NSIS%202/$(NSISVER)/$(NSIS)-src.tar.bz2/download -O $(NSISDIR)$(NSIS)-src.tar.bz2
+
+$(NSISDIR)$(NSIS).zip : $(NSISDIR)
+	wget http://sourceforge.net/projects/nsis/files/NSIS%202/$(NSISVER)/$(NSIS).zip/download -O $(NSISDIR)$(NSIS).zip
 
 $(NSISDIR)$(NSIS)-src/ : $(NSISDIR)$(NSIS)-src.tar.bz2
 	tar -xjvf $(NSISDIR)$(NSIS)-src.tar.bz2 --directory $(NSISDIR)
@@ -87,7 +90,7 @@ $(LINUX_FINAL_DIR)$(LINUX_FINAL_FILE) : $(LINUX_FINAL_DIR)
 	cd $(DISTRO_DIR)$(LINUX_DIR) ;\
 	tar -cvzf $(LINUX_FINAL_FILE) $(APPNAME)
 
-$(WINDOWS_FINAL_DIR)$(WINDOWS_FINAL_FILE) : $(WINDOWS_FINAL_DIR) nsis $(NSISDIR)$(NSIS)/$(WINDOWS_NSIS_SCRIPT) $(NSISDIR)$(NSIS)/share/nsis
+$(WINDOWS_FINAL_DIR)$(WINDOWS_FINAL_FILE) : $(WINDOWS_FINAL_DIR) css-nsis $(NSISDIR)$(NSIS)/$(WINDOWS_NSIS_SCRIPT) $(NSISDIR)$(NSIS)/share/nsis
 	cd $(NSISDIR)$(NSIS) ;\
 	./makensis $(WINDOWS_NSIS_SCRIPT)
 	cp $(NSISDIR)$(NSIS)/$(WINDOWS_FINAL_FILE) $(DISTRO_DIR)$(WINDOWS_DIR)$(WINDOWS_FINAL_FILE)
