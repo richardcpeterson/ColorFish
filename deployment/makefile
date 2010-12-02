@@ -1,4 +1,4 @@
-XULVER = 1.9.2.8
+XULVER = 1.9.2.12
 NSISVER = 2.46
 NSIS = nsis-$(NSISVER)
 NSISDIR = nsis/
