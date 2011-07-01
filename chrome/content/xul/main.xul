@@ -80,6 +80,12 @@
         <menuitem label="Quit" command="cmd_menuFileQuit" accesskey="q" key="quit-key"/>
       </menupopup>
     </menu>
+    <menu id="edit-menu" label="Edit">
+        <menupopup id="edit-popup">
+            <menuitem label="Undo" command="cmd_undo" accesskey="u" key="undo-key"/>
+            <menuitem label="Redo" command="cmd_redo" accesskey="r" key="redo-key"/>
+        </menupopup>
+    </menu>
   </menubar>
 
   <vbox id="main-layout" flex="1">
